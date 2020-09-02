@@ -42,16 +42,45 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/wp-content/themes/enfold/config-templatebuilder/avia-template-builder/php/asset-manager.class.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1196">
-              <caret line="862" column="17" lean-forward="true" selection-start-line="862" selection-start-column="17" selection-end-line="862" selection-end-column="17" />
+            <state relative-caret-position="14280">
+              <caret line="952" column="16" selection-start-line="952" selection-start-column="16" selection-end-line="952" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/wp-config.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1095">
+              <caret line="90" selection-start-line="90" selection-end-line="90" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/index.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
+              <folding>
+                <element signature="e#6#190#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/wp-content/themes/index.php">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -98,36 +127,6 @@
               <item name="hookedmcr" type="462c0819:PsiDirectoryNode" />
               <item name="wp-content" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="hookedmcr" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hookedmcr" type="462c0819:PsiDirectoryNode" />
-              <item name="wp-content" type="462c0819:PsiDirectoryNode" />
-              <item name="themes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hookedmcr" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hookedmcr" type="462c0819:PsiDirectoryNode" />
-              <item name="wp-content" type="462c0819:PsiDirectoryNode" />
-              <item name="themes" type="462c0819:PsiDirectoryNode" />
-              <item name="enfold" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hookedmcr" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hookedmcr" type="462c0819:PsiDirectoryNode" />
-              <item name="wp-content" type="462c0819:PsiDirectoryNode" />
-              <item name="themes" type="462c0819:PsiDirectoryNode" />
-              <item name="enfold" type="462c0819:PsiDirectoryNode" />
-              <item name="config-templatebuilder" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hookedmcr" type="b2602c69:ProjectViewProjectNode" />
-              <item name="hookedmcr" type="462c0819:PsiDirectoryNode" />
-              <item name="wp-content" type="462c0819:PsiDirectoryNode" />
-              <item name="themes" type="462c0819:PsiDirectoryNode" />
-              <item name="enfold" type="462c0819:PsiDirectoryNode" />
-              <item name="config-templatebuilder" type="462c0819:PsiDirectoryNode" />
-              <item name="avia-template-builder" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -169,12 +168,12 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1924000" />
+    <option name="totallyTimeSpent" value="2647000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="70" y="23" width="1631" height="608" extended-state="0" />
+    <frame x="181" y="117" width="1609" height="824" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18502203" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14231014" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -188,7 +187,7 @@
       <window_info anchor="bottom" id="Tinkerwell" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.32945737" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.23087431" />
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -205,15 +204,15 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/wp-config.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
+        <state relative-caret-position="1095">
+          <caret line="90" selection-start-line="90" selection-end-line="90" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/wp-content/themes/enfold/config-templatebuilder/avia-template-builder/php/asset-manager.class.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1196">
-          <caret line="862" column="17" lean-forward="true" selection-start-line="862" selection-start-column="17" selection-end-line="862" selection-end-column="17" />
+        <state relative-caret-position="14280">
+          <caret line="952" column="16" selection-start-line="952" selection-start-column="16" selection-end-line="952" selection-end-column="16" />
         </state>
       </provider>
     </entry>
