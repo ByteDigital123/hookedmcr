@@ -184,13 +184,14 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 							'type' 	=> 'select',
 							'std' 	=> '',
 							'subtype'	=> array( 
-												__( 'Default Style', 'avia_framework' )								=> '',  
-												__( 'Heading Style Modern (left)', 'avia_framework' )				=> 'blockquote modern-quote' , 
-												__( 'Heading Style Modern (centered)', 'avia_framework' )			=> 'blockquote modern-quote modern-centered',
-												__( 'Heading Style Modern (right)', 'avia_framework' )				=> 'blockquote modern-quote modern-right',
-												__( 'Heading Style Classic (left, italic)', 'avia_framework' )		=> 'blockquote classic-quote classic-quote-left',
-												__( 'Heading Style Classic (centered, italic)', 'avia_framework' )	=> 'blockquote classic-quote',
-												__( 'Heading Style Classic (right, italic)', 'avia_framework' )		=> 'blockquote classic-quote classic-quote-right'
+												__( 'Default Style', 'avia_framework' )										=> '',  
+												__( 'Heading Style Modern (left)', 'avia_framework' )						=> 'blockquote modern-quote' , 
+												__( 'Heading Style Modern (centered)', 'avia_framework' )					=> 'blockquote modern-quote modern-centered',
+												__( 'Heading Style Modern (right)', 'avia_framework' )						=> 'blockquote modern-quote modern-right',
+												__( 'Heading Style Classic (left, italic)', 'avia_framework' )				=> 'blockquote classic-quote classic-quote-left',
+												__( 'Heading Style Classic (centered, italic)', 'avia_framework' )			=> 'blockquote classic-quote',
+												__( 'Heading Style Classic (right, italic)', 'avia_framework' )				=> 'blockquote classic-quote classic-quote-right',
+												__( 'Heading Style Elegant (centered, optional icon)', 'avia_framework' )	=> 'blockquote elegant-quote elegant-centered'
 											)
 						),   
 				
@@ -213,9 +214,31 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 							'desc' 	=> __( 'Add your subheading here','avia_framework' ),
 							'id' 	=> 'content',
 							'type' 	=> 'textarea',
-							'required' => array( 'subheading_active', 'not', '' ),
+							'required'	=> array( 'subheading_active', 'not', '' ),
 							'std' 	=> ''
 						),   
+				
+						array(	
+							'name' 	=> __( 'Icon', 'avia_framework' ),
+							'desc' 	=> __( 'Select to show an additional icon above headline', 'avia_framework' ),
+							'id' 	=> 'show_icon',
+							'type' 	=> 'select',
+							'std' 	=> '',
+							'required' => array( 'style', 'equals', 'blockquote elegant-quote elegant-centered' ),
+							'subtype'	=> array( 
+												__( 'No Icon', 'avia_framework' )		=>'',  
+												__( 'Display Icon', 'avia_framework' )	=>'custom_icon' , 
+											)
+						),   
+
+						array(
+							'name' 	=> __( 'Icon','avia_framework' ),
+							'desc' 	=> __( 'Select an icon to display above the headline', 'avia_framework' ),
+							'id' 	=> 'icon',
+							'type' 	=> 'iconfont',
+							'std' 	=> '',
+							'required'	=> array( 'show_icon', 'equals', 'custom_icon' ),
+						)
 				
 				);
 			
@@ -257,7 +280,7 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 				
 						array(
 							'name'			=> __( 'Subheading Font Sizes', 'avia_framework' ),
-							'desc'			=> __( 'Select a custom font size for the Subheading.', 'avia_framework' ),
+							'desc'			=> __( 'Select a custom font size for the subheading.', 'avia_framework' ),
 							'type'			=> 'template',
 							'template_id'	=> 'font_sizes_icon_switcher',
 							'required'		=> array( 'subheading_active', 'not', '' ),
@@ -275,7 +298,25 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 											)
 						),
 				
-	
+						array(
+							'name'			=> __( 'Icon Font Size', 'avia_framework' ),
+							'desc'			=> __( 'Select a custom font size for the icon', 'avia_framework' ),
+							'type'			=> 'template',
+							'template_id'	=> 'font_sizes_icon_switcher',
+							'required'		=> array( 'show_icon', 'equals', 'custom_icon' ),
+							'subtype'		=> array(
+												'default'	=> AviaHtmlHelper::number_array( 10, 120, 1, array( __( 'Use Default', 'avia_framework' ) => '' ), 'px' ),
+												'medium'	=> AviaHtmlHelper::number_array( 10, 120, 1, array( __( 'Use Default', 'avia_framework' ) => '', __( 'Hidden', 'avia_framework' ) => 'hidden' ), 'px' ),
+												'small'		=> AviaHtmlHelper::number_array( 10, 120, 1, array( __( 'Use Default', 'avia_framework' ) => '', __( 'Hidden', 'avia_framework' ) => 'hidden' ), 'px' ),
+												'mini'		=> AviaHtmlHelper::number_array( 10, 120, 1, array( __( 'Use Default', 'avia_framework' ) => '', __( 'Hidden', 'avia_framework' ) => 'hidden' ), 'px' )
+											),
+							'id_sizes'		=> array(
+												'default'	=> 'icon_size',
+												'medium'	=> 'av-medium-font-size-1',
+												'small'		=> 'av-small-font-size-1',
+												'mini'		=> 'av-mini-font-size-1'
+											)
+						)
 				
 				);
 			
@@ -312,6 +353,15 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 							'std' 	=> '',
 							'required' => array( 'color', 'equals', 'custom-color-heading' )
 						),
+				
+						array(	
+							'name' 	=> __( 'Custom Icon Color', 'avia_framework' ),
+							'desc' 	=> __( 'Select a custom icon color for your Heading here', 'avia_framework' ),
+							'id' 	=> 'icon_color',
+							'type' 	=> 'colorpicker',
+							'std' 	=> '',
+							'required' => array( 'color', 'equals', 'custom-color-heading' )
+						)
 						
 				);
 			
@@ -351,7 +401,16 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 							'subtype'	=> AviaHtmlHelper::number_array( 0, 120, 1 ),
 							'std'	=> '10'
 						), 
-				            
+				
+						array(	
+							'name' 	=> __( 'Icon Padding Bottom', 'avia_framework' ),
+							'desc' 	=> __( 'Icon bottom padding in pixel', 'avia_framework' ),
+							'id' 	=> 'icon_padding',
+							'type' 	=> 'select',
+							'std'	=> '10',
+							'subtype'	=> AviaHtmlHelper::number_array( 0, 120, 1 ),
+							'required'	=> array( 'show_icon', 'equals', 'custom_icon' ),
+						)
 						
 				);
 			
@@ -407,6 +466,8 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 				$params['args']['link_target'] = $params['args']['linktarget'];
 			}
 			
+			extract( av_backend_icon( $params ) ); // creates $font and $display_char if the icon was passed as param 'icon' and the font as 'font' 
+			
 			$params['args'] = shortcode_atts( array(
 									'heading'					=> '',
 									'tag'						=> 'h3', 
@@ -418,8 +479,14 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 									'subheading_size'			=> '', 
 									'margin'					=> '',
 									'padding'					=> '5', 
+									'icon_padding'				=> '10',
 									'color'						=> '', 
 									'custom_font'				=> '', 
+									'icon_color'				=> '', 
+									'show_icon'					=> '',
+									'icon'						=> '',
+									'font'						=> '',
+									'icon_size'					=> '',
 									'custom_class'				=> '', 
 									'id'						=> '',
 									'admin_preview_bg'			=> '',
@@ -432,19 +499,28 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 									'av-mini-font-size-title'	=> '',
 									'av-medium-font-size'		=> '',
 									'av-small-font-size'		=> '',
-									'av-mini-font-size'			=> ''
+									'av-mini-font-size'			=> '',
+									'av-medium-font-size-1'		=> '',
+									'av-small-font-size-1'		=> '',
+									'av-mini-font-size-1'		=> ''
+				
 						), $params['args'], $this->config['shortcode'] );
 			
 			
-			$templateNAME  	= $this->update_template( 'name', '{{name}}' );
+//			$templateNAME  	= $this->update_template( 'name', '{{name}}' );
 
 			$content = stripslashes( wpautop( trim( html_entity_decode( $params['content'] ) ) ) );
 
 			$params['class'] = '';
 			$params['innerHtml']  = "<div class='avia_textblock avia_textblock_style avia-special-heading' >";
 
-			$params['innerHtml'] .= 	'<div ' . $this->class_by_arguments( 'tag, style, color, subheading_active', $params['args'] ) . '>';
+			$params['innerHtml'] .= 	'<div ' . $this->class_by_arguments( 'tag, style, color, subheading_active, show_icon', $params['args'] ) . '>';
 			$params['innerHtml'] .= 		"<div class='av-subheading-top av-subheading' data-update_with='content'>{$content}</div>";
+			$params['innerHtml'] .=			'<span class="avia-heading-icon">';
+			$params['innerHtml'] .=				'<span ' . $this->class_by_arguments( 'font', $font ) . '>';
+			$params['innerHtml'] .=					"<span data-update_with='icon_fakeArg' class='avia_icon_char'>{$display_char}</span>";
+			$params['innerHtml'] .=				'</span>';
+			$params['innerHtml'] .=			'</span>';
 			$params['innerHtml'] .= 		"<div data-update_with='heading'>";
 			$params['innerHtml'] .=				stripslashes( trim( htmlspecialchars_decode( $params['args']['heading'] ) ) );
 			$params['innerHtml'] .= 		'</div>';
@@ -476,19 +552,26 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 			extract( AviaHelper::av_mobile_sizes( $atts ) ); //return $av_font_classes, $av_title_font_classes and $av_display_classes 
 
 			$atts = shortcode_atts( array(
-							'heading'		=> '',
-							'tag'			=> 'h3', 
-							'link_apply'	=> null,		//	backwards comp. < version 1.0
-							'link'			=> '',
-							'link_target'	=> '',
-							'style'			=> '',
-							'size'			=> '',
+							'heading'			=> '',
+							'tag'				=> 'h3', 
+							'link_apply'		=> null,		//	backwards comp. < version 1.0
+							'link'				=> '',
+							'link_target'		=> '',
+							'style'				=> '',
+							'show_icon'			=> '',
+							'icon'				=> '',
+							'font'				=> '',
+							'icon_size'			=> '',
+							'icon_padding'		=> 10,
+							'icon_color'		=> '',
+							'size'				=> '',
 							'subheading_active' => '', 
 							'subheading_size'	=> '', 
-							'margin'		=> '',
-							'padding'		=> '5', 
-							'color'			=> '', 
-							'custom_font'	=> '', 
+							'margin'			=> '',
+							'padding'			=> '5', 
+							'color'				=> '', 
+							'custom_font'		=> '', 
+				
 					), $atts, $this->config['shortcode'] );
 			
 			//	backwards comp. < version 1.0
@@ -520,6 +603,7 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 			$link_before = '';
 			$link_after = '';
 			$subheading_size = empty( $subheading_size ) ? '15' : $subheading_size;
+			$icon_size = empty( $icon_size ) ? '25' : $icon_size;
 
 			/*margin calc*/
 			$margin_calc = AviaHelper::multi_value_result( $margin , 'margin' );
@@ -572,15 +656,44 @@ if ( ! class_exists( 'avia_sc_heading' ) )
 				{
 					$class .= ' av-linked-heading';
 
-					$link_before .= '<a href="' . AviaHelper::get_url( $link ) . '"';
-
-					$blank = ( strpos( $link_target, '_blank' ) !== false || $link_target == 'yes' ) ? ' target="_blank" ' : '';
-					$blank .= strpos( $link_target, 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
-
-					$link_before .= $blank;
-					$link_before .= '>';
-
+					$link_before .= '<a href="' . AviaHelper::get_url( $link ) . '"' . AviaHelper::get_link_target( $link_target ) . '>';
 					$link_after = '</a>';
+				}
+				
+				// special markup for 'elegant' style
+				if( $style == 'blockquote elegant-quote elegant-centered' )
+				{
+					$output_before = "";
+
+					if( $show_icon == 'custom_icon' && $icon !== '' )
+					{
+						$display_char = av_icon( $icon, $font );
+						$icon_styling = "";
+						
+						if( is_numeric( $icon_size ) )
+						{
+							$icon_styling .= AviaHelper::style_string( $atts, 'icon_size', 'font-size','px' );
+						}
+						
+						if( $icon_color !== '' )
+						{
+							$icon_styling .= AviaHelper::style_string( $atts, 'icon_color', 'color' );
+						}
+						if( is_numeric( $icon_padding ) )
+						{
+							$icon_styling .= AviaHelper::style_string( $atts, 'icon_padding', 'padding-bottom','px' );
+						}
+
+						$icon_styling = ( $icon_styling !== "" ) ? AviaHelper::style_string( $icon_styling ) : "";
+
+						$icon_markup = "<span class='heading-char avia-font-{$font} {$av_font_classes_1}' {$icon_styling} {$display_char}></span>";
+						$output_before = $icon_markup;
+					}
+
+					$output_before .= '<span class="heading-wrap">';
+					$output_after = '</span>';
+
+					$heading = $output_before . $heading . $output_after;
 				}
 	        		
 				//check if we got a subheading

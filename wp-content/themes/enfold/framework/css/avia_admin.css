@@ -2580,6 +2580,16 @@ margin-left:10px;
 	clear:both;
 }
 
+.avia_responsive_images_overview .av-plugin-check-wrap{
+	width: 100%;
+	margin-top: 0;
+}
+.avia_responsive_images_overview .av-plugin-check-wrap li{
+	margin-left: 25px;
+	line-height: 1.0em;
+	color: #999;
+}
+
 .av-plugin-result-title{
 	margin-top:15px;
 }

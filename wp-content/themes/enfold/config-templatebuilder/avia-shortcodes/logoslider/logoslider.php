@@ -29,8 +29,8 @@ if ( ! class_exists( 'avia_sc_partner_logo' ) )
 			$this->config['tooltip'] 	    = __( 'Display a partner/logo Grid or Slider', 'avia_framework' );
 			$this->config['preview'] 		= false;
 			$this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'el_id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'el_id';
+			$this->config['id_show']		= 'yes';
 		}
 
 		function extra_assets()
@@ -114,6 +114,11 @@ if ( ! class_exists( 'avia_sc_partner_logo' ) )
 						array(	
 								'type'			=> 'template',
 								'template_id'	=> $this->popup_key( 'advanced_heading' )
+							),
+				
+						array(	
+								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation_slider' )
 							),
 				
 						array(	
@@ -410,13 +415,32 @@ if ( ! class_exists( 'avia_sc_partner_logo' ) )
 							array(	
 								'type'			=> 'template',
 								'template_id'	=> 'toggle',
+								'title'			=> __( 'Slider Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+			
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation_slider' ), $template );
+			
+			
+			$c = array(
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
+						)
+
+				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
 								'title'			=> __( 'Animation', 'avia_framework' ),
 								'content'		=> $c 
 							),
 					);
 			
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
-			
 		}
 		
 		/**
@@ -646,6 +670,7 @@ if ( ! class_exists( 'avia_sc_partner_logo' ) )
 							'navigation'    => 'arrows',
 							'animation'     => 'slide',
 							'interval'		=> 5,
+							'lazy_loading'	=> 'disabled',
 							'heading'		=> '',
 							'hover'			=> '',
 							'columns'       => 3,
@@ -657,7 +682,8 @@ if ( ! class_exists( 'avia_sc_partner_logo' ) )
 							'custom_el_id'	=> ! empty( $meta['custom_el_id'] ) ? $meta['custom_el_id'] : '',
 							'heading_tag'	=> ! empty( $meta['heading_tag'] ) ? $meta['heading_tag'] : '',
 							'heading_class'	=> ! empty( $meta['heading_class'] ) ? $meta['heading_class'] : '',
-							'img_size_behave' => '',
+							'img_size_behave' => ''
+				
 						), $atts, $this->config['shortcode'] );
 
 			$logo = new avia_partner_logo( $atts );
@@ -737,15 +763,25 @@ if ( ! class_exists( 'avia_partner_logo' ) )
 								'heading_class'	=> '',
 								'hover'			=> '',
 								'css_id'		=> '',
-								'img_size_behave'=>'',
+								'img_size_behave' =>'',
+								'lazy_loading'	=> 'disabled',
 								'content'		=> array()
+				
 						), $config);
 
 
+			/**
+			 * @since 4.7.6.2
+			 * @param array $this->config
+			 * @return array
+			 */
+			$this->config = apply_filters( 'avf_partner_logo_config', $this->config );
+			
+			
 			//if we got subslides overwrite the id array
-			if( ! empty( $config['content'] ) )
+			if( ! empty( $this->config['content'] ) )
 			{
-				$this->extract_subslides( $config['content'] );
+				$this->extract_subslides( $this->config['content'] );
 			}
 
 			$this->set_slides( $this->config['ids'] );
@@ -935,33 +971,34 @@ if ( ! class_exists( 'avia_partner_logo' ) )
 
 					if( $img_size_behave == 'no_stretch' )
 					{
-					   $img = wp_get_attachment_image($slide->ID, $size);
+					   $img = wp_get_attachment_image( $slide->ID, $size );
+					   $img = Av_Responsive_Images()->make_image_responsive( $img, $slide->ID, $this->config['lazy_loading'] );
 					}
-                        
-                        
-					$link = aviaHelper::get_url($link, $slide->ID);
-					$blank = (strpos($link_target, '_blank') !== false || $link_target == 'yes') ? ' target="_blank" ' : '';
-					$blank .= strpos($link_target, 'nofollow') !== false ? ' rel="nofollow" ' : '';
+
+					$link = AviaHelper::get_url( $link, $slide->ID );
+					$blank = AviaHelper::get_link_target( $link_target );
 				}
 
 				$parity			= $loop_counter % 2 ? 'odd' : 'even';
 				$last       	= $this->slide_count == $slide_loop_count ? " post-entry-last " : '';
 				$post_class 	= "post-entry slide-entry-overview slide-loop-{$slide_loop_count} slide-parity-{$parity} {$last}";
 				$thumb_class	= 'real-thumbnail';
-				$single_data 	= empty($hover) ? '' : 'data-avia-tooltip="' . $hover . '"';
+				$single_data 	= empty( $hover ) ? '' : 'data-avia-tooltip="' . $hover . '"';
 
-
-				if($loop_counter == 1) $output .= "<div class='slide-entry-wrap' >";
+				if( $loop_counter == 1 ) 
+				{
+					$output .= "<div class='slide-entry-wrap' >";
+				}
 
 				$output .= "<div {$single_data} class='slide-entry flex_column no_margin {$post_class} {$grid} {$extraClass} {$thumb_class}'>";
-				$output .= !empty($link) ? "<a href='{$link}' data-rel='slide-".avia_partner_logo::$slider."' class='slide-image' title='{$linktitle}' {$blank} >{$img}</a>" : $img;
+				$output .=		! empty( $link ) ? "<a href='{$link}' data-rel='slide-" . avia_partner_logo::$slider . "' class='slide-image' title='{$linktitle}' {$blank} >{$img}</a>" : $img;
 				$output .= '</div>';
 
 				$loop_counter ++;
 				$slide_loop_count ++;
 				$extraClass = '';
 
-				if($loop_counter > $columns)
+				if( $loop_counter > $columns )
 				{
 					$loop_counter = 1;
 					$extraClass = 'first';
@@ -1033,23 +1070,3 @@ if ( ! class_exists( 'avia_partner_logo' ) )
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

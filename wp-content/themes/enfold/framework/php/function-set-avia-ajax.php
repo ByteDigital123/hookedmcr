@@ -453,30 +453,30 @@ if( ! function_exists( 'avia_ajax_reset_options_page' ) )
 /**
  * This function gets an attachment image based on its id and returns the image url to the javascript. Needed for advanced image uploader
  */
-if(!function_exists('avia_ajax_get_image'))
+if( ! function_exists( 'avia_ajax_get_image' ) )
 {
 	function avia_ajax_get_image()
 	{
 		#backend single post/page/portfolio item: add multiple preview pictures. get a preview picture via ajax request and display it
 		
 		$attachment_id = (int) $_POST['attachment_id'];
-		$attachment = get_post($attachment_id);
+		$attachment = get_post( $attachment_id );
 		$mime_type = $attachment->post_mime_type;
 				
-		if (strpos($mime_type, 'flash') !== false || substr($mime_type, 0, 5) == 'video')
+		if( strpos( $mime_type, 'flash' ) !== false || substr( $mime_type, 0, 5 ) == 'video' )
 		{
 			$output = $attachment->guid;
 		}
 		else
 		{
-			$output = wp_get_attachment_image($attachment_id, array(100,100));
+			$output = wp_get_attachment_image( $attachment_id, array( 100, 100 ) );
 		}
 
-		die($output);
+		die( $output );
 	}
 	
 	//hook into wordpress admin.php
-	add_action('wp_ajax_avia_ajax_get_image', 'avia_ajax_get_image');
+	add_action( 'wp_ajax_avia_ajax_get_image', 'avia_ajax_get_image' );
 }
 
 

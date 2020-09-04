@@ -70,15 +70,19 @@ if ( ! class_exists( 'avia_sc_table' ) )
 			$this->config['tooltip'] 	= __( 'Creates a data or pricing table', 'avia_framework' );
 			$this->config['preview'] 	= false;
 			$this->config['disabling_allowed'] = true;
+			
 			$this->config['id_name']	= 'id';
 			$this->config['id_show']	= 'yes';
+			$this->config['alb_desc_id']	= 'alb_description';
 		}
 
 
 		function admin_assets()
 		{
 			$ver = AviaBuilder::VERSION;
-			wp_enqueue_script('avia_table_js', AviaBuilder::$path['assetsURL'] . 'js/avia-table.js', array( 'avia_modal_js' ), $ver, true );
+			
+			wp_register_script('avia_table_js', AviaBuilder::$path['assetsURL'] . 'js/avia-table.js', array( 'avia_modal_js' ), $ver, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_table_js' );
 		}
 
 
@@ -358,7 +362,7 @@ if ( ! class_exists( 'avia_sc_table' ) )
 		 */
 		function editor_sub_element( $params )
 		{	
-			$template = $this->update_template( 'label', __( 'Element', 'avia_framework' ). ': {{label}}' );
+			$template = $this->update_template( 'label', __( 'Element', 'avia_framework' ) . ': {{label}}' );
 
 			$params['content'] = null;
 			$params['innerHtml']  = '';
@@ -475,16 +479,16 @@ if ( ! class_exists( 'avia_sc_table' ) )
 
 					if( empty( $content ) && $content !== '0' ) 
 					{ 
-						$ul['attr'][$key]['row_style'] .= ' empty-table-cell'; 
+						$ul['attr'][ $key ]['row_style'] .= ' empty-table-cell'; 
 						$content = "{{content-{$key}}}";
 						$empty_cells = true;
 					}
-					else if( empty( $fallback_values[$key] ) )
+					else if( empty( $fallback_values[ $key ] ) )
 					{
-						$fallback_values[$key] = $content;
+						$fallback_values[ $key ] = $content;
 					}
 
-					if(strpos($ul['attr'][$key]['row_style'],'avia-pricing-row') !== false)
+					if( strpos( $ul['attr'][ $key ]['row_style'], 'avia-pricing-row' ) !== false )
 					{
 						$content = preg_replace( '!(\$|€|¥|£|¢|¤|%|‰|&cent;|&curren;|&pound;|&yen;|&euro;)!' , '<span class="currency-symbol">$1</span>', $content );
 					}
@@ -495,8 +499,6 @@ if ( ! class_exists( 'avia_sc_table' ) )
 					$output .= $key == 0 ? "<span class='pricing-extra'></span>" :'';
 
 					$output .= '</li>';
-							
-							
 				}
 						
 				$output .= '</ul>';
@@ -515,33 +517,39 @@ if ( ! class_exists( 'avia_sc_table' ) )
 			return $output;
 		}
 			
-			
-			
-		/*
-		data table uses the real table html tag to display its structure
+		/**
+		 * Data table uses the real table html tag to display its structure
+		 * 
+		 * @param array $table_rows
+		 * @param array $atts
+		 * @param array $meta
+		 * @return type
 		*/
 		protected function data_table( $table_rows, $atts, $meta )
 		{	
 			extract( $this->screen_options );
 
 			$responsive_style = '';
-			$class = $meta['el_class'].' '.$atts['pricing_table_design'].' '.$av_display_classes;
+			$class = $meta['el_class'] . ' ' . $atts['pricing_table_design'] . ' ' . $av_display_classes;
 
-			$markup = avia_markup_helper(array('context' => 'table','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
+			$markup = avia_markup_helper( array( 'context' => 'table', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
 
-			$output = "<div class='avia-data-table-wrap {$atts['responsive_styling']}'>";
-			$output .= "<table class='avia-table avia-data-table avia-table-" . self::$table_count . " {$class}' {$markup}>";
-			$output .=	$atts['caption'] ? '<caption>' . $atts['caption'] . '</caption>' : '';
-			$output .= '<tbody>';	
+			$output  = "<div class='avia-data-table-wrap {$atts['responsive_styling']}'>";
+			$output .=		"<table {$meta['custom_el_id']} class='avia-table avia-data-table avia-table-" . self::$table_count . " {$class}' {$markup}>";
+			$output .=			$atts['caption'] ? '<caption>' . $atts['caption'] . '</caption>' : '';
+			$output .=			'<tbody>';	
 			$counter = 0;
-
 
 			foreach( $table_rows as $rk => $row )
 			{	
 				$responsive_style_nth_modifier = 1;
 
-				if(empty($row['attr'])) $row['attr'] = array();
-				$row_attributes = array_merge(array('row_style' => ''), $row['attr']);
+				if( empty( $row['attr'] ) ) 
+				{
+					$row['attr'] = array();
+				}
+
+				$row_attributes = array_merge( array( 'row_style' => '' ), $row['attr'] );
 
 				$output .= "<tr class='{$row_attributes['row_style']}'>";
 
@@ -567,20 +575,21 @@ if ( ! class_exists( 'avia_sc_table' ) )
 
 					if( $rk == 0 && $tag == 'th' )
 					{
-						$responsive_style .= ".avia-table-" . self::$table_count . " td:nth-of-type(".($counter + $responsive_style_nth_modifier)."):before { content: '".strip_tags(html_entity_decode($row['content'][$counter]['content']))."'; } ";
+						$responsive_style .= ".avia-table-" . self::$table_count . " td:nth-of-type(" . ( $counter + $responsive_style_nth_modifier ) . "):before { content: '" . strip_tags( html_entity_decode( $row['content'][ $counter ]['content'] ) ) . "'; } ";
 						$counter ++;
 					}
 
 					$output .= "<{$tag} class='{$cell_attributes['col_style']}'>";
-					$output .= do_shortcode($cell['content']);
+					$output .=		do_shortcode( $cell['content'] );
 					$output .= "</{$tag}>";
 				}
 				$output .= '</tr>';
 			}
 
-			$output .= '</tbody>';	
-			$output .= '</table>';
+			$output .=			'</tbody>';	
+			$output .=		'</table>';
 			$output .= '</div>';
+			
 			if( $atts['responsive_styling'] == 'avia_responsive_table' )
 			{
 				$output .= "<style type='text/css'>{$responsive_style}</style>";
@@ -588,7 +597,6 @@ if ( ! class_exists( 'avia_sc_table' ) )
 
 			return $output;
 		}
-			
-	
+
 	}
 }

@@ -90,16 +90,29 @@ $GLOBALS['LS_AutoUpdate'] = new KM_PluginUpdatesV3( array(
 
 
 // Load locales
-add_action('plugins_loaded', 'layerslider_plugins_loaded');
-function layerslider_plugins_loaded() {
+add_action('plugins_loaded', function() {
 	load_plugin_textdomain('LayerSlider', false, LS_PLUGIN_SLUG . '/assets/locales/' );
+});
+
+
+// Override locale?
+$custom_locale = get_option('ls_custom_locale', 'auto' );
+
+if( ! empty( $custom_locale ) && $custom_locale !== 'auto' ) {
+
+	add_filter('plugin_locale', function( $locale, $domain ) use ( $custom_locale ) {
+		if( $domain === 'LayerSlider') {
+			$locale = $custom_locale;
+		}
+
+		return $locale;
+	}, 10, 2);
 }
 
 
 // Offering a way for authors to override LayerSlider resources by
 // triggering filter and action hooks after the theme has loaded.
-add_action('after_setup_theme', 'layerslider_after_setup_theme');
-function layerslider_after_setup_theme() {
+add_action('after_setup_theme', function() {
 
 	// Set the LS_ROOT_URL constant
 	$url = apply_filters('layerslider_root_url', plugins_url('', LS_ROOT_FILE));
@@ -112,7 +125,7 @@ function layerslider_after_setup_theme() {
 
 	// Backwards compatibility for theme authors
 	LS_Config::checkCompatibility();
-}
+});
 
 
 

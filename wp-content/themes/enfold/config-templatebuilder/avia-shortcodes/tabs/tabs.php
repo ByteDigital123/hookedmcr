@@ -84,7 +84,9 @@ if ( ! class_exists( 'avia_sc_tab' ) )
 		function admin_assets()
 		{
 			$ver = AviaBuilder::VERSION;
-			wp_enqueue_script( 'avia_tab_toggle_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-toggle.js', array( 'avia_modal_js' ), $ver, true );
+			
+			wp_register_script( 'avia_tab_toggle_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-toggle.js', array( 'avia_modal_js' ), $ver, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_tab_toggle_js' );
 		}
 
 		function extra_assets()
@@ -478,7 +480,7 @@ if ( ! class_exists( 'avia_sc_tab' ) )
 			extract( $atts );
 
 			$boxed   = $position != 'top_tab' ? $boxed : '';
-			$output  = '<div ' . $meta['custom_el_id'] . ' class="tabcontainer  ' . $av_display_classes . ' ' . $position . ' ' . $boxed . ' ' . $meta['el_class'] . '">' . "\n";
+			$output  = '<div ' . $meta['custom_el_id'] . ' class="tabcontainer  ' . $av_display_classes . ' ' . $position . ' ' . $boxed . ' ' . $meta['el_class'] . '" role="tablist">' . "\n";
 			$counter = 1;
 		
 			$tab_sc = ShortcodeHelper::shortcode2array( $content, 1 );
@@ -574,9 +576,9 @@ if ( ! class_exists( 'avia_sc_tab' ) )
 			
 			$output .= '<section class="av_tab_section" ' . $markup_tab . '>';
 			$output .=		'<div aria-controls="' . $tab_atts['custom_id'] . '" role="tab" tabindex="0" data-fake-id="#' . $tab_atts['custom_id'] . '" class="tab ' . $titleClass . '" ' . $markup_title . '>' . $icon.$tab_atts['title'] . "</div>\n";
-			$output .=			'<div id="' . $tab_atts['custom_id'] . '-container" class="tab_content ' . $contentClass . '" ' . $aria_content . ">\n";
-			$output .=				'<div class="tab_inner_content invers-color" ' . $markup_text . ">\n";
-			$output .=					ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $content ) ) . "\n";
+			$output .=		'<div id="' . $tab_atts['custom_id'] . '" class="tab_content ' . $contentClass . '" ' . $aria_content . ">\n";
+			$output .=			'<div class="tab_inner_content invers-color" ' . $markup_text . ">\n";
+			$output .=				ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $content ) ) . "\n";
 			$output .=			"</div>\n";
 			$output .=		"</div>\n";
 			$output .=	"</section>\n";

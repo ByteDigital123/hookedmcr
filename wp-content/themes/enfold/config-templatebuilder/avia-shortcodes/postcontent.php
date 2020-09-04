@@ -86,6 +86,22 @@ if ( ! class_exists( 'avia_sc_postcontent' ) )
 						'type' 	=> 'tab_close',
 						'nodescription' => true
 					),
+				
+//				array(
+//						'type' 	=> 'tab',
+//						'name'  => __( 'Advanced', 'avia_framework' ),
+//						'nodescription' => true
+//					),
+//				
+//					array(	
+//							'type'			=> 'template',
+//							'template_id'	=> 'lazy_loading'
+//						),
+//				
+//				array(
+//						'type' 	=> 'tab_close',
+//						'nodescription' => true
+//					),
 
 				array(
 						'type' 	=> 'tab_container_close',
@@ -162,6 +178,14 @@ if ( ! class_exists( 'avia_sc_postcontent' ) )
 //	 			preg_match_all('/'.$pattern.'/s', $content, $matches);
 //	 			ShortcodeHelper::$tree = ShortcodeHelper::build_shortcode_tree($matches);
 			
+			
+			/*
+			 * Currently we can leave content unchanged
+			 * 
+			 * @since 4.7.6.2 - might change in future
+			 */
+//			$content = Av_Responsive_Images()->remove_loading_lazy_attributes( $content );
+			
 			return $content;
 		}
 
@@ -224,7 +248,9 @@ if ( ! class_exists( 'avia_sc_postcontent' ) )
 			global $shortcode_tags;
 
 			extract( shortcode_atts( array(
-										'link' => ''
+										'link'			=> '',
+										'lazy_loading'	=> 'disabled'
+				
 									), $atts, $this->config['shortcode'] ) );
 
 			$output  = '';

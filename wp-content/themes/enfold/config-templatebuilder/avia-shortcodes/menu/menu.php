@@ -668,16 +668,14 @@ if ( ! class_exists( 'avia_sc_submenu' ) )
 			{
 				avia_sc_submenu::$custom_items++;
 				$link = AviaHelper::get_url( $link );
-				$blank = ( strpos( $linktarget, '_blank' ) !== false || $linktarget == 'yes' ) ? ' target="_blank" ' : '';
-				$blank .= strpos( $linktarget, 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
-
+				$blank = AviaHelper::get_link_target( $linktarget );
+				
 				$output .= "<li class='menu-item menu-item-top-level {$button_style} menu-item-top-level-" . avia_sc_submenu::$custom_items . "'>";
 				$output .=		"<a href='{$link}' {$blank}><span class='avia-bullet'></span>";
 				$output .=			"<span class='avia-menu-text'>{$title}</span>";
 				//$output .=		"<span class='avia-menu-fx'><span class='avia-arrow-wrap'><span class='avia-arrow'></span></span></span>";
 				$output .=		'</a>';
 				$output .= '</li>';
-
 			}
 
 			return $output;

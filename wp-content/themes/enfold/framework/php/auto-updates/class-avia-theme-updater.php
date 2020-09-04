@@ -554,7 +554,7 @@ if( ! class_exists( 'Avia_Theme_Updater' ) )
 				if( ! empty( $arr_info['errors'] ) )
 				{
 					$error_msg .=	'<p>';
-					$error_msg .=		__( 'Following errors occured:', 'avia_framework' );
+					$error_msg .=		__( 'Following errors occurred:', 'avia_framework' );
 					$error_msg .=	'</p>';
 					$error_msg .=	'<ul>';
 					foreach ( $arr_info['errors'] as $value ) 
@@ -601,7 +601,7 @@ if( ! class_exists( 'Avia_Theme_Updater' ) )
 					$notice .=	'</div>';
 					
 					$notice .=	'<div class="av-verification-cell av-privacy-token-notice">';
-					$notice .=		__( 'If you ever edit the restrictions of your personal token please re-vailidate it again to test if it works properly', 'avia_framework' );
+					$notice .=		__( 'If you ever edit the restrictions of your personal token please re-validate it again to test if it works properly', 'avia_framework' );
 					$notice .=	'</div>';
 				}
 				else

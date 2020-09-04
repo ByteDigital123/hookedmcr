@@ -325,12 +325,12 @@ var avia_cookie_consent_modal_callback = avia_cookie_consent_modal_callback ||
 				date.setTime( date.getTime() + ( CookieDays * 24 * 60 * 60 * 1000 ) );
 				var expires = "; expires=" + date.toGMTString();
 			}
-			else 
+			else
 			{
 				var expires = "";
 			}
 			
-			document.cookie = CookieName + "=" + CookieValue + expires + "; path=" + path;
+			document.cookie = CookieName + "=" + CookieValue + expires + "; path=" + path + '; samesite=strict';
 		}
 		
 		function aviaGetCookieNames( CookieName, check, path )

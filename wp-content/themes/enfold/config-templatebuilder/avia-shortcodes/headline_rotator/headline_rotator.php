@@ -11,7 +11,6 @@ if ( ! class_exists( 'avia_sc_headline_rotator' ) )
 {
 	class avia_sc_headline_rotator extends aviaShortcodeTemplate
 	{
-		
 		/**
 		 *
 		 * @since 4.5.5
@@ -649,6 +648,7 @@ if ( ! class_exists( 'avia_sc_headline_rotator' ) )
 			}
 
 			$this->count = 0;
+			
 			$style = '';
 			$style .= AviaHelper::style_string( $atts, 'align', 'text-align');
 			$style .= AviaHelper::style_string( $atts, 'custom_title', 'color');
@@ -667,20 +667,40 @@ if ( ! class_exists( 'avia_sc_headline_rotator' ) )
 
 			switch( $animation )
 			{
-				case 'typewriter': $animation = 'typewriter'; break;
-				case 'reverse': $animation = -1; break;
-				case 'fade': 	$animation = 0; break;
-				default: 		$animation = 1;
+				case 'typewriter': 
+					$animation = 'typewriter'; 
+					break;
+				case 'reverse': 
+					$animation = -1; 
+					break;
+				case 'fade': 	
+					$animation = 0; 
+					break;
+				default: 		
+					$animation = 1;
+					break;
 			}
 
 			$data = "data-interval='{$interval}' data-animation='{$animation}'";
 
-			if(empty($after_rotating) && $align == 'center' ) { $data .= " data-fixWidth='1'"; $meta['el_class'] .= ' av-fixed-rotator-width'; } 
-			if($animation == 'typewriter') $meta['el_class'] .= ' av-typewriter';
-			if(!empty($after_rotating)) $meta['el_class'] .= ' av-after-rotation-text-active';
+			if( empty( $after_rotating ) && $align == 'center' ) 
+			{ 
+				$data .= " data-fixWidth='1'"; 
+				$meta['el_class'] .= ' av-fixed-rotator-width'; 
+			} 
+			
+			if( $animation == 'typewriter' ) 
+			{
+				$meta['el_class'] .= ' av-typewriter';
+			}
+			
+			if( ! empty( $after_rotating ) ) 
+			{
+				$meta['el_class'] .= ' av-after-rotation-text-active';
+			}
 
 			$output	 = '';
-			$output .=	"<div {$meta['custom_el_id']} {$style} class='av-rotator-container av-rotation-container-".$atts['align']." {$av_display_classes} ".$meta['el_class']."' {$data}>";
+			$output .=	"<div {$meta['custom_el_id']} {$style} class='av-rotator-container av-rotation-container-{$atts['align']} {$av_display_classes} {$meta['el_class']}' {$data}>";
 			$output .=		"<{$tag} class='av-rotator-container-inner {$av_title_font_classes}'>";
 			$output .=			apply_filters( 'avia_ampersand', $before_rotating );
 			$output .=			"<span class='av-rotator-text av-rotator-multiline-{$multiline} '>";
@@ -728,9 +748,7 @@ if ( ! class_exists( 'avia_sc_headline_rotator' ) )
 			$style  = AviaHelper::style_string( $style );
 
 			$link = AviaHelper::get_url( $link );
-			$blank = ( strpos( $linktarget, '_blank' ) !== false || $linktarget == 'yes' ) ? ' target="_blank" ' : '';
-			$blank .= strpos( $linktarget, 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
-
+			$blank = AviaHelper::get_link_target( $linktarget );
 
 			$tags = ! empty( $link ) ? array( "a href='{$link}' {$blank} ", 'a' ) : array( 'span','span' );
 

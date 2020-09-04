@@ -1,6 +1,7 @@
 (function($)
 {
 	"use strict";
+	
 	$.AviaElementBehavior = $.AviaElementBehavior || {};
 	$.AviaElementBehavior.wp_media = $.AviaElementBehavior.wp_media || [];
 	
@@ -21,20 +22,21 @@
         		button: "save"					//@string parameter that tells the modal window which button to generate
         };
         
-        $.AviaModal.openInstance.unshift(this); 
-        
-        this.instanceNr	= $.AviaModal.openInstance.length;
-        this.options	= $.extend({}, defaults, options);
-        this.namespace	= '.AviaModal'+ this.instanceNr;
-        this.body		= $('body').addClass('avia-noscroll');
-        this.wrap		= $('#wpwrap');
-        this.doc		= $(document);
-        this.modal		= $('<div class="avia-modal avia-style"></div>');
-        this.backdrop	= $('<div class="avia-modal-backdrop"></div>');
+		$.AviaModal.openInstance.unshift(this); 
+
+		this.instanceNr	= $.AviaModal.openInstance.length;
+		this.options	= $.extend({}, defaults, options);
+		this.namespace	= '.AviaModal'+ this.instanceNr;
+		this.body		= $('body').addClass('avia-noscroll');
+		this.wrap		= $('#wpwrap');
+		this.doc		= $(document);
+		this.modal		= $('<div class="avia-modal avia-style"></div>');
+		this.backdrop	= $('<div class="avia-modal-backdrop"></div>');
+		
+		this.has_modal_popup_state = ( $.avia_builder.activeStatus.val() == 'active' && typeof this.options.save_param.hasClass == 'function' );
        
-        this.set_up();
-        
-       
+		this.set_up();
+
     };
     
     $.AviaModal.openInstance = [];
@@ -43,10 +45,21 @@
    	{
    		set_up: function()
    		{
+			var obj = this;
+			
+			$('body').one( 'avia_modal_finished', function(){
+						//	ensure DOM is ready
+						setTimeout( function(){
+								obj.set_to_last_state();
+							}, 100 );
+						
+					});
+			
    			this.create_html();
    			this.add_behavior();
    			this.modify_binding_order();
    			this.propagate_modal_open();
+			
    		},
    		
    		add_behavior: function()
@@ -108,6 +121,7 @@
    				output += '<div class="avia-modal-inner-content '+loading+'">'+content+'</div>';
    				output += attach;
    				output += '<div class="avia-modal-inner-footer">';
+				
    				if(this.options.button === "save")
    				{
    					output += '<a href="#save" class="avia-modal-save button button-primary button-large">' + avia_modal_L10n.save + '</a>';
@@ -149,12 +163,96 @@
    				this.on_load_callback();
    			}			
    		},
+		
+		set_to_last_state: function()
+		{
+			var builder = $.avia_builder;
+			
+			if( ! this.has_modal_popup_state )
+			{
+				return;
+			}
+			
+			var state = builder.modal_popup_state;
+			if( false === state )
+			{
+				return;
+			}
+			
+			//	Checks for last selected tab and last opened toggle
+			var data_container = this.options.save_param;
+			
+			var current_shortcode = data_container.data( 'shortcodehandler' );
+			var group_element = data_container.hasClass( 'avia-modal-group-element' );
+			var last_element_class = group_element ? 'avia-modal-group-last-open' : 'avia-modal-element-last-open';
+			var last_used = $( 'body' ).find( '.' + last_element_class );
+			
+			//	After page reload we use last state as we do not know which element was last clicked
+			if( last_used.length > 0 )
+			{
+				if( ! data_container.hasClass( last_element_class ) )
+				{
+					builder.clear_modal_popup_state( current_shortcode, group_element );
+					return;
+				}
+			}
+			
+			var state_shortcode = group_element ? state.group_shortcode : state.shortcode;
+			var state_tab_text = group_element ? state.group_tab_text : state.tab_text;
+			var state_toggle_text = group_element ? state.group_toggle_text : state.toggle_text;
+			
+			if( current_shortcode != state_shortcode )
+			{
+				builder.clear_modal_popup_state( current_shortcode, group_element );
+				return;
+			}
+			
+			var tab_container = this.modal.find( '.avia-modal-tab-container' );
+			var tabs = tab_container.find( '.avia-modal-tab-titles a' );
+			var tab_text = '';
+			tabs.each( function(i)
+			{
+				var tab = $(this);
+				tab_text = tab.html();
+				if( tab_text == state_tab_text )
+				{
+					tab.trigger( 'click' );
+					return false;
+				}
+			});
+			
+			if( '' == tab_text )
+			{
+				return;
+			}
+			
+			var tab_content = tab_container.find( '.avia-modal-tab-container-inner[data-tab-name="' + tab_text + '"]' );
+			
+			if( '' == state_toggle_text )
+			{
+				return;
+			}
+			
+			var toggle_content = tab_content.find( '.avia-modal-toggle-container-inner[data-toggle-name="' + state_toggle_text + '"]' );
+			if( 0 == toggle_content.length )
+			{
+				return;
+			}
+			
+			var toggle = toggle_content.closest( '.avia-modal-toggle-visibility-wrap').find( 'a.avia-modal-toggle-title' );
+			if( ! toggle.hasClass( 'active-modal-toggles' ) )
+			{
+				toggle.trigger( 'click' );
+			}
+		},
    		
    		set_focus: function()
    		{
-   			var field = this.modal.find('select, input[type=text], input[type=checkbox], textarea, radio').filter(':eq(0)');
-   			if(!field.is('.av-no-autoselect')) field.focus();
-   			
+			var field = this.modal.find('select, input[type=text], input[type=checkbox], textarea, radio').filter(':eq(0)');
+			if( ! field.is('.av-no-autoselect') ) 
+			{
+				field.focus();
+			}
    		},
    		
    		fetch_ajax_content: function()
@@ -320,15 +418,9 @@
    		}
    	
    	};
-   	
-   	
-   	
-   	
-   	
-   	
-   	
-   	
-   		
+
+
+
 	//wrapper for small modal notifications
 	
 	$.AviaModalNotification = function(options)
@@ -571,29 +663,41 @@
 	$.AviaModal.register_callback.modal_load_tabs = function()
 	{
 		var scope			= this.modal,
-			tabcontainer	= scope.find('.avia-modal-tab-container'),
-			tabs			= tabcontainer.find('.avia-modal-tab-container-inner'),
-			title_container = $('<div class="avia-modal-tab-titles"></div>').prependTo(tabcontainer),
-			active 			= "active-modal-tab";
+			modal_instance	= this,
+			tabcontainer	= scope.find( '.avia-modal-tab-container' ),
+			tabs			= tabcontainer.find( '.avia-modal-tab-container-inner' ),
+			title_container = $( '<div class="avia-modal-tab-titles"></div>' ).prependTo( tabcontainer ),
+			active 			= "active-modal-tab",
+			group_element	= null;
+	
+			if( this.has_modal_popup_state )
+			{
+				group_element = this.options.save_param.hasClass( 'avia-modal-group-element' );
+			}
 			
-			
-			tabs.each(function(i)
+			tabs.each( function(i)
 			{
 				var current 	= $(this),
 					tab_title 	= current.data('tab-name'),
 					title_link  = $("<a href='#'>"+tab_title+"</a>").appendTo(title_container);
 					
-					if(i === 0)
+					if( i === 0 )
 					{
 						title_link.addClass(active);
 						tabs.css({display:"none"});
 						current.css({display:"block"});
 					}
 					
-					title_link.on('click', function(e)
+					title_link.on( 'click', function(e)
 					{
 						var clicked = $(this);
-					
+						
+						if( modal_instance.has_modal_popup_state )
+						{
+							var option = group_element ? 'group_tab_text' : 'tab_text';
+							$.avia_builder.set_modal_popup_state( option, tab_title, modal_instance );
+						}
+						
 						//hide prev
 						title_container.find('a').removeClass(active);
 						tabs.css({display:"none"});
@@ -613,16 +717,23 @@
 	$.AviaModal.register_callback.modal_load_toggles = function()
 	{	
 		var scope			= this.modal,
-			tabcontainer	= scope.find('.avia-modal-toggle-container').addClass('avia-modal-toggle-ready'),
+			modal_instance	= this,
+			tabcontainer	= scope.find( '.avia-modal-toggle-container' ).addClass( 'avia-modal-toggle-ready' ),
+			group_element	= null,
 			active 			= "active-modal-toggles",
 			svg_arrow		= '<svg class="avia-modal-toggle-arrow" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><g><path fill="none" d="M0,0h24v24H0V0z"></path></g><g><path d="M7.41,8.59L12,13.17l4.59-4.58L18,10l-6,6l-6-6L7.41,8.59z"></path></g></svg>';
 			
-			tabcontainer.each(function(i){
-				
+			if( this.has_modal_popup_state )
+			{
+				group_element = this.options.save_param.hasClass( 'avia-modal-group-element' );
+			}
+			
+			tabcontainer.each( function(i)
+			{
 				var current_container 	= $(this),
-					all_closed	 		= current_container.data('toggles-closed'),
-					layout				= current_container.data('toggles-layout'),
-					tabs				= current_container.find('.avia-modal-toggle-container-inner'),
+					all_closed	 		= current_container.data( 'toggles-closed' ),
+					layout				= current_container.data( 'toggles-layout' ),
+					tabs				= current_container.find( '.avia-modal-toggle-container-inner' ),
 					initial_is_open		= false;
 				
 				all_closed = 'string' == typeof( all_closed ) &&  $.inArray( all_closed, ['yes', 'no'] ) >= 0 ? all_closed : 'no';
@@ -641,7 +752,7 @@
 						tab_content = current.find('.avia-form-element-container').not( '.avia-hidden' ),
 						title_link  = $("<a class='avia-modal-toggle-title' href='#'>"+svg_arrow+tab_title+"<span>"+tab_desc+"</span></a>").insertBefore(current),
 						modal		= current.closest( '.avia-modal' );
-					
+						
 					if( ! initial_is_open && tab_content.length > 0 && layout == '' )
 					{
 						tabs.css({display:"none"});
@@ -650,24 +761,29 @@
 						initial_is_open = true;
 					}
 						
-					
 					title_link.on( 'click', function(e)
 					{
 						e.preventDefault();
+						
+						var clicked = $(this),
+							is_active = clicked.hasClass( active ) ? true : false,
+							state_option = group_element ? 'group_toggle_text' : 'toggle_text';
+							
+						if( modal_instance.has_modal_popup_state )
+						{
+							$.avia_builder.set_modal_popup_state( state_option, tab_title, modal_instance );
+						}
 						
 						if( layout != '' )
 						{
 							return;
 						}
-						
-						var clicked = $(this),
-							no_show = clicked.hasClass(active) ? true : false;
 
 						//hide prev
 						current_container.find('a').removeClass(active);
 						tabs.css({display:"none"});
 
-						if( ! no_show )
+						if( ! is_active )
 						{
 							//show current
 							clicked.addClass(active);
@@ -675,11 +791,9 @@
 						}
 
 					});	
-					
-
+	
 					modal.on( 'change', function( e )
 					{	
-						
 						setTimeout( function()
 						{
 							var is_visible = true;
@@ -721,7 +835,7 @@
 								wrap.removeClass( 'avia-hidden' );
 							}
 
-						 }, 500 );
+						}, 500 );
 
 					});
 
@@ -740,22 +854,23 @@
 			active 			= "active-modal-icon-switcher";
 			
 
-			tabcontainer.each(function(i){
+			tabcontainer.each(function(i)
+			{
 				
 				var current_container 	= $(this),
 					title_container		= null,
 					tabs				= current_container.find('.avia-modal-iconswitcher-container-inner'),
 					titles				= $('<div class="avia-modal-iconswitcher-titles"></div>'),
 					desc				= current_container.find('.avia-iconswitcher-name-description');
-					if( desc.length == 0 )
-					{
-						title_container = titles.prependTo(current_container);
-					}
-					else
-					{
-						title_container = titles.insertAfter( desc );
-					}
-				
+					
+				if( desc.length == 0 )
+				{
+					title_container = titles.prependTo(current_container);
+				}
+				else
+				{
+					title_container = titles.insertAfter( desc );
+				}
 				
 				tabs.each(function(i)
 				{
@@ -764,38 +879,33 @@
 						tab_icon 	= current.data('switcher-icon'),
 						title_link  = $("<a class='avia-modal-iconswitcher-title' href='#'><span><img src='"+tab_icon+"' /></span><strong>"+tab_title+"</strong></a>").appendTo(title_container);
 						
-						if(i === 0)
-						{
-							tabs.css({display:"none"});
-							title_link.addClass(active);
-							current.css({display:"block"});
-							
-						}
+					if( i === 0 )
+					{
+						tabs.css({display:"none"});
+						title_link.addClass(active);
+						current.css({display:"block"});
+
+					}
 						
-						title_link.on('click', function(e)
-						{
-							var clicked = $(this);
-							
-							//hide prev
-							current_container.find('a').removeClass(active);
-							tabs.css({display:"none"});
-							
-							//show current
-							clicked.addClass(active);
-							current.css({display:"block"});
-							
-							
-							//prevent default
-							return false;
-						});	
+					title_link.on('click', function(e)
+					{
+						var clicked = $(this);
+
+						//hide prev
+						current_container.find('a').removeClass(active);
+						tabs.css({display:"none"});
+
+						//show current
+						clicked.addClass(active);
+						current.css({display:"block"});
+
+						//prevent default
+						return false;
+					});	
 					
 				});
-				
-				
+
 			});
-			
-			
-			
 			
 	};
 	
@@ -837,12 +947,10 @@
 					current.value = current.value.replace(/'/g, "&lsquo;");
 				}
 				
-				
-				
-				textarea  	= insert.find('textarea');
-				shortcode 	= $.avia_builder.createShortcode(current, shortcode_name, {}, true);
+				textarea = insert.find('textarea');
+				shortcode = $.avia_builder.createShortcode(current, shortcode_name, {}, false );
 				textarea.html(shortcode);
-				$.avia_builder.update_builder_html(insert, current, true);
+				$.avia_builder.update_builder_html(insert, current, false );
 				
 				if(where == "prepend")
 				{
@@ -1321,7 +1429,7 @@
 			
 				timeout = setTimeout( function()
 				{
-					if(e.type == "av-update-preview-tinymce")
+					if( typeof e != 'undefined' && e.type == "av-update-preview-tinymce")
 					{
 						e.currentTarget.value = content;
 					}
@@ -1346,6 +1454,7 @@
 						action: 'avia_ajax_text_to_preview',
 						text: shortcode,
 						avia_request: true,
+						text_to_preview_post_id: _self.has_modal_popup_state ? $.avia_builder.modal_popup_state.post_id : 0,
 						_ajax_nonce: $('#avia-loader-nonce').val()
 					},
 					success: function(response)
@@ -1394,7 +1503,9 @@
 		};
 		
 		methods.set_frame_content("");
-		methods.update_iframe();
+		
+		//		Allow e.g. linkpicker element to add html template and render to preview (@since 4.7.6.3)
+		methods.update_iframe_with_delay();
 		
 		//preset bg color
 		if(preview_bg_stored.val() != "") { iframe_container.css('background',preview_bg_stored.val()); }

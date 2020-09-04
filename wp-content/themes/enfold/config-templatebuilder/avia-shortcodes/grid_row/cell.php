@@ -743,7 +743,7 @@ if ( ! class_exists( 'avia_sc_cell' ) )
 			$extraClass .= empty( $atts['mobile_display'] ) ? '' : " {$atts['mobile_display']} ";
 
 
-			$link = aviaHelper::get_url( $atts['link'] );
+			$link = AviaHelper::get_url( $atts['link'] );
 			$link_data = '';
 			$output = '';
 
@@ -776,7 +776,7 @@ if ( ! class_exists( 'avia_sc_cell' ) )
 				 * Add an invisible link also for screen readers
 				 */				
 				$output .=	'<a class="av-screen-reader-only" href=' . esc_attr( $link ) . " {$screen_reader}" . '>';
-				$output .=		aviaHelper::get_screen_reader_url_text( $atts['link'] );
+				$output .=		AviaHelper::get_screen_reader_url_text( $atts['link'] );
 				$output .=	'</a>';
 			}
 				

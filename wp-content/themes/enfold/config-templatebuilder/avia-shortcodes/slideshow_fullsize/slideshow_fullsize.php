@@ -122,6 +122,11 @@ if ( ! class_exists( 'avia_sc_slider_full' ) )
 				
 						array(	
 								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation_slider' )
+							),
+				
+						array(	
+								'type'			=> 'template',
 								'template_id'	=> $this->popup_key( 'advanced_animation' )
 							),
 				
@@ -322,6 +327,10 @@ if ( ! class_exists( 'avia_sc_slider_full' ) )
 			
 			$c = array(
 				
+					array(	
+								'type'			=> 'template',
+								'template_id'	=> 'lazy_loading'
+							),
 				);
 			
 			$template = array(
@@ -333,7 +342,7 @@ if ( ! class_exists( 'avia_sc_slider_full' ) )
 							),
 					);
 			
-			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation1' ), $template );
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
 			
 			$c = array(
 						array(	
@@ -351,7 +360,7 @@ if ( ! class_exists( 'avia_sc_slider_full' ) )
 				
 						array(
 							'name' 	=> __( 'Transition Speed', 'avia_framework' ),
-							'desc' 	=> __( 'Selected speed in miliseconds for transition effect.', 'avia_framework' ),
+							'desc' 	=> __( 'Selected speed in milliseconds for transition effect.', 'avia_framework' ),
 							'id' 	=> 'transition_speed',
 							'type' 	=> 'select',
 							'std' 	=> '',
@@ -395,12 +404,12 @@ if ( ! class_exists( 'avia_sc_slider_full' ) )
 							array(	
 								'type'			=> 'template',
 								'template_id'	=> 'toggle',
-								'title'			=> __( 'Animation', 'avia_framework' ),
+								'title'			=> __( 'Slider Animation', 'avia_framework' ),
 								'content'		=> $c 
 							),
 					);
 			
-			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation_slider' ), $template );
 			
 			$c = array(
 						array(
@@ -953,7 +962,8 @@ if ( ! class_exists( 'avia_sc_slider_full' ) )
 						'autoplay_stopper'	=>'',
 						'content'			=> ShortcodeHelper::shortcode2array( $content, 1 ),
 						'min_height'		=> '0px',
-
+						'lazy_loading'		=> 'disabled'
+				
 					), $atts, $this->config['shortcode'] );
 
 			extract( $atts );

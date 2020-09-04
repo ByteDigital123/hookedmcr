@@ -15,7 +15,7 @@
 if ( ! defined( 'ABSPATH' ) ) {  die('-1');  }
 
 
-if ( ! class_exists('avia_sc_search')) 
+if( ! class_exists('avia_sc_search')) 
 {
     class avia_sc_search extends aviaShortcodeTemplate
     {
@@ -707,7 +707,7 @@ if ( ! class_exists('avia_sc_search'))
             $params['innerHtml']  = "<div class='avia_title_container'>";
             $params['innerHtml'] .= "<span class='avia-element-label avia-sc-search-fakeinput' {$template}>{$params['args']['placeholder']}</span>";
 
-            if ( ( isset( $params['args']['label'] ) ) && ( $params['args']['label'] == 'text') ) 
+            if( ( isset( $params['args']['label'] ) ) && ( $params['args']['label'] == 'text') ) 
             {
                 $template2  = $this->update_template( 'label_text', '{{label_text}}' );
                 $params['innerHtml'] .= "<span class='button' {$template2}>{$params['args']['label_text']}</span>";
@@ -822,7 +822,7 @@ if ( ! class_exists('avia_sc_search'))
             }
 
             // padding results container
-            if (array_key_exists('results_padding',$atts) ) 
+            if(array_key_exists('results_padding',$atts) ) 
 			{
                 $explode_padding = explode(',',$atts['results_padding']);
                 if(count($explode_padding) > 1)
@@ -842,7 +842,7 @@ if ( ! class_exists('avia_sc_search'))
 
 
             // margin results container
-            if (array_key_exists('results_margin',$atts) ) 
+            if(array_key_exists('results_margin',$atts) ) 
 			{
                 $explode_margin = explode(',',$atts['results_margin']);
                 if(count($explode_margin) > 1)
@@ -864,11 +864,11 @@ if ( ! class_exists('avia_sc_search'))
 
             $button_val = $label_text;
 
-            if ($icon_display == 'button' && $icon !== '')
+            if( $icon_display == 'button' && $icon !== '' )
 			{
 
                 // submit button with icon only
-                if ($label_text == '') 
+                if( $label_text == '' ) 
 				{
                     $button_val = $icon;
                     $button_class .= ' av-submit-hasicon avia-font-'.$font;
@@ -884,24 +884,24 @@ if ( ! class_exists('avia_sc_search'))
 
             }
 
-            else if ($icon_display == 'input' && $icon !== '')
+            else if( $icon_display == 'input' && $icon !== '' )
 			{
                 $input_icon = true;
                 $input_class .= ' av-input-hasicon';
             }
 
             // results location
-            if ($display == 'classic') 
+            if( $display == 'classic' ) 
 			{
                 $form_class = 'av_disable_ajax_search';
             }
             else 
 			{
-                if ($ajax_location == 'custom' && $ajax_container !== '') 
+                if( $ajax_location == 'custom' && $ajax_container !== '' ) 
 				{
                     $results_container_attr = " data-ajaxcontainer='{$ajax_container}'";
                 }
-                if ($ajax_location == 'form_absolute') 
+                if( $ajax_location == 'form_absolute' ) 
 				{
                     $form_class .= 'av_results_container_fixed';
                 }
@@ -910,110 +910,110 @@ if ( ! class_exists('avia_sc_search'))
             // search params
             $form_action = home_url( '/' );
             $search_id = 's';
-            $search_val = !empty($_GET['s']) ? get_search_query() : '';
+            $search_val = ! empty( $_GET['s'] ) ? get_search_query() : '';
             // radius style
-            if ( $radius !== '' && $radius !== '0px') 
+            if( $radius !== '' && $radius !== '0px' ) 
 			{
-                $input_style .= AviaHelper::style_string($atts, 'radius', 'border-radius');
-                $button_wrapper_style .= AviaHelper::style_string($atts, 'radius', 'border-radius');
-                $button_style .= AviaHelper::style_string($atts, 'radius', 'border-radius');
-                $form_wrapper_style .= AviaHelper::style_string($atts, 'radius', 'border-radius');
+                $input_style .= AviaHelper::style_string( $atts, 'radius', 'border-radius' );
+                $button_wrapper_style .= AviaHelper::style_string( $atts, 'radius', 'border-radius' );
+                $button_style .= AviaHelper::style_string( $atts, 'radius', 'border-radius' );
+                $form_wrapper_style .= AviaHelper::style_string( $atts, 'radius', 'border-radius' );
             }
 
             // border style
-            if ( $border_width !== '' ) 
+            if( $border_width !== '' ) 
 			{
-                $form_wrapper_style .= AviaHelper::style_string($atts, 'border_width', 'border-width','px');
+                $form_wrapper_style .= AviaHelper::style_string( $atts, 'border_width', 'border-width','px' );
             }
 
-            if ( $border_color == 'custom' && $custom_border_color !== '' ) 
+            if( $border_color == 'custom' && $custom_border_color !== '' ) 
 			{
-                $form_wrapper_style .= AviaHelper::style_string($atts, 'custom_border_color', 'border-color');
-                $form_wrapper_style .= AviaHelper::style_string($atts, 'custom_border_color', 'background-color');
+                $form_wrapper_style .= AviaHelper::style_string( $atts, 'custom_border_color', 'border-color' );
+                $form_wrapper_style .= AviaHelper::style_string( $atts, 'custom_border_color', 'background-color' );
             }
 
 
             // input style
-            if ( $input_bg == 'custom' && $custom_input_bg !== '' ) 
+            if( $input_bg == 'custom' && $custom_input_bg !== '' ) 
 			{
-                $input_style .= AviaHelper::style_string($atts, 'custom_input_bg', 'background-color');
+                $input_style .= AviaHelper::style_string( $atts, 'custom_input_bg', 'background-color' );
             }
 
-            if ( $input_color == 'custom' && $custom_input_color !== '') 
+            if( $input_color == 'custom' && $custom_input_color !== '' ) 
 			{
-                $input_style .= AviaHelper::style_string($atts, 'custom_input_color', 'color');
-                $input_icon_style .= AviaHelper::style_string($atts, 'custom_input_color', 'color');
+                $input_style .= AviaHelper::style_string( $atts, 'custom_input_color', 'color' );
+                $input_icon_style .= AviaHelper::style_string( $atts, 'custom_input_color', 'color' );
             }
 
-            if ( $custom_height !== '') 
+            if( $custom_height !== '' ) 
 			{
-                $input_style .= AviaHelper::style_string($atts, 'custom_height', 'line-height', 'px');
-                $input_style .= AviaHelper::style_string($atts, 'custom_height', 'height', 'px');
+                $input_style .= AviaHelper::style_string( $atts, 'custom_height', 'line-height', 'px' );
+                $input_style .= AviaHelper::style_string( $atts, 'custom_height', 'height', 'px' );
             }
 
-            if ( $custom_input_size !== '' ) 
+            if( $custom_input_size !== '' ) 
 			{
-                $input_style .= AviaHelper::style_string($atts, 'custom_input_size', 'font-size','px');
-                $input_icon_style .= AviaHelper::style_string($atts, 'custom_input_size', 'font-size','px');
+                $input_style .= AviaHelper::style_string( $atts, 'custom_input_size', 'font-size','px' );
+                $input_icon_style .= AviaHelper::style_string( $atts, 'custom_input_size', 'font-size','px' );
             }
 
 
             // button style
-            if ( $button_bg == 'custom' && $custom_button_bg ) 
+            if( $button_bg == 'custom' && $custom_button_bg ) 
 			{
-                $button_style .= AviaHelper::style_string($atts, 'custom_button_bg', 'background-color');
+                $button_style .= AviaHelper::style_string( $atts, 'custom_button_bg', 'background-color' );
             }
 
-            if ( $button_color == 'custom' && $custom_button_color ) 
+            if( $button_color == 'custom' && $custom_button_color ) 
 			{
-               $button_style .= AviaHelper::style_string($atts, 'custom_button_color', 'color');
-               $button_wrapper_style .= AviaHelper::style_string($atts, 'custom_button_color', 'color');
+               $button_style .= AviaHelper::style_string( $atts, 'custom_button_color', 'color' );
+               $button_wrapper_style .= AviaHelper::style_string( $atts, 'custom_button_color', 'color' );
             }
 
-            if ( $custom_button_size !== '' ) 
+            if( $custom_button_size !== '' ) 
 			{
-                $button_style .= AviaHelper::style_string($atts, 'custom_button_size', 'font-size', 'px');
-                $button_icon_style .= AviaHelper::style_string($atts, 'custom_button_size', 'font-size', 'px');
+                $button_style .= AviaHelper::style_string( $atts, 'custom_button_size', 'font-size', 'px' );
+                $button_icon_style .= AviaHelper::style_string( $atts, 'custom_button_size', 'font-size', 'px' );
             }
 
             // button wrapper style
-            if ( $button_bg == 'custom' && $custom_button_bg ) 
+            if( $button_bg == 'custom' && $custom_button_bg ) 
 			{
-                $button_wrapper_style .= AviaHelper::style_string($atts, 'custom_button_bg', 'background-color');
+                $button_wrapper_style .= AviaHelper::style_string( $atts, 'custom_button_bg', 'background-color' );
             }
 
             // results style
-            if ( $results_bg == 'custom' && $custom_results_bg !== '' )
+            if( $results_bg == 'custom' && $custom_results_bg !== '' )
 			{
                 $results_style['background-color'] = $custom_results_bg;
             }
 
-            if ( $results_color == 'custom' && $custom_results_color !== '' )
+            if( $results_color == 'custom' && $custom_results_color !== '' )
 			{
                 $results_style['color'] = $custom_results_color;
             }
 
-            if ( $results_padding !== '' && $results_padding !== '0px') 
+            if( $results_padding !== '' && $results_padding !== '0px' ) 
 			{
                 $results_style['padding'] = $atts['results_padding'];
             }
 
-            if ( $results_margin !== '' && $results_margin !== '0px') 
+            if( $results_margin !== '' && $results_margin !== '0px' ) 
 			{
                 $results_style['margin'] = $atts['results_margin'];
             }
 
-            $form_style = AviaHelper::style_string($form_style);
-            $input_style = AviaHelper::style_string($input_style);
-            $button_style = AviaHelper::style_string($button_style);
-            $button_icon_style = AviaHelper::style_string($button_icon_style);
-            $input_icon_style = AviaHelper::style_string($input_icon_style);
-            $button_wrapper_style = AviaHelper::style_string($button_wrapper_style);
-            $form_wrapper_style = AviaHelper::style_string($form_wrapper_style);
+            $form_style = AviaHelper::style_string( $form_style );
+            $input_style = AviaHelper::style_string( $input_style );
+            $button_style = AviaHelper::style_string( $button_style );
+            $button_icon_style = AviaHelper::style_string( $button_icon_style );
+            $input_icon_style = AviaHelper::style_string( $input_icon_style );
+            $button_wrapper_style = AviaHelper::style_string( $button_wrapper_style );
+            $form_wrapper_style = AviaHelper::style_string( $form_wrapper_style );
 
             $results_style_attr = '';
 
-            if ( ! empty( $results_style ) ) 
+            if( ! empty( $results_style ) ) 
 			{
                 $results_style_str = json_encode( $results_style );
                 $results_style_attr = " data-results_style='{$results_style_str}'";
@@ -1050,7 +1050,7 @@ if ( ! class_exists('avia_sc_search'))
 
                 if( $post_types_custom ) 
 				{
-                    $post_types_custom = explode(',', $post_types_custom);
+                    $post_types_custom = explode( ',', $post_types_custom );
 
                     foreach( $post_types_custom as $ptc ) 
 					{
@@ -1063,13 +1063,24 @@ if ( ! class_exists('avia_sc_search'))
             // results display options
             $results_hide_fields = array();
             $results_hide_str = '';
-            if ($results_hide_titles) $results_hide_fields[] = 'post_titles';
-            if ($results_hide_meta) $results_hide_fields[] = 'meta';
-            if ($results_hide_image) $results_hide_fields[] = 'image';
+			
+            if( $results_hide_titles ) 
+			{
+				$results_hide_fields[] = 'post_titles';
+			}
+			
+            if( $results_hide_meta ) 
+			{
+				$results_hide_fields[] = 'meta';
+			}
+            if( $results_hide_image ) 
+			{
+				$results_hide_fields[] = 'image';
+			}
 
             if( ! empty( $results_hide_fields ) ) 
 			{
-                $results_hide_str = implode(',', $results_hide_fields);
+                $results_hide_str = implode( ',', $results_hide_fields );
             }
 
             $output .= "<input type='hidden' name='results_hide_fields' value='{$results_hide_str}' />";

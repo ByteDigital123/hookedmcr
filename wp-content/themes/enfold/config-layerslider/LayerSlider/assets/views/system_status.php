@@ -17,7 +17,8 @@ $isAdmin 	= current_user_can('manage_options');
 
 $notifications = array(
 
-	'dbUpdateSuccess' => __('LayerSlider has attempted to update your database. Server restrictions may apply, please verify whether it was successful.', 'LayerSlider')
+	'dbUpdateSuccess' => __('LayerSlider has attempted to update your database. Server restrictions may apply, please verify whether it was successful.', 'LayerSlider'),
+	'clearGroupsSuccess' => __('Groups have been removed. All sliders are now moved to the main grid where they remain available to you.', 'LayerSlider')
 );
 
 ?><div class="wrap">
@@ -93,6 +94,8 @@ $notifications = array(
 								<?php if( ! $test ) : ?>
 								<span><?php echo __('Your database needs an update in order for LayerSlider to work properly. Please press the ’Update Database’ button on the right. If this does not help, you need to contact your web server hosting company to fix any issue preventing plugins creating and updating database tables.', 'LayerSlider') ?></span>
 								<?php endif ?>
+								<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=layerslider-options&section=system-status&action=clear_groups'), 'clear_groups') ?>" class="button button-small ls-clear-groups-button"><?php _e('Clear Groups', 'LayerSlider') ?></a>
+
 								<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=layerslider-options&section=system-status&action=database_update'), 'database_update') ?>" class="button button-small"><?php _e('Update Database', 'LayerSlider') ?></a>
 							</div>
 						</td>
@@ -445,6 +448,14 @@ $notifications = array(
 					minWidth: 400,
 					maxWidth: 1000
 				});
+			});
+
+
+			jQuery('.ls-clear-groups-button').click( function( event ) {
+
+				if( ! confirm( LS_l10n.SSClearGroupsConfirmation ) ) {
+					event.preventDefault();
+				}
 			});
 
 		});

@@ -83,6 +83,15 @@ add_action('init', function() {
 		}
 
 
+		// Clear Groups
+		if( isset( $_GET['page']) && $_GET['page'] == 'layerslider-options' && isset($_GET['action']) && $_GET['action'] == 'clear_groups') {
+			if(check_admin_referer('clear_groups')) {
+				LS_Sliders::removeAllGroups();
+				wp_redirect( admin_url('admin.php?page=layerslider-options&section=system-status&message=clearGroupsSuccess') );
+			}
+		}
+
+
 		// Slider list bulk actions
 		if(isset($_POST['ls-bulk-action'])) {
 			if(check_admin_referer('bulk-action')) {
@@ -236,6 +245,12 @@ add_action('init', function() {
 		}
 
 
+		// Language settings
+		if( isset( $_POST['ls_save_language_settings'] ) ) {
+			ls_language_settings();
+		}
+
+
 		// AJAX functions
 		add_action('wp_ajax_ls_save_slider', 'ls_save_slider');
 		add_action('wp_ajax_ls_import_bundled', 'ls_import_bundled');
@@ -334,6 +349,16 @@ function ls_gdpr_settings( $redirect = false ) {
 	}
 
 	die( json_encode( array( 'success' => true ) ) );
+}
+
+
+function ls_language_settings() {
+
+	check_admin_referer('ls-save-language-settings');
+
+	update_option('ls_custom_locale', $_POST['ls_custom_locale'] );
+
+	wp_redirect( admin_url('admin.php?page=layerslider-options') );
 }
 
 
@@ -515,6 +540,7 @@ function ls_save_advanced_settings() {
 		'use_custom_jquery',
 		'gsap_sandboxing',
 		'defer_scripts',
+		'clear_3rd_party_caches',
 		'rocketscript_ignore',
 		'suppress_debug_info',
 		'tinymce_helper',
@@ -585,9 +611,14 @@ function ls_get_slider_details( ) {
 function ls_get_mce_sliders() {
 
 	$sliders = LS_Sliders::find( array( 'limit' => 200 ) );
+
 	foreach($sliders as $key => $item) {
 		$sliders[$key]['preview'] = apply_filters('ls_preview_for_slider', $item );
 		$sliders[$key]['name'] = ! empty($item['name']) ? htmlspecialchars(stripslashes($item['name'])) : 'Unnamed';
+
+		// Prevent outputting the unnecessarily large slider data object that
+		// in some cases also causes server issues with the large request data.
+		$sliders[$key]['data'] = null;
 	}
 
 	die( json_encode( $sliders ) );
@@ -805,6 +836,12 @@ function ls_save_slider() {
 		LS_Popups::removeIndex( $id );
 	}
 
+
+	// 3rd party caches
+	if( get_option('ls_clear_3rd_party_caches', true ) ) {
+		ls_empty_3rd_party_caches();
+	}
+
 	die(json_encode(array('status' => 'ok')));
 }
 
@@ -880,8 +917,24 @@ function layerslider_duplicateslider() {
 	$data = $slider['data'];
 
 	// Name check
-	if(empty($data['properties']['title'])) {
+	if( empty( $data['properties']['title'] ) ) {
 		$data['properties']['title'] = 'Unnamed';
+	}
+
+	// Remove existing layer UUIDs for better WPML integration.
+	// The editor will generate new UUIDs and register these layers
+	// as new, so users can freely change the contents of the duplicated
+	// slider without having conflicts with or references to the old one.
+	if( ! empty( $data['layers'] ) && is_array( $data['layers'] ) ) {
+		foreach( $data['layers'] as $slideKey => $slideData ) {
+
+			if( ! empty( $slideData['sublayers'] ) && is_array( $slideData['sublayers'] ) ) {
+				foreach( $slideData['sublayers'] as $layerKey => $layerData ) {
+
+					unset( $data['layers'][ $slideKey ]['sublayers'][ $layerKey ]['uuid'] );
+				}
+			}
+		}
 	}
 
 	// Insert the duplicate
@@ -1430,6 +1483,7 @@ function ls_do_erase_plugin_data() {
 		// Plugin settings
 		'ls-screen-options',
 		'layerslider_custom_capability',
+		'ls_custom_locale',
 		'ls-google-fonts',
 		'ls-google-font-scripts',
 		'ls_use_cache',
@@ -1440,6 +1494,7 @@ function ls_do_erase_plugin_data() {
 		'ls_gsap_sandboxing',
 		'ls_defer_scripts',
 		'ls_use_custom_jquery',
+		'ls_clear_3rd_party_caches',
 		'ls_rocketscript_ignore',
 		'ls_suppress_debug_info',
 		'ls_tinymce_helper',
@@ -1679,4 +1734,49 @@ function ls_export_as_html( $sliderID ) {
 	// thus we cannot use the code directly on the global scope in order
 	// to avoid parsing errors on pre 5.3 PHP versions.
 	include LS_ROOT_PATH . '/includes/slider_markup_export.php';
+}
+
+
+function ls_empty_3rd_party_caches() {
+
+	// W3 Total Cache
+	if( function_exists( 'w3tc_flush_all' ) ) {
+		w3tc_flush_all();
+	}
+
+	// WP Fastest Cache
+	if( ! empty( $GLOBALS['wp_fastest_cache'] ) && method_exists( $GLOBALS['wp_fastest_cache'], 'deleteCache' ) ) {
+		$GLOBALS['wp_fastest_cache']->deleteCache();
+	}
+
+	// WP Super Cache
+	if( function_exists( 'wp_cache_clean_cache' ) ) {
+		global $file_prefix;
+		wp_cache_clean_cache( $file_prefix, true );
+	}
+
+	// WP Rocket
+	if( function_exists('rocket_clean_domain') ) {
+		rocket_clean_domain();
+	}
+
+	// WP-Optimize
+	if( function_exists('wpo_cache_flush') ) {
+		wpo_cache_flush();
+	}
+
+	// SG Optimizer
+	if( function_exists('sg_cachepress_purge_cache') ) {
+		sg_cachepress_purge_cache();
+	}
+
+	// LiteSpeed Cache For WordPress
+	if( has_action('litespeed_purge_all') ) {
+		do_action( 'litespeed_purge_all' );
+	}
+
+	// Autoptimize
+	if( method_exists('autoptimizeCache', 'clearall' ) ) {
+		autoptimizeCache::clearall();
+	}
 }

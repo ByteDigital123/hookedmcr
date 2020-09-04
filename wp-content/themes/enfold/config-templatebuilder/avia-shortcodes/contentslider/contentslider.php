@@ -659,42 +659,66 @@ if ( ! class_exists( 'avia_content_slider' ) )
 			$heading1 = ! empty( $args['heading'] ) ? $args['heading'] : $default_heading;
 			$css = ! empty( $args['extra_class'] ) ? $args['extra_class'] : $heading_class;
 
-            $extraClass 		= 'first';
-            $grid 				= 'one_third';
-            $slide_loop_count 	= 1;
-            $loop_counter		= 1;
-            $total				= $columns % 2 ? 'odd' : 'even';
-			$heading 			= !empty($this->config['heading']) ? "<{$heading1} class='{$css}'>{$this->config['heading']}</{$heading1}>" : '&nbsp;';
+            $extraClass = 'first';
+            $grid = 'one_third';
+            $slide_loop_count = 1;
+            $loop_counter = 1;
+            $total = $columns % 2 ? 'odd' : 'even';
+			$heading = ! empty( $this->config['heading'] ) ? "<{$heading1} class='{$css}'>{$this->config['heading']}</{$heading1}>" : '&nbsp;';
             $slide_count = count( $content );
 
-            switch($columns)
+            switch( $columns )
             {
-                case '1': $grid = 'av_fullwidth'; break;
-                case '2': $grid = 'av_one_half'; break;
-                case '3': $grid = 'av_one_third'; break;
-                case '4': $grid = 'av_one_fourth'; break;
-                case '5': $grid = 'av_one_fifth'; break;
-                case '6': $grid = 'av_one_sixth'; break;
+                case '1': 
+					$grid = 'av_fullwidth'; 
+					break;
+                case '2': 
+					$grid = 'av_one_half'; 
+					break;
+                case '3': 
+					$grid = 'av_one_third'; 
+					break;
+                case '4': 
+					$grid = 'av_one_fourth'; 
+					break;
+                case '5': 
+					$grid = 'av_one_fifth'; 
+					break;
+                case '6': 
+					$grid = 'av_one_sixth'; 
+					break;
             }
 
-            $data = AviaHelper::create_data_string(array('autoplay'=>$autoplay, 'interval'=>$interval, 'animation' => $animation, 'show_slide_delay'=>30));
+            $data = AviaHelper::create_data_string( array( 'autoplay' => $autoplay, 'interval' => $interval, 'animation' => $animation, 'show_slide_delay' => 30 ) );
 
             $thumb_fallback = '';
-            $output .= "<div {$el_id} {$data} class='avia-content-slider-element-container avia-content-slider-element-{$type} avia-content-slider avia-smallarrow-slider avia-content-{$type}-active avia-content-slider".avia_content_slider::$slider." avia-content-slider-{$total} {$class} {$av_display_classes}' {$styling}>";
+            $output .= "<div {$el_id} {$data} class='avia-content-slider-element-container avia-content-slider-element-{$type} avia-content-slider avia-smallarrow-slider avia-content-{$type}-active avia-content-slider" . avia_content_slider::$slider . " avia-content-slider-{$total} {$class} {$av_display_classes}' {$styling}>";
 
                 $heading_class = '';
-                if($navigation == 'no') $heading_class .= ' no-content-slider-navigation ';
-                if($heading == '&nbsp;') $heading_class .= ' no-content-slider-heading ';
+                if( $navigation == 'no' ) 
+				{
+					$heading_class .= ' no-content-slider-navigation ';
+				}
+				
+                if( $heading == '&nbsp;' ) 
+				{
+					$heading_class .= ' no-content-slider-heading ';
+				}
 
 				$output .= "<div class='avia-smallarrow-slider-heading {$heading_class}'>";
 				$output .= "<div class='new-special-heading'>{$heading}</div>";
 
-
-
-				if($slide_count > $columns && $type == 'slider' && $navigation != 'no')
+				if( $slide_count > $columns && $type == 'slider' && $navigation != 'no' )
 	            {
-	                if($navigation == 'dots') $output .= $this->slide_navigation_dots();
-                    if($navigation == 'arrows') $output .= $this->slide_navigation_arrows();
+	                if( $navigation == 'dots' ) 
+					{
+						$output .= $this->slide_navigation_dots();
+					}
+					
+                    if( $navigation == 'arrows' ) 
+					{
+						$output .= $this->slide_navigation_arrows();
+					}
 	            }
 				$output .= '</div>';
 
@@ -709,20 +733,22 @@ if ( ! class_exists( 'avia_content_slider' ) )
 
                     extract( $value['attr'] );
 
-                    $link = aviaHelper::get_url($link);
-                    $blank = (strpos($linktarget, '_blank') !== false || $linktarget == 'yes') ? ' target="_blank" ' : '';
-                    $blank .= strpos($linktarget, 'nofollow') !== false ? ' rel="nofollow" ' : '';
+                    $link = AviaHelper::get_url( $link );
+					$blank = AviaHelper::get_link_target( $linktarget );
+                    
+                    $parity = $loop_counter % 2 ? 'odd' : 'even';
+                    $last = $slide_count == $slide_loop_count ? ' post-entry-last ' : '';
+                    $post_class = "post-entry slide-entry-overview slide-loop-{$slide_loop_count} slide-parity-{$parity} {$last}";
 
-                    $parity			= $loop_counter % 2 ? 'odd' : 'even';
-                    $last       	= $slide_count == $slide_loop_count ? ' post-entry-last ' : '';
-                    $post_class 	= "post-entry slide-entry-overview slide-loop-{$slide_loop_count} slide-parity-{$parity} {$last}";
+                    if( $loop_counter == 1 ) 
+					{
+						$output .= "<div class='slide-entry-wrap'>";
+					}
 
-                    if($loop_counter == 1) $output .= "<div class='slide-entry-wrap'>";
-
-                    $markup = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$custom_markup));
+                    $markup = avia_markup_helper( array( 'context' => 'entry', 'echo' => false, 'custom_markup' => $custom_markup ) );
                     $output .= "<section class='slide-entry flex_column {$post_class} {$grid} {$extraClass}' $markup>";
 
-                    $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$custom_markup));
+                    $markup = avia_markup_helper( array( 'context' => 'entry_title', 'echo' => false, 'custom_markup' => $custom_markup ) );
 					
 					$default_heading = ! empty( $meta['heading_tag'] ) ? $meta['heading_tag'] : 'h3';
 					$args = array(
@@ -741,12 +767,12 @@ if ( ! class_exists( 'avia_content_slider' ) )
 					$heading1 = ! empty( $args['heading'] ) ? $args['heading'] : $default_heading;
 					$css = ! empty( $args['extra_class'] ) ? $args['extra_class'] : $meta['heading_class'];
 					
-                    $output .= !empty($title) ? "<{$heading1} class='slide-entry-title entry-title {$css}' $markup>" : '';
-                    $output .= (!empty($link) && !empty($title)) ? "<a href='{$link}' $blank title='" . esc_attr($title) . "'>" . $title . '</a>' : $title;
-                    $output .= !empty($title) ? "</{$heading1}>" : '';
+                    $output .= ! empty( $title ) ? "<{$heading1} class='slide-entry-title entry-title {$css}' $markup>" : '';
+                    $output .= ( ! empty( $link ) && ! empty( $title ) ) ? "<a href='{$link}' $blank title='" . esc_attr($title) . "'>" . $title . '</a>' : $title;
+                    $output .= ! empty( $title ) ? "</{$heading1}>" : '';
 
-                    $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$custom_markup));
-                    $output .= !empty($value['content']) ? "<div class='slide-entry-excerpt entry-content' $markup>" . ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $value['content'] ) ) . '</div>' : '';
+                    $markup = avia_markup_helper( array( 'context' => 'entry_content', 'echo' => false, 'custom_markup' => $custom_markup ) );
+                    $output .= ! empty( $value['content'] ) ? "<div class='slide-entry-excerpt entry-content' $markup>" . ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $value['content'] ) ) . '</div>' : '';
 
                     $output .= '</section>';
 
@@ -754,13 +780,13 @@ if ( ! class_exists( 'avia_content_slider' ) )
                     $slide_loop_count ++;
                     $extraClass = '';
 
-                    if($loop_counter > $columns)
+                    if( $loop_counter > $columns )
                     {
                         $loop_counter = 1;
                         $extraClass = 'first';
                     }
 
-                    if($loop_counter == 1 || !empty($last))
+                    if( $loop_counter == 1 || ! empty( $last ) )
                     {
                         $output .= '</div>';
                     }
@@ -792,11 +818,11 @@ if ( ! class_exists( 'avia_content_slider' ) )
             $html  .= "<div class='avia-slideshow-dots avia-slideshow-controls'>";
             $active = 'active';
 
-            $entry_count = count($this->config['content']);
-            $slidenumber = $entry_count / (int)$this->config['columns'];
-            $slidenumber = $entry_count % (int)$this->config['columns'] ? ((int)$slidenumber + 1) : (int)$slidenumber;
+            $entry_count = count( $this->config['content'] );
+            $slidenumber = $entry_count / (int) $this->config['columns'];
+            $slidenumber = $entry_count % (int) $this->config['columns'] ? ( (int) $slidenumber + 1)  : (int) $slidenumber;
 
-            for($i = 1; $i <= $slidenumber; $i++)
+            for( $i = 1; $i <= $slidenumber; $i++ )
             {
                 $html .= "<a href='#{$i}' class='goto-slide {$active}' >{$i}</a>";
                 $active = '';

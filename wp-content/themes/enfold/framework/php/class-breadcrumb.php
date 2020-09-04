@@ -567,7 +567,7 @@ function avia_breadcrumbs( $args = array() )
 				
 				$link_text = ! empty( $matches[1] ) ? $matches[1] : '';
 				$anchor = str_replace( $link_text . '</a>', '', $link );
-				$anchor = str_replace( '<a ', '<a itemprop="url"', $anchor );
+				$anchor = str_replace( '<a ', '<a itemprop="url" ', $anchor );
 						
 				$new_link  = '<span ' . $markup_list . '>';
 				$new_link .=	'<span ' . $markup_item . '>';

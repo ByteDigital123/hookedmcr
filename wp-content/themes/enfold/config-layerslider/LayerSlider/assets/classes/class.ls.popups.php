@@ -200,7 +200,7 @@ class LS_Popups {
 	}
 
 
-	public static function render( $popup ) {
+	public static function render( ) {
 
 		if( ! empty(self::$popups) && is_array(self::$popups) ) {
 			foreach( self::$popups as $popup ) {

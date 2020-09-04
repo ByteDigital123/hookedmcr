@@ -1393,7 +1393,9 @@ div .avia-element-tiny_mce iframe{background: #fff;}
 /*heading*/
 .avia_sortable_element .avia-special-heading{font-size: 25px; padding: 25px 20px; line-height: 1.4em; border-color: transparent; background-color: transparent; font-weight: 300; }
 .avia-special-heading .avia-style-blockquote.modern-quote.modern-centered, 
-.avia-special-heading .avia-style-blockquote_modern-quote_modern-centered{text-align: center;}
+.avia-special-heading .avia-style-blockquote_modern-quote_modern-centered,
+.avia-special-heading .avia-style-blockquote.elegant-quote.elegant-centered,
+.avia-special-heading .avia-style-blockquote_elegant-quote_elegant-centered{text-align: center;}
 
 .avia-special-heading .avia-style-blockquote.modern-quote.modern-right, 
 .avia-special-heading .avia-style-blockquote_modern-quote_modern-right{text-align: right;}
@@ -1410,13 +1412,22 @@ div .avia-element-tiny_mce iframe{background: #fff;}
 }
 
 .avia-special-heading .avia-style-blockquote_classic-quote_classic-quote-left, 
-.avia-special-heading  .avia-style-blockquote.classic-quote.classic-quote-left{
+.avia-special-heading .avia-style-blockquote.classic-quote.classic-quote-left{
 	text-align: left;
 }
 
 .avia-special-heading .avia-style-blockquote_classic-quote_classic-quote-right, 
-.avia-special-heading  .avia-style-blockquote.classic-quote.classic-quote-right{
+.avia-special-heading .avia-style-blockquote.classic-quote.classic-quote-right{
 	text-align: right;
+}
+
+.avia-special-heading .avia-heading-icon{
+	display: none;
+}
+ 
+.avia-special-heading .avia-style-blockquote_elegant-quote_elegant-centered.avia-show_icon-custom_icon .avia-heading-icon,
+.avia-special-heading .avia-style-blockquote.elegant-centered.avia-show_icon-custom_icon .avia-heading-icon{
+	display: block;
 }
 
 .avia_sortable_element .avia-special-heading .av-subheading{font-size: 15px; line-height: 1.4em; text-transform: none; padding:10px 0; display: none;}
@@ -2176,7 +2187,7 @@ border-left: none;
 border-bottom-style: dotted !important;
 font-style: italic;
 background: transparent;
-width:150px;
+width:200px;
 }
 
 .avia-style .avia-table .avia-highlight-col{
@@ -2189,8 +2200,8 @@ position: relative;
 
 .avia-style .avia-table .avia-table-col-style .avia-highlight-col{
 	-moz-box-shadow: none;
- -webkit-box-shadow: none;
-		 box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
 }
 
 .avia-table .avia-new-target, .avia-table .avia-clone{

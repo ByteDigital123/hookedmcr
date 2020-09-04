@@ -162,6 +162,10 @@ require_once( 'framework/avia_framework.php' );
 
 ##################################################################
 
+/**
+ * Init object so we can hook and add user defined image sizes
+ */
+$resp_images = Av_Responsive_Images();
 
 /*
  * Register additional image thumbnail sizes
@@ -183,27 +187,72 @@ $avia_config['imgSize']['magazine'] 		 	= array('width'=>710, 'height'=>375 );		
 $avia_config['imgSize']['masonry'] 		 		= array('width'=>705, 'height'=>705 , 'crop' => false);		// images for fullscreen masonry
 $avia_config['imgSize']['entry_with_sidebar'] 	= array('width'=>845, 'height'=>321);		            	// big images for blog and page entries
 $avia_config['imgSize']['entry_without_sidebar']= array('width'=>1210, 'height'=>423 );						// images for fullsize pages and fullsize slider
-$avia_config['imgSize'] = apply_filters('avf_modify_thumb_size', $avia_config['imgSize']);
+
+/**
+ * @used_by							av_responsive_images				10
+ * @param array $avia_config['imgSize']
+ * @return array
+ */
+$avia_config['imgSize'] = apply_filters( 'avf_modify_thumb_size', $avia_config['imgSize'] );
 
 
 $avia_config['selectableImgSize'] = array(
-	'square' 				=> __('Square','avia_framework'),
-	'featured'  			=> __('Featured Thin','avia_framework'),
-	'featured_large'  		=> __('Featured Large','avia_framework'),
-	'portfolio' 			=> __('Portfolio','avia_framework'),
-	'gallery' 				=> __('Gallery','avia_framework'),
-	'entry_with_sidebar' 	=> __('Entry with Sidebar','avia_framework'),
-	'entry_without_sidebar'	=> __('Entry without Sidebar','avia_framework'),
-	'extra_large' 			=> __('Fullscreen Sections/Sliders','avia_framework'),
-	
-);
+			'square' 				=> __( 'Square', 'avia_framework' ),
+			'featured'  			=> __( 'Featured Thin', 'avia_framework' ),
+			'featured_large'  		=> __( 'Featured Large', 'avia_framework' ),
+			'portfolio' 			=> __( 'Portfolio', 'avia_framework' ),
+			'gallery' 				=> __( 'Gallery', 'avia_framework'),
+			'entry_with_sidebar' 	=> __( 'Entry with Sidebar', 'avia_framework' ),
+			'entry_without_sidebar'	=> __( 'Entry without Sidebar', 'avia_framework' ),
+			'extra_large' 			=> __( 'Fullscreen Sections/Sliders', 'avia_framework' )
+		);
+
+/**
+ * @since 4.5.7.2
+ * @param array $avia_config['selectableImgSize']
+ * @param array $avia_config['imgSize']
+ * @return array
+ */
+$avia_config['selectableImgSize'] = apply_filters( 'avf_modify_selectable_image_sizes', $avia_config['selectableImgSize'], $avia_config['imgSize'] );
+
+
+$avia_config['readableImgSize'] = $avia_config['selectableImgSize'];
+
+$avia_config['readableImgSize']['widget'] =				__( 'Widget', 'avia_framework' );
+$avia_config['readableImgSize']['portfolio_small'] =	__( 'Portfolio small', 'avia_framework' );
+$avia_config['readableImgSize']['magazine'] =			__( 'Magazine', 'avia_framework' );
+$avia_config['readableImgSize']['masonry'] =			__( 'Masonry', 'avia_framework' );
+
+/**
+ * @used_by						av_responsive_images				10
+ * @since 4.5.7.2
+ * @param array $avia_config['readableImgSize']
+ * @param array $avia_config['imgSize']
+ * @return array
+ */
+$avia_config['readableImgSize'] = apply_filters( 'avf_modify_readable_image_sizes', $avia_config['readableImgSize'], $avia_config['imgSize'] );
+
+
+/**
+ * Get options and reinit responsive image object
+ */
+$resp_img_config = array(
+		'default_jpeg_quality'	=> 100,						//	ensure best image quality - use filter avf_default_jpeg_quality to change
+		'theme_images'			=> $avia_config['imgSize'],
+		'readableImgSizes'		=> $avia_config['readableImgSize'],
+		'no_lazy_loading_ids'	=> array()					//	add is's of images for permanently disable lazy loading attribute
+	);
+
+$resp_images->reinit( $resp_img_config );
 
 
 
-avia_backend_add_thumbnail_size($avia_config);
+avia_backend_add_thumbnail_size( $avia_config );
 
-if ( ! isset( $content_width ) ) $content_width = $avia_config['imgSize']['featured']['width'];
-
+if ( ! isset( $content_width ) ) 
+{
+	$content_width = $avia_config['imgSize']['featured']['width'];
+}
 
 
 

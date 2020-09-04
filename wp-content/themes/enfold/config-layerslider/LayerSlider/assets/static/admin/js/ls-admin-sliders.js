@@ -632,7 +632,7 @@ jQuery(function($) {
 		});
 	});
 
-	// Auto-update authorization
+	// Auto-update and product activation
 	$('.ls-auto-update form').submit(function(e) {
 
 		// Prevent browser default submission

@@ -492,15 +492,29 @@ if ( ! class_exists( 'avia_sc_buttonrow' ) )
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'modal_styling_appearance' ), $template );
 			
 			$c = array(
+				
+						array(	
+							'name' 	=> __( 'Button Colors Selection', 'avia_framework' ),
+							'desc' 	=> __( 'Select the available options for button colors. Switching to advanced options for already existing buttons you need to set all options (color settings from basic options are ignored).', 'avia_framework' ),
+							'id' 	=> 'color_options',
+							'type' 	=> 'select',
+							'std' 	=> '',
+							'subtype'	=> array(
+												__( 'Basic options only', 'avia_framework' )	=> '',	
+												__( 'Advanced options', 'avia_framework' )		=> 'color_options_advanced',
+											)
+						),
+				
 						array(	
 							'type'			=> 'template',
 							'template_id'	=> 'named_colors',
-							'custom'		=> true
+							'custom'		=> true,
+							'required'		=> array( 'color_options', 'equals', '' )
 						),
 				
 						array(	
 							'name' 	=> __( 'Custom Background Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom background color for your Button here', 'avia_framework' ),
+							'desc' 	=> __( 'Select a custom background color for your button here', 'avia_framework' ),
 							'id' 	=> 'custom_bg',
 							'type' 	=> 'colorpicker',
 							'std' 	=> '#444444',
@@ -509,12 +523,20 @@ if ( ! class_exists( 'avia_sc_buttonrow' ) )
 						
 						array(	
 							'name' 	=> __( 'Custom Font Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom font color for your Button here', 'avia_framework' ),
+							'desc' 	=> __( 'Select a custom font color for your button here', 'avia_framework' ),
 							'id' 	=> 'custom_font',
 							'type' 	=> 'colorpicker',
 							'std' 	=> '#ffffff',
 							'required'	=> array( 'color', 'equals', 'custom' )
-						),	
+						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'button_colors',
+							'color_id'		=> 'btn_color',
+							'custom_id'		=> 'btn_custom',
+							'required'		=> array( 'color_options', 'not', '' )
+						)
 				
 				);
 			
@@ -599,8 +621,8 @@ if ( ! class_exists( 'avia_sc_buttonrow' ) )
             extract( $this->screen_options );	//return $av_font_classes, $av_title_font_classes and $av_display_classes
 
             extract( shortcode_atts( array(
-							'alignment'			=> 'center',
-							'button_spacing'	=> '5',
+							'alignment'				=> 'center',
+							'button_spacing'		=> '5',
 							'button_spacing_unit'	=> 'px'
 						), $atts, $this->config['shortcode'] ) );
 
@@ -658,26 +680,76 @@ if ( ! class_exists( 'avia_sc_buttonrow' ) )
 										'font'			=> '',
 										'icon_hover'	=> '',
 										'label_display'	=> '',
-										'title_attr'	=> ''
+										'title_attr'	=> '',
+				
+										'color_options'			=> '',		//	added 4.7.5.1
+										'btn_color_bg'			=> 'theme-color',			
+										'btn_color_bg_hover'	=> 'theme-color',
+										'btn_color_font'		=> 'custom',
+										'btn_custom_bg'			=> '#444444',
+										'btn_custom_bg_hover'	=> '#444444',
+										'btn_custom_font'		=> '#ffffff',
+//										'btn_color_font_hover'	=> '#ffffff',
+//										'btn_custom_font_hover'	=> '#ffffff'
+				
 									), $atts, 'av_buttonrow_item' );
 
-            $display_char = av_icon( $atts['icon'], $atts['font'] );
-            $extraClass = $atts['icon_hover'] ? 'av-icon-on-hover' : '';
-            $spacing = $this->spacing;
+            
+			$style = '';
+			$style_hover = '';
+			$background_hover = '';
+			$spacing = $this->spacing;
             $spacing_unit = $this->spacing_unit;
+			
+			$display_char = av_icon( $atts['icon'], $atts['font'] );
+            $extraClass = $atts['icon_hover'] ? 'av-icon-on-hover' : '';
 
             if( $atts['icon_select'] == 'yes' ) 
 			{
 				$atts['icon_select'] = 'yes-left-icon';
 			}
 
-            $style = '';
-            if( $atts['color'] == 'custom' ) 
+            if( '' == $atts['color_options'] )
 			{
-                $style .= AviaHelper::style_string( $atts, 'custom_bg', 'background-color' );
-                $style .= AviaHelper::style_string( $atts, 'custom_bg', 'border-color' );
-                $style .= AviaHelper::style_string( $atts, 'custom_font', 'color' );
-            }
+				if( $atts['color'] == 'custom' ) 
+				{
+					$style .= AviaHelper::style_string( $atts, 'custom_bg', 'background-color' );
+					$style .= AviaHelper::style_string( $atts, 'custom_bg', 'border-color' );
+					$style .= AviaHelper::style_string( $atts, 'custom_font', 'color' );
+				}
+				else
+				{
+					$extraClass .= ' ' . $this->class_by_arguments( 'color', $atts, true );
+				}
+			}
+			else		//	color_options_advanced - added 4.7.5.1
+			{
+				if( 'custom' == $atts['btn_color_bg'] )
+				{
+					$style .= AviaHelper::style_string( $atts, 'btn_custom_bg', 'background-color' );
+					$style .= AviaHelper::style_string( $atts, 'btn_custom_bg', 'border-color' );
+				}
+				else 
+				{
+					$extraClass .= ' avia-color-' . $atts['btn_color_bg'] . ' ';
+				}
+				
+				if( 'custom' == $atts['btn_color_font'] )
+				{
+					$style .= AviaHelper::style_string( $atts, 'btn_custom_font', 'color' );
+				}
+				else
+				{
+					$extraClass .= ' avia-font-color-' . $atts['btn_color_font'];
+				}
+				
+				if( 'custom' == $atts['btn_color_bg_hover'] )
+				{
+					$style_hover = "style='background-color:{$atts['btn_custom_bg_hover']};'";
+				}
+				
+				$background_hover = "<span class='avia_button_background avia-button avia-color-" . $atts['btn_color_bg_hover'] . "' {$style_hover}></span>";
+			}
 
             if( ! empty( $spacing ) )
 			{
@@ -702,17 +774,15 @@ if ( ! class_exists( 'avia_sc_buttonrow' ) )
                     $spacingval = round( $spacing / 2 );
                     $atts['margin-left'] = $spacingval;
                     $atts['margin-right'] = $spacingval;
-                    $style .= AviaHelper::style_string( $atts, 'margin-left', 'margin-left',$spacing_unit );
+					
+                    $style .= AviaHelper::style_string( $atts, 'margin-left', 'margin-left', $spacing_unit );
                     $style .= AviaHelper::style_string( $atts, 'margin-right', 'margin-right', $spacing_unit );
-
                 }
             }
 
-            $style  = AviaHelper::style_string( $style );
+            $style = AviaHelper::style_string( $style );
 
-            $blank = strpos( $atts['link_target'], '_blank' ) !== false ? ' target="_blank" ' : '';
-            $blank .= strpos( $atts['link_target'], 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
-
+			$blank = AviaHelper::get_link_target( $atts['link_target'] );
             $link = trim( AviaHelper::get_url( $atts['link'] ) );
             $link = ( in_array( $link, array( 'http://', 'https://', 'manually' ) ) ) ? '' : $link;
 			
@@ -745,8 +815,9 @@ if ( ! class_exists( 'avia_sc_buttonrow' ) )
 			}
 
             $output = '';
-            $output .=	"<a href='{$link}' {$data} class='avia-button {$extraClass} " . $this->class_by_arguments('icon_select, color, size', $atts, true) . "' {$blank} {$style} {$title_attr}>";
+            $output .=	"<a href='{$link}' {$data} class='avia-button {$extraClass} " . $this->class_by_arguments( 'icon_select, size', $atts, true ) . "' {$blank} {$style} {$title_attr}>";
             $output .=		$content_html;
+			$output .=		$background_hover;
             $output .=	'</a>';
 
             return $output;

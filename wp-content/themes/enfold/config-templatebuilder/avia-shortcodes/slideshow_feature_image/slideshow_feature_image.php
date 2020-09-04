@@ -128,7 +128,7 @@ if ( ! class_exists( 'avia_sc_featureimage_slider' ) )
 				
 						array(	
 								'type'			=> 'template',
-								'template_id'	=> $this->popup_key( 'advanced_animation' )
+								'template_id'	=> $this->popup_key( 'advanced_animation_slider' )
 							),
 				
 						array(	
@@ -459,12 +459,12 @@ if ( ! class_exists( 'avia_sc_featureimage_slider' ) )
 							array(	
 								'type'			=> 'template',
 								'template_id'	=> 'toggle',
-								'title'			=> __( 'Animation', 'avia_framework' ),
+								'title'			=> __( 'Slider Animation', 'avia_framework' ),
 								'content'		=> $c 
 							),
 					);
 			
-			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation_slider' ), $template );
 			
 			
 			$c = array(
@@ -570,10 +570,20 @@ if ( ! class_exists( 'avia_sc_featureimage_slider' ) )
 			$params['custom_markup'] = $atts['custom_markup'] = $meta['custom_markup'];
 			
 			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
 			
-			if($meta['index'] > 0) $params['class'] .= ' slider-not-first';
+			if( ! empty( $meta['siblings']['prev']['tag'] ) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( $meta['index'] > 0 ) 
+			{
+				$params['class'] .= ' slider-not-first';
+			}
 			
 			$params['id'] = AviaHelper::save_string( $meta['custom_id_val'], '-', 'avia_feature_image_slider_' . avia_sc_featureimage_slider::$slide_count );
 			$atts['el_id'] = ! empty( $meta['custom_el_id'] ) ? $meta['custom_el_id'] : ' id="avia_feature_image_slider_' . avia_sc_featureimage_slider::$slide_count . '" ';
@@ -709,8 +719,8 @@ if ( ! class_exists( 'avia_feature_image_slider' ) )
 								'date_filter_format'	=> 'yy/mm/dd',		//	'yy/mm/dd' | 'dd-mm-yy'	| yyyymmdd
 								'el_id'					=> '',
 								'heading_tag'			=> '',
-								'heading_class'			=> ''
-
+								'heading_class'			=> '',
+								
 							), $atts, 'av_feature_image_slider' );
 
 
@@ -757,7 +767,7 @@ if ( ! class_exists( 'avia_feature_image_slider' ) )
 			
 			if( strpos( $this->atts['slider_size'], ':') !== false)
 			{
-				$ratio = explode(':',trim($this->atts['slider_size']));
+				$ratio = explode( ':',trim( $this->atts['slider_size'] ) );
 				if(empty($ratio[0])) $ratio[0] = 16;
 				if(empty($ratio[1])) $ratio[1] = 9;
 				$final_ratio = ((int) $ratio[0] / (int) $ratio[1]);
@@ -821,6 +831,7 @@ if ( ! class_exists( 'avia_feature_image_slider' ) )
 			foreach( $this->entries->posts as $index => $slide )
 			{
 				$counter ++;
+				
 				$thumb_id = get_post_thumbnail_id( $slide->ID );
 				$slide_data = '';
 				$slide_class = '';

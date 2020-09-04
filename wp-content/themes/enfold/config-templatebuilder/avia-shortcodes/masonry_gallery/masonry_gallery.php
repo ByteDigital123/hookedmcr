@@ -418,6 +418,11 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 												__( 'Animation activated', 'avia_framework' )	=> 'active',
 												__( 'Animation deactivated', 'avia_framework' )	=> '',
 											)
+						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
 						)
 				);
 			
@@ -435,15 +440,29 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 			$c = array(
 						array(
 							'name' 	=> __( 'Image Link', 'avia_framework' ),
-							'desc' 	=> __( 'By default images link to a larger image version in a lightbox. You can deactivate that link. You can also set custom links when editing the images in the gallery', 'avia_framework' ),
+							'desc' 	=> __( 'By default images link to a larger image version in a lightbox. You can change this here. A custom link can be added when editing the images in the gallery.', 'avia_framework' ),
 							'id' 	=> 'container_links',
 							'type' 	=> 'select',
 							'std' 	=> 'active',
 							'subtype'	=> array(
-												__( 'Lightbox linking active', 'avia_framework' )	=> 'active',
-												__( 'Lightbox linking deactivated. (Custom links will still be used)', 'avia_framework' )	=> '',
+												__( 'Lightbox linking active', 'avia_framework' )				=> 'active',
+												__( 'Use custom link (fallback is no link)', 'avia_framework' )	=> '',
+												__( 'No links', 'avia_framework' )								=> 'no_links',
 											)
 						),	
+				
+						array(
+							'name'		=> __( 'Custom link destination', 'avia_framework' ),
+							'desc'		=> __( 'Select where an existing custom link should be opened.', 'avia_framework' ),
+							'id'		=> 'link_dest',
+							'type'		=> 'select',
+							'std'		=> '',
+							'required'	=> array( 'container_links', 'equals', '' ),
+							'subtype'	=> array(
+												__( 'Open in same window', 'avia_framework' )		=> '',
+												__( 'Open in a new window', 'avia_framework' )		=> '_blank'
+											)
+						)
 				
 				);
 			
@@ -508,8 +527,7 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 			return $params;
 		}
 			
-			
-			
+
 		/**
 		 * Frontend Shortcode Handler
 		 *
@@ -518,7 +536,6 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 		 * @param string $shortcodename the shortcode found, when == callback name
 		 * @return string $output returns the modified html string 
 		 */
-
 		function shortcode_handler( $atts, $content = '', $shortcodename = '', $meta = '' )
 		{
 			extract( AviaHelper::av_mobile_sizes( $atts ) ); //return $av_font_classes, $av_title_font_classes and $av_display_classes 
@@ -532,13 +549,30 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 			$params['id'] = AviaHelper::save_string( $meta['custom_id_val'] , '-', 'av-sc-masonry-gallery-' . avia_sc_masonry_gallery::$gallery_count );
 
 			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( ! empty( $meta['siblings']['prev']['tag']) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
 
-			if($meta['index'] > 0) $params['class'] .= ' masonry-not-first';
-			if($meta['index'] == 0 && get_post_meta(get_the_ID(), 'header', true) != 'no') $params['class'] .= ' masonry-not-first';
+			if( $meta['index'] > 0 ) 
+			{
+				$params['class'] .= ' masonry-not-first';
+			}
+			
+			if( $meta['index'] == 0 && get_post_meta( get_the_ID(), 'header', true ) != 'no' ) 
+			{
+				$params['class'] .= ' masonry-not-first';
+			}
 
-			if($atts['gap'] == 'no') $params['class'] .= ' avia-no-border-styling';
+			if( $atts['gap'] == 'no' ) 
+			{
+				$params['class'] .= ' avia-no-border-styling';
+			}
 
 			/**
 			 * Remove custom CSS from element if it is top level (otherwise added twice - $meta['el_class'] )
@@ -552,10 +586,10 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 			$custom_class = ! empty( $atts['custom_class'] ) ? $atts['custom_class'] : '';
 			$atts['container_class'] = "av-masonry-gallery {$custom_class} ";
 
-			$masonry  = new avia_masonry( $atts );
+			$masonry = new avia_masonry( $atts );
 			$masonry->query_entries_by_id();
 			$masonry_html = $masonry->html();
-
+			
 			if( ! ShortcodeHelper::is_top_level() ) 
 			{
 				return $masonry_html;
@@ -567,19 +601,19 @@ if ( ! class_exists( 'avia_sc_masonry_gallery' ) )
 			}
 
 
-			$output .=  avia_new_section( $params );
+			$output .= avia_new_section( $params );
 			$output .= $masonry_html;
 			$output .= '</div><!-- close section -->'; //close section
 
 
 			//if the next tag is a section dont create a new section from this shortcode
-			if(!empty($meta['siblings']['next']['tag']) && in_array($meta['siblings']['next']['tag'], AviaBuilder::$full_el ))
+			if( ! empty( $meta['siblings']['next']['tag'] ) && in_array( $meta['siblings']['next']['tag'], AviaBuilder::$full_el ) )
 			{
 				$skipSecond = true;
 			}
 
 			//if there is no next element dont create a new section.
-			if(empty($meta['siblings']['next']['tag']))
+			if( empty( $meta['siblings']['next']['tag'] ) )
 			{
 				$skipSecond = true;
 			}

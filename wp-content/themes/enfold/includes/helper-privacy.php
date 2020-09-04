@@ -258,8 +258,17 @@ if( ! class_exists( 'av_privacy_class' ) )
 				
 				if( false === $sep )
 				{
-					setcookie( 'aviaPrivacyRefuseCookiesHideBar', true, time() + YEAR_IN_SECONDS, '/' );
-					setcookie( 'aviaPrivacyEssentialCookiesEnabled', true, time() + YEAR_IN_SECONDS, '/' );
+					$args = array(
+								'expires'	=> time() + YEAR_IN_SECONDS,
+								'path'		=> '/',
+								'domain'	=> '',
+								'secure'	=> false,
+								'httponly'	=> false,
+								'samesite'	=> 'Strict'
+							);
+					
+					setcookie( 'aviaPrivacyRefuseCookiesHideBar', true, $args );
+					setcookie( 'aviaPrivacyEssentialCookiesEnabled', true, $args );
 				}
 			}
 			
@@ -282,7 +291,16 @@ if( ! class_exists( 'av_privacy_class' ) )
 			{
 				if( ! $user_must_opt_in )
 				{
-					setcookie( 'aviaPrivacyMustOptInSetting', false, time()-3600, '/' );
+					$args = array(
+								'expires'	=> time() - 3600,
+								'path'		=> '/',
+								'domain'	=> '',
+								'secure'	=> false,
+								'httponly'	=> false,
+								'samesite'	=> 'Strict'
+							);
+					
+					setcookie( 'aviaPrivacyMustOptInSetting', false, $args );
 				}
 				
 				return;
@@ -339,7 +357,17 @@ if( ! class_exists( 'av_privacy_class' ) )
 				
 				if( $remove )
 				{
-					setcookie( $cookie, false, time()-3600, '/' );
+					$args = array(
+								'expires'	=> time() - 3600,
+								'path'		=> '/',
+								'domain'	=> '',
+								'secure'	=> false,
+								'httponly'	=> false,
+								'samesite'	=> 'Strict'
+							);
+					
+					
+					setcookie( $cookie, false, $args );
 				}
 			}		
 			

@@ -400,7 +400,7 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 			
 			$data['modal_title'] 		= $element['modal_title'];
 			$data['modal_open']			= isset( $element['modal_open'] ) ? $element['modal_open'] : 'yes';
-			$data['trigger_button']			= isset( $element['trigger_button'] ) ? $element['trigger_button'] : '';
+			$data['trigger_button']		= isset( $element['trigger_button'] ) ? $element['trigger_button'] : '';
 			$data['shortcodehandler'] 	= $parent_class->config['shortcode_nested'][0];
 			$data['closing_tag']		= $parent_class->is_nested_self_closing( $parent_class->config['shortcode_nested'][0] ) ? 'no' : 'yes';
 			$data['modal_ajax_hook'] 	= $parent_class->config['shortcode_nested'][0];
@@ -1435,7 +1435,7 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 								'label'				=> false,			//	for option group
 								'class'				=> '',
 								'hierarchical'		=> 'yes',			//	'yes' | 'no'
-								'post_status'		=> 'publish',		//	array or seperated by comma
+								'post_status'		=> 'publish',		//	array or separated by comma
 								'option_none_text'	=> '',				//	text to display for "Nothing selected"
 								'option_none_value'	=> '',				//	value for 'option_none_text'
 								'option_no_change'	=> ''				//	value for 'no change' - set to -1 by WP default
@@ -1986,7 +1986,7 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 		}
 		
 		/**
-		 * Returns a valid timezone_string for the selectbox.
+		 * Returns a valid timezone_string for the select box.
 		 * Checks for WP default setting if empty.
 		 * 
 		 * @since 4.5.6
@@ -2017,7 +2017,7 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 			
 
 		/**
-		 * Returns a timezone selectbox and preselects the default WP timezone
+		 * Returns a timezone select box and preselects the default WP timezone
 		 * 
 		 * @since 4.5.6
 		 * @param array $element
@@ -2133,69 +2133,74 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 		}
 		
 		
-		
+		/**
+		 * 
+		 * @param array $element
+		 * @return string
+		 */
 		static public function mailchimp_list( $element )
 		{
-			$api 		= $element['api'];
-			$new_list 	= array();
+			$api = $element['api'];
+			$new_list = array();
 			
-			foreach( $api->fields as $list_id => $fields)
+			foreach( $api->fields as $list_id => $fields )
 			{
-				foreach($fields as $field)
+				foreach( $fields as $field )
 				{
 					$list_item = array();
-					$list_item['id'] 		= $field->merge_id;
-					$list_item['label'] 	= $field->name;
-					$list_item['type'] 		= $field->type;
-					$list_item['value'] 	= $field->default_value;
-					$list_item['disabled'] 	= empty($field->show) ? "true" : '';
-					$list_item['check'] 	= '';
+					$list_item['id'] = $field->merge_id;
+					$list_item['label'] = $field->name;
+					$list_item['type'] = $field->type;
+					$list_item['value'] = $field->default_value;
+					$list_item['disabled'] = empty( $field->show ) ? 'true' : '';
+					$list_item['check'] = '';
 								
-					
-					if($field->required == 1)
+					if( $field->required == 1 )
 					{
-						$list_item['check'] = "is_empty";
-						if($field->type == 'email')  { $list_item['check'] = "is_email"; $list_item['type'] = "text";}
-						if($field->type == 'number')  $list_item['check'] = "is_number";
+						$list_item['check'] = 'is_empty';
+						if( $field->type == 'email' )  
+						{ 
+							$list_item['check'] = 'is_email'; 
+							$list_item['type'] = 'text';
+						}
+						
+						if( $field->type == 'number' )  
+						{
+							$list_item['check'] = 'is_number';
+						}
 					}
 					
-					if(isset( $field->options ))
+					if( isset( $field->options ) )
 					{
-						$list_item['options'] = implode(",", $field->options->choices );
+						$list_item['options'] = implode( ',', $field->options->choices );
 					}						
 					
-					$new_list[$list_id][$field->merge_id] = $list_item;
+					$new_list[ $list_id ][ $field->merge_id ] = $list_item;
 				}
 				
 				//add the default subscribe button
-				if(!empty($new_list[$list_id]))
+				if( ! empty( $new_list[ $list_id ] ) )
 				{
-					$new_list[$list_id]['av-button'] = array(
-						'id' 		=> "av-button",
-						'label' 	=> __( "Subscribe" , "avia_framework" ),
-						'type'		=> "button",
-						'value' 	=> '',
-						'check' 	=> '',
-					);
+					$new_list[ $list_id ]['av-button'] = array(
+												'id' 		=> 'av-button',
+												'label' 	=> __( 'Subscribe' , 'avia_framework' ),
+												'type'		=> 'button',
+												'value' 	=> '',
+												'check' 	=> '',
+											);
 				}
 				
 			}
 			
 			$output  = '';
-			$output  .= self::select( $element );	
-			$output  .= "<script type='text/javascript' > var av_mailchimp_list = ".json_encode($new_list)."; ";
-			$output  .= "</script>";
+			$output .= self::select( $element );	
+			$output .= "<script type='text/javascript' > var av_mailchimp_list = " . json_encode( $new_list ) . '; ';
+			$output .= '</script>';
 			
 			return $output;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
+
 		static public function table ( $element , $parent)
 		{
 			$values = !empty($_POST['extracted_shortcode']) ? $_POST['extracted_shortcode'] : false;
@@ -2388,13 +2393,22 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 			return $output;
 		}
 		
-		
-		
-		
-		static public function number_array($from = 0, $to = 100, $steps = 1, $array = array(), $label = '', $value_prefix = '', $value_postfix = '')
+		/**
+		 * 
+		 * @param int $from
+		 * @param int $to
+		 * @param int $steps
+		 * @param array $array
+		 * @param string $label
+		 * @param string $value_prefix
+		 * @param string $value_postfix
+		 * @return array
+		 */
+		static public function number_array( $from = 0, $to = 100, $steps = 1, $array = array(), $label = '', $value_prefix = '', $value_postfix = '' )
 		{
-			for ($i = $from; $i <= $to; $i += $steps) {
-			    $array[$i.$label] = $value_prefix.$i.$value_postfix;
+			for( $i = $from; $i <= $to; $i += $steps ) 
+			{
+			    $array[ $i . $label ] = $value_prefix . $i . $value_postfix;
 			}
 		
 			return $array;
@@ -2405,21 +2419,21 @@ if ( ! class_exists( 'AviaHtmlHelper' ) )
 
 		static public function linking_options()
 		{
-		    if(current_theme_supports('avia_rel_nofollow_for_links'))
+		    if( current_theme_supports( 'avia_rel_nofollow_for_links' ) )
 			{
 			    $linkoptions = array(
-					__('Open in same window',  'avia_framework' ) =>'',
-					__('Open in same window and use rel=nofollow',  'avia_framework' ) =>'nofollow',
-					__('Open in new window',  'avia_framework' ) =>'_blank',
-					__('Open in new window and use rel=nofollow',  'avia_framework' ) =>'_blank nofollow'
-			    );
+									__( 'Open in same window', 'avia_framework' )						=> '',
+									__( 'Open in same window and use rel=nofollow', 'avia_framework' )	=> 'nofollow',
+									__( 'Open in new window', 'avia_framework' )						=> '_blank',
+									__( 'Open in new window and use rel=nofollow', 'avia_framework' )	=> '_blank nofollow'
+								);
 			}
 			else
 			{
 			    $linkoptions = array(
-					__('Open in same window',  'avia_framework' ) =>'',
-					__('Open in new window',  'avia_framework' ) =>'_blank'
-			    );
+									__( 'Open in same window', 'avia_framework' )	=> '',
+									__( 'Open in new window', 'avia_framework' )	=> '_blank'
+								);
 			}
 
 		    return $linkoptions;

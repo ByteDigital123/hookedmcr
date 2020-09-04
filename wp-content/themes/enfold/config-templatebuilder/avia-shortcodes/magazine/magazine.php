@@ -21,18 +21,18 @@ if ( ! class_exists( 'avia_sc_magazine' ))
 			$this->config['version']		= '1.0';
 			$this->config['self_closing']	= 'yes';
 			
-			$this->config['name']		= __( 'Magazine', 'avia_framework' );
-			$this->config['tab']		= __( 'Content Elements', 'avia_framework' );
-			$this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-magazine.png';
-			$this->config['order']		= 39;
-			$this->config['target']		= 'avia-target-insert';
-			$this->config['shortcode'] 	= 'av_magazine';
-			$this->config['tooltip'] 	= __( 'Display entries in a magazine like fashion', 'avia_framework' );
-			$this->config['drag-level'] = 3;
-			$this->config['preview'] 	= 1;
+			$this->config['name']			= __( 'Magazine', 'avia_framework' );
+			$this->config['tab']			= __( 'Content Elements', 'avia_framework' );
+			$this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-magazine.png';
+			$this->config['order']			= 39;
+			$this->config['target']			= 'avia-target-insert';
+			$this->config['shortcode']		= 'av_magazine';
+			$this->config['tooltip']		= __( 'Display entries in a magazine like fashion', 'avia_framework' );
+			$this->config['drag-level']		= 3;
+			$this->config['preview']		= 1;
 			$this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 			$this->config['alb_desc_id']	= 'alb_description';
 		}
 		
@@ -127,6 +127,11 @@ if ( ! class_exists( 'avia_sc_magazine' ))
 								'type'			=> 'template',
 								'template_id'	=> $this->popup_key( 'advanced_link' ),
 								'nodescription' => true
+							),
+				
+						array(
+								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation' ),
 							),
 				
 						array(	
@@ -469,6 +474,25 @@ if ( ! class_exists( 'avia_sc_magazine' ))
 			
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_link' ), $template );
 			
+			$c = array(
+				
+					array(	
+								'type'			=> 'template',
+								'template_id'	=> 'lazy_loading'
+							),
+				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
+								'title'			=> __( 'Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+			
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			
 		}
 
 		/**
@@ -589,7 +613,9 @@ if ( ! class_exists( 'avia_magazine' ) )
 								'date_filter_format'	=> 'yy/mm/dd',		//	'yy/mm/dd' | 'dd-mm-yy'	| yyyymmdd
 								'custom_el_id'			=> '',
 								'heading_tag'			=> '',
-								'heading_class'			=> ''
+								'heading_class'			=> '',
+								'lazy_loading'			=> 'enabled'
+				
 							), $atts, 'av_magazine' );
 			
 			/**
@@ -1050,6 +1076,12 @@ if ( ! class_exists( 'avia_magazine' ) )
 		protected function render_entry( WP_Post $entry, $style )
 		{
 			$output = '';
+			
+			if( $this->atts['lazy_loading'] != 'enabled' )
+			{
+				Av_Responsive_Images()->add_attachment_id_to_not_lazy_loading( $entry->ID );
+			}
+			
 			$image = get_the_post_thumbnail( $entry->ID, $this->atts['image_size'][ $style ] );
 			
 			$link = get_permalink( $entry->ID );

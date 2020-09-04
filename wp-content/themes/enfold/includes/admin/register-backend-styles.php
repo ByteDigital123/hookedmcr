@@ -1,6 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {  exit;  }    // Exit if accessed directly
 
-	$styles["Enfold Classic"] = array(	
+$styles["Enfold Classic"] = array(	
 						'style'			=> 'background-color:#c3512f;',
 						'default_font' 	=> 'Open Sans:400,600',
 						'google_webfont'=> 'Open Sans:400,600',
@@ -986,10 +987,10 @@ $styles["Vine"] = array(
 
 
 $styles["Cyan"] = array(	
-						'style'=>'background-color:#2997ab;',
-						'default_font' => 'Arial-websave',
-						'google_webfont' => 'Terminal Dosis',
-						'color_scheme'	=>'Cyan',
+						'style'				=> 'background-color:#2997ab;',
+						'default_font'		=> 'Arial-websave',
+						'google_webfont'	=> 'Dosis',
+						'color_scheme'		=> 'Cyan',
 						
 						// header
 						'colorset-header_color-bg'				=>'#ffffff',
@@ -1569,10 +1570,10 @@ $default_background = "#041424";
 $special_border 	= "#0A2138";						
 								
 $styles["Navy"] = array(	
-						'style'=>'background-color:#435960;',
-						'default_font' => 'Arial-websave',
-						'google_webfont' => 'Terminal Dosis',
-						'color_scheme'	=>'Navy',
+						'style'				=> 'background-color:#435960;',
+						'default_font'		=> 'Arial-websave',
+						'google_webfont'	=> 'Dosis',
+						'color_scheme'		=> 'Navy',
 						
 						// header
 						'colorset-header_color-bg'				=>'#ffffff',

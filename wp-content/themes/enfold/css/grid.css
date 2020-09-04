@@ -105,6 +105,11 @@ body .unit.alpha, body .units.alpha {
 .responsive #top #wrap_all .av-break-at-tablet-flextable, .responsive .av-layout-grid-container.av-break-at-tablet {
 	display: block;	
   }
+	
+.responsive #top #wrap_all .av-flex-cells .no_margin{
+    height:auto !important;
+    overflow: hidden;
+  }
 
 }
 
@@ -338,7 +343,10 @@ div .av_one_tenth {
 	table-layout: fixed;
 	width:100%;
 	float: left;	/* added 4.7.4.1 to fix equal height after individual height columns  */
-	margin-top: 50px;
+}
+
+#top .flex_column_table.av-equal-height-column-flextable:not(:first-child){ 
+	margin-top: 50px;  /* added 4.7.5.1 to fix inconsistent layout equal height after individual height columns but remove when first entry  */
 }
 
 #top .flex_column_table_cell{

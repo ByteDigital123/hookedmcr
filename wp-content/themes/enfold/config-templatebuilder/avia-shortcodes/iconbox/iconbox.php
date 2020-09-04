@@ -502,7 +502,7 @@ if ( ! class_exists( 'avia_sc_icon_box' ) )
 						'icon'			=> 'ue800', 
 						'position'		=> 'left', 
 						'link'			=> '', 
-						'linktarget'	=> 'no', 
+						'linktarget'	=> '', 
 						'linkelement'	=> '', 
 						'font'			=> '', 
 						'boxed'			=> '',
@@ -535,9 +535,8 @@ if ( ! class_exists( 'avia_sc_icon_box' ) )
 				$boxed = '';
 			}
 
-			$blank = ( strpos( $linktarget, '_blank' ) !== false || $linktarget == 'yes' ) ? ' target="_blank" ' : '';
-			$blank .= strpos( $linktarget, 'nofollow') !== false ? ' rel="nofollow" ' : '';
-			$link = aviaHelper::get_url( $link );
+			$link = AviaHelper::get_url( $link );
+			$blank = AviaHelper::get_link_target( $linktarget );
 
 			if( ! empty( $link ) )
 			{
@@ -551,11 +550,11 @@ if ( ! class_exists( 'avia_sc_icon_box' ) )
 							$title = "<a href='{$link}' title='" . esc_attr( $linktitle ) . "' $blank>$linktitle</a>";
 						}
 						
-						$display_char_wrapper['start'] = "a href='{$link}' title='".esc_attr($linktitle)."' {$blank}";
+						$display_char_wrapper['start'] = "a href='{$link}' title='"  . esc_attr($linktitle) . "' {$blank}";
 						$display_char_wrapper['end'] = 'a';
 						break;
 					case 'only_icon':
-						$display_char_wrapper['start'] = "a href='{$link}' title='".esc_attr($linktitle)."' {$blank}";
+						$display_char_wrapper['start'] = "a href='{$link}' title='" . esc_attr($linktitle) . "' {$blank}";
 						$display_char_wrapper['end'] = 'a';
 						break;
 					default:

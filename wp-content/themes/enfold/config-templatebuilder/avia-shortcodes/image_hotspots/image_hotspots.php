@@ -252,7 +252,12 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 												__( 'Always', 'avia_framework' )								=> 'av-permanent-tooltip',
 												__( 'Show On Mouse Hover - Hide On Click', 'avia_framework' )	=> 'av-close-on-click-tooltip'
 											)
-						)
+						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
+						),
 					
 				);
 			
@@ -629,8 +634,9 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 			$alt 		= '';
 			$title 		= '';
 			$src   		= '';
-			$markup 	= avia_markup_helper(array('context' => 'image','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
-			$markup_url = avia_markup_helper(array('context' => 'image_url','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
+			
+			$markup 	= avia_markup_helper( array( 'context' => 'image', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
+			$markup_url = avia_markup_helper( array( 'context' => 'image_url', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
 			$hotspots 	= ShortcodeHelper::shortcode2array( $content, 1 );
 
 			avia_sc_image_hotspots::$img_hotspot_count ++;
@@ -644,11 +650,13 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 							'attachment_size'			=> '', 
 							'hotspot_layout'			=> 'numbered', 
 							'hotspot_mobile'			=> '', 
-							'hotspot_tooltip_display'	=> ''
+							'hotspot_tooltip_display'	=> '',
+							'lazy_loading'				=> 'disabled'
 						), $atts, $this->config['shortcode'] ) );
 
 			$img_h = '';
 			$img_w = '';
+			$attachment_id = 0;
 
 			if( ! empty( $attachment ) )
 			{
@@ -667,10 +675,11 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 				if( is_array( $posts ) && ! empty( $posts ) )
 				{
 					$attachment_entry = $posts[0];
+					$attachment_id = $attachment_entry->ID;
 
-					$alt = get_post_meta($attachment_entry->ID, '_wp_attachment_image_alt', true);
-					$alt = !empty($alt) ? esc_attr($alt) : '';
-					$title = trim($attachment_entry->post_title) ? esc_attr($attachment_entry->post_title) : '';
+					$alt = get_post_meta( $attachment_entry->ID, '_wp_attachment_image_alt', true );
+					$alt = ! empty( $alt ) ? esc_attr( $alt ) : '';
+					$title = trim( $attachment_entry->post_title ) ? esc_attr( $attachment_entry->post_title ) : '';
 
 					if( ! empty( $attachment_size ) )
 					{
@@ -681,7 +690,6 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 					}
 				}
 			}
-				
 				
 			//no src? return
 			if( ! empty( $src ) )
@@ -712,28 +720,38 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 				//some custom classes
 				$class .= $animation == 'no-animation' ? '' :" avia_animated_image avia_animate_when_almost_visible {$animation}";
 				$class .= " av-hotspot-{$hotspot_layout}";
-				$class .= !empty($hotspot_mobile) ? ' av-mobile-fallback-active ' : '';
+				$class .= ! empty( $hotspot_mobile ) ? ' av-mobile-fallback-active ' : '';
 				$class .= " {$hotspot_tooltip_display}";
 
 
 				$hw = '';
-				if(!empty($img_h)) $hw .= ' height="' . $img_h . '"';
-				if(!empty($img_w)) $hw .= ' width="' . $img_w . '"';
+				if( ! empty( $img_h ) ) 
+				{
+					$hw .= ' height="' . $img_h . '"';
+				}
+				if( ! empty( $img_w ) ) 
+				{
+					$hw .= ' width="' . $img_w . '"';
+				}
 
 				$el_id = ShortcodeHelper::is_top_level() ? '' : $meta['custom_el_id'];
+				$img_tag = "<img class='avia_image' src='{$src}' alt='{$alt}' title='{$title}' {$hw} {$markup_url} />";
+				$img_tag = Av_Responsive_Images()->prepare_single_image( $img_tag, $attachment_id, $lazy_loading );
 
 				$output .= "<div {$el_id} class='av-hotspot-image-container {$av_display_classes} {$class} {$meta['el_class']}' {$markup}>";
 				$output .= 		"<div class='av-hotspot-container'>";
 				$output .= 			"<div class='av-hotspot-container-inner-cell'>";
 				$output .= 				"<div class='av-hotspot-container-inner-wrap'>";
 				$output .= 					$hotspot_html;
-				$output .= 					"<img class='avia_image' src='{$src}' alt='{$alt}' title='{$title}' {$hw} {$markup_url} />";
+				$output .= 					$img_tag;
 				$output .= 				'</div>';
 				$output .= 			'</div>';
 				$output .= 		'</div>';
 				$output .=		$tooltip_html;
 				$output .= '</div>';				
 			}
+			
+			$output = Av_Responsive_Images()->make_content_images_responsive( $output );
 				
 			if( ! ShortcodeHelper::is_top_level() ) 
 			{
@@ -746,9 +764,16 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 			$params['id'] = AviaHelper::save_string( $meta['custom_id_val'] , '-', 'av-sc-img-hotspot-' . avia_sc_image_hotspots::$img_hotspot_count );
 			$params['custom_markup'] = $meta['custom_markup'];
 
-			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+			//we don't need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( ! empty( $meta['siblings']['prev']['tag'] ) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
 
 			$image = $output;
 
@@ -758,20 +783,20 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 				
 				
 			//if the next tag is a section dont create a new section from this shortcode
-			if(!empty($meta['siblings']['next']['tag']) && in_array($meta['siblings']['next']['tag'], AviaBuilder::$full_el ))
+			if( ! empty( $meta['siblings']['next']['tag'] ) && in_array( $meta['siblings']['next']['tag'], AviaBuilder::$full_el ) )
 			{
 				$skipSecond = true;
 			}
 
 			//if there is no next element dont create a new section.
-			if(empty($meta['siblings']['next']['tag']))
+			if( empty( $meta['siblings']['next']['tag'] ) )
 			{
 				$skipSecond = true;
 			}
 
 			if( empty( $skipSecond ) ) 
 			{
-				$output .= avia_new_section(array('close'=>false, 'id' => 'after_image_hotspots'));
+				$output .= avia_new_section( array( 'close' => false, 'id' => 'after_image_hotspots' ) );
 			}
 
 			return $output;
@@ -812,24 +837,25 @@ if ( ! class_exists( 'avia_sc_image_hotspots' ) )
 
 			$content = ShortcodeHelper::avia_remove_autop( $hotspot['content'] );
 
-			$tags = array('div', 'div');
-			if(!empty($link)) 
+			$tags = array( 'div', 'div' );
+			if( ! empty( $link ) ) 
 			{
-				$blank  = strpos($link_target, '_blank') !== false ? ' target="_blank" ' : '';
-				$blank .= strpos($link_target, 'nofollow') !== false ? ' rel="nofollow" ' : '';
-
-				$link = aviaHelper::get_url($link, false);
+				$link = AviaHelper::get_url( $link, false );
+				$blank = AviaHelper::get_link_target( $link_target );
 				$tags = array( "a href={$link} {$blank}", 'a' );
 			}
 
-			if(empty($hotspot_pos)) $hotspot_pos = '50,50';
+			if( empty( $hotspot_pos ) ) 
+			{
+				$hotspot_pos = '50,50';
+			}
 
-			$layout 		= explode(' ', $tooltip_pos);
-			$hotspot_pos 	= explode(',', $hotspot_pos);
+			$layout 		= explode( ' ', $tooltip_pos );
+			$hotspot_pos 	= explode( ',', $hotspot_pos );
 			$top 			= $hotspot_pos[0];
 			$left			= $hotspot_pos[1];
 			$position		= $layout[0];
-			$align			= isset($layout[1]) ? str_replace('av-tt-align-', '', $layout[1]) : 'centered';
+			$align			= isset($layout[1]) ? str_replace( 'av-tt-align-', '', $layout[1] ) : 'centered';
 			$pos_string 	= "top: {$top}%; left: {$left}%; ";
 			$data_pos		= '';
 				

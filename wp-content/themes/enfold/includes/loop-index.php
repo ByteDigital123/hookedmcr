@@ -219,7 +219,7 @@ if( have_posts() ) :
 					
                     if( $slider ) 
 					{
-						echo '<div class="big-preview ' . $blog_style . '">' . $slider . '</div>';
+						echo '<div class="big-preview ' . $blog_style . '" ' . avia_markup_helper( array( 'context' => 'image', 'echo' => false ) ) . '>' . $slider . '</div>';
 					}
                 }
 
@@ -254,7 +254,7 @@ if( have_posts() ) :
 			}
 			else if( strpos( $blog_style, 'small' ) !== false )
 			{
-				$blog_meta_output = "<a href='{$link}' class='small-preview' {$featured_img_title}>" . $slider . $icon . '</a>';
+				$blog_meta_output = "<a href='{$link}' class='small-preview' {$featured_img_title} " . avia_markup_helper( array( 'context' => 'image', 'echo' => false ) ). ">" . $slider . $icon . '</a>';
 			}
 
 			echo apply_filters( 'avf_loop_index_blog_meta', $blog_meta_output );
@@ -349,7 +349,7 @@ if( have_posts() ) :
 
 							if( $slider ) 
 							{
-								echo '<div class="big-preview ' . $blog_style . '">' . $slider . '</div>';
+								echo '<div class="big-preview ' . $blog_style . '" ' . avia_markup_helper( array( 'context' => 'image', 'echo' => false ) ) . '>' . $slider . '</div>';
 							}
 						}
 
@@ -508,3 +508,4 @@ if( have_posts() ) :
 	{
 		echo "<div class='{$blog_style}'>" . avia_pagination( '', 'nav' ) . '</div>';
 	}
+

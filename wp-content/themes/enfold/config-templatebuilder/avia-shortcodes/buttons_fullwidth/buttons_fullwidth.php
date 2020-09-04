@@ -141,7 +141,6 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 						'nodescription' => true
 					)
 					
-						
 				);
 
 		}
@@ -165,11 +164,9 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 							'desc' 	=> __( 'This is the text that appears on your button.', 'avia_framework' ),
 							'id' 	=> 'label',
 							'type' 	=> 'input',
-							'std' => __( 'Click me', 'avia_framework' )
+							'std'	=> __( 'Click me', 'avia_framework' )
 						),
 				
-				
-				    
 						array(
 							'name' 	=> __( 'Additional Description', 'avia_framework' ),
 							'desc' 	=> __( 'Enter an additional description', 'avia_framework' ),
@@ -195,7 +192,7 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 							'desc' 	=> __( 'Should an icon be displayed at the left side of the button', 'avia_framework' ),
 							'id' 	=> 'icon_select',
 							'type' 	=> 'select',
-							'std' 	=> 'yes',
+							'std' 	=> 'yes-left-icon',
 							'subtype'	=> array(
 												__( 'No Icon', 'avia_framework' )										=> 'no',
 												__( 'Yes, display Icon to the left of the title', 'avia_framework' )	=> 'yes-left-icon' ,	
@@ -263,55 +260,34 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'styling_appearance' ), $template );
 			
 			$c = array(
-						array(	
-							'type'			=> 'template',
-							'template_id'	=> 'named_colors',
-							'name'			=> __( 'Background Color', 'avia_framework' ),
-							'desc'			=> __( 'Choose a background color for your button here', 'avia_framework' ),
-							'id'			=> 'color',
-							'custom'		=> true,
-							'translucent'	=> array()
-						),
-				
-						array(	
-							'name' 	=> __( 'Custom Background Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom background color for your Button here', 'avia_framework' ),
-							'id' 	=> 'custom_bg',
-							'type' 	=> 'colorpicker',
-							'std' 	=> '#444444',
-							'required'	=> array( 'color', 'equals', 'custom' )
-						),	
 				
 						array(	
 							'type'			=> 'template',
-							'template_id'	=> 'named_colors',
-							'name'			=> __( 'Background Hover Color', 'avia_framework' ),
-							'desc'			=> __( 'Choose a background hover color for your button here', 'avia_framework' ),
-							'id'			=> 'color_hover',
-							'std'			=> 'theme-color-highlight',
-							'custom'		=> true,
-							'translucent'	=> array()
-						),
+							'template_id'	=> 'button_colors',
+							'ids'			=> array(
+												'bg'		=> array(
+																'color'		=> 'color',
+																'custom'	=> 'custom',
+																'custom_id'	=> 'custom_bg',
+															),
+												'bg_hover'	=> array(
+																'color'		=> 'color_hover',
+																'custom'	=> 'custom',
+																'custom_id'	=> 'custom_bg_hover',
+															),
+												'font'		=> array(
+																'color'		=> 'color_font',
+																'custom'	=> 'custom',
+																'custom_id'	=> 'custom_font',
+															),
+												'font_hover' => array(
+																'color'		=> 'color_font_hover',
+																'custom'	=> 'custom',
+																'custom_id'	=> 'custom_font_hover',
+															),
+												)
+						)
 				
-						array(	
-							'name' 	=> __( 'Custom Hover Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom background color for your Button here', 'avia_framework' ),
-							'id' 	=> 'custom_bg_hover',
-							'type' 	=> 'colorpicker',
-							'std' 	=> '#444444',
-							'required'	=> array( 'color_hover', 'equals', 'custom' )
-						),
-						
-						array(	
-							'name' 	=> __( 'Custom Font Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom font color for your Button here', 'avia_framework' ),
-							'id' 	=> 'custom_font',
-							'type' 	=> 'colorpicker',
-							'std' 	=> '#ffffff',
-							'required'	=> array( 'color', 'equals', 'custom')
-						),	
-				
-					
 				);
 			
 			$template = array(
@@ -344,7 +320,6 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 			
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_link' ), $c );
 		}
-
 
 
 		/**
@@ -412,52 +387,59 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 
 			$atts = shortcode_atts( array(
 							 'label'			=> 'Click me', 
-							 'link'			=> '', 
-							 'link_target'	=> '',
-							 'title_attr'	=> '',
+							 'link'				=> '', 
+							 'link_target'		=> '',
+							 'title_attr'		=> '',
 							 'color'			=> 'theme-color',
-							 'color_hover'	=> 'theme-color-highlight',
+							 'color_hover'		=> 'theme-color-highlight',
 							 'custom_bg'		=> '#444444',
 							 'custom_bg_hover'	=> '#444444',
-							 'custom_font'	=> '#ffffff',
-							 'position'		=> 'center',
-							 'icon_select'	=> 'no',
-							 'icon'			=> '', 
-							 'font'			=>'',
-							 'icon_hover'	=> '',
+							 'color_font'		=> 'custom',
+							 'custom_font'		=> '#ffffff',
+							 'position'			=> 'center',
+							 'icon_select'		=> 'no',
+							 'icon'				=> '', 
+							 'font'				=> '',
+							 'icon_hover'		=> '',
 							 'description_pos'	=> ''
 						 ), $atts, $this->config['shortcode'] );
 
 
 			$display_char = av_icon( $atts['icon'], $atts['font'] );
-
-			$style = "color:{$atts['custom_font']}; ";
+			$style = '';
 			$style_hover = '';
-			if( $atts['color'] == 'custom' ) 
+			$extraClass = '';
+
+			if( 'custom' == $atts['color_font'] )
 			{
-				$style .= "background-color:{$atts['custom_bg']};  ";
+				$style .= AviaHelper::style_string( $atts, 'custom_font', 'color' );
+			}
+			else
+			{
+				$extraClass .= 'avia-font-color-' . $atts['color_font'];
+			}
+			
+			if( 'custom' == $atts['color'] ) 
+			{
+				$style .= AviaHelper::style_string( $atts, 'custom_bg', 'background-color' );
 			}
 
-			if($atts['color_hover'] == 'custom') 
+			if( 'custom' == $atts['color_hover'] ) 
 			{
-				$style_hover = "style='background-color:{$atts['custom_bg_hover']}; '";
+				$style_hover = "style='background-color:{$atts['custom_bg_hover']};'";
 			}
+			
+			$style = AviaHelper::style_string( $style );
 
-			$extraClass = $atts['icon_hover'] ? 'av-icon-on-hover' : '';
+			$extraClass .= $atts['icon_hover'] ? ' av-icon-on-hover' : '';
 
-			$blank = strpos($atts['link_target'], '_blank') !== false ? ' target="_blank" ' : '';
-			$blank .= strpos($atts['link_target'], 'nofollow') !== false ? ' rel="nofollow" ' : '';
+			$blank = AviaHelper::get_link_target( $atts['link_target'] );
 
-			$link  = AviaHelper::get_url($atts['link']);
-			$link  = $link == 'http://' ? '' : $link;
+			$link = AviaHelper::get_url( $atts['link'] );
+			$link = $link == 'http://' ? '' : $link;
 
-			$title_attr = ! empty( $atts['title_attr'] ) ? 'title="' . $atts['title_attr'] . '"' : '';
+			$title_attr = ! empty( $atts['title_attr'] ) ? 'title="' . esc_attr( $atts['title_attr'] ) . '"' : '';
 			    
-			if( $style ) 
-			{
-				$style = "style='{$style}'";
-			}
-
 			$content_html = '';
 
 			if( $content && $atts['description_pos'] == 'above' ) 
@@ -467,7 +449,7 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 
 			if( 'yes-left-icon' == $atts['icon_select'] ) 
 			{
-				$content_html .= "<span class='avia_button_icon avia_button_icon_left ' {$display_char}></span>";
+				$content_html .= "<span class='avia_button_icon avia_button_icon_left' {$display_char}></span>";
 			}
 				
 			$content_html .= "<span class='avia_iconbox_title' >{$atts['label']}</span>";
@@ -483,9 +465,9 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 			}
 
 			$output  = '';
-			$output .=	"<a href='{$link}' class='avia-button avia-button-fullwidth {$av_display_classes} {$extraClass} ".$this->class_by_arguments('icon_select, color' , $atts, true)."' {$blank} {$style} >";
+			$output .=	"<a href='{$link}' class='avia-button avia-button-fullwidth {$av_display_classes} {$extraClass} " . $this->class_by_arguments( 'icon_select, color', $atts, true ) . "' {$blank} {$style} >";
 			$output .=		$content_html;
-			$output .=		"<span class='avia_button_background avia-button avia-button-fullwidth avia-color-".$atts['color_hover']."' {$style_hover}></span>";
+			$output .=		"<span class='avia_button_background avia-button avia-button-fullwidth avia-color-" . $atts['color_hover'] . "' {$style_hover}></span>";
 			$output .=	'</a>';
 
 			$output =  "<div {$meta['custom_el_id']} class='avia-button-wrap avia-button-{$atts['position']} {$meta['el_class']}' {$title_attr}>{$output}</div>";
@@ -499,22 +481,26 @@ if ( !class_exists( 'avia_sc_button_full' ) )
 			$params['custom_markup'] = $meta['custom_markup'];
 
 			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
-				
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( ! empty( $meta['siblings']['prev']['tag'] ) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
 
 			if( ! ShortcodeHelper::is_top_level() ) 
 			{
 				return $output;
 			}
 
-			$button_html = $output;
+			$html  = avia_new_section( $params );
+			$html .= $output;
+			$html .= avia_section_after_element_content( $meta , 'after_fullwidth_button' );
 
-			$output  = avia_new_section( $params );
-			$output .= $button_html;
-			$output .= avia_section_after_element_content( $meta , 'after_fullwidth_button' );
-
-			return $output;
+			return $html;
 		}
 			
 	}

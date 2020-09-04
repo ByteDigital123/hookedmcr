@@ -31,8 +31,13 @@ div .avia-table {background: transparent; width:100%; clear:both; margin:30px 0;
     .responsive div .avia_responsive_table .avia-data-table th{display:block; border-top:none; border-right:none; border-left:none; text-align: center;}
     .responsive .avia_responsive_table .avia-data-table{border-style:solid; border-width: 1px;}
     .responsive .avia_responsive_table .avia-data-table .avia-pricing-row .avia-desc-col{text-align: center;}
-    .responsive .avia_responsive_table .avia-data-table .avia-button-row, .responsive .avia_responsive_table .avia-data-table tr:first-child th{display:none;}
-    .responsive .avia_responsive_table .avia-data-table td:before {
+	
+    .responsive .avia_responsive_table .avia-data-table .avia-button-row, 
+	.responsive .avia_responsive_table .avia-data-table tr:first-child th{
+		display:none;
+	}
+    
+	.responsive .avia_responsive_table .avia-data-table td:before {
 	display:block;
 	font-style: italic; font-size: 11px;
 	}

@@ -1158,6 +1158,11 @@ var LayerSlider = {
 		// Assign new UUID
 		newSlideData.properties.uuid = LS_DataSource.generateUUID();
 
+		// Update layer UUIDs
+		jQuery.each( newSlideData.sublayers, function( layerKey, layerData ) {
+			layerData.uuid = LS_DataSource.generateUUID();
+		});
+
 		// Rename slide
 		if( !! newSlideData.properties.title) {
 			newSlideData.properties.title += ' copy';
@@ -1528,7 +1533,7 @@ var LayerSlider = {
 					'font-family': 'Arial, sans-serif',
 					'font-size': 14,
 					'font-weight': 700,
-					'background': '#1b9af7',
+					'background-color': '#1b9af7',
 					'color': '#fff',
 					'border-radius': 50
 				});

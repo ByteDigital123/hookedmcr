@@ -20,17 +20,17 @@ if ( ! class_exists( 'avia_sc_animated_numbers' ) )
 			$this->config['version']		= '1.0';
 			$this->config['self_closing']	= 'no';
 
-			$this->config['name']		= __( 'Animated Numbers', 'avia_framework' );
-			$this->config['tab']		= __( 'Content Elements', 'avia_framework' );
-			$this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-numbers.png';
-			$this->config['order']		= 15;
-			$this->config['target']		= 'avia-target-insert';
-			$this->config['shortcode'] 	= 'av_animated_numbers';
-			$this->config['tooltip'] 	= __( 'Display an animated Number with subtitle', 'avia_framework' );
-			$this->config['preview'] 	= true;
+			$this->config['name']			= __( 'Animated Numbers', 'avia_framework' );
+			$this->config['tab']			= __( 'Content Elements', 'avia_framework' );
+			$this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-numbers.png';
+			$this->config['order']			= 15;
+			$this->config['target']			= 'avia-target-insert';
+			$this->config['shortcode']		= 'av_animated_numbers';
+			$this->config['tooltip']		= __( 'Display an animated Number with subtitle', 'avia_framework' );
+			$this->config['preview']		= true;
 			$this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 		}
 
 
@@ -167,7 +167,7 @@ if ( ! class_exists( 'avia_sc_animated_numbers' ) )
 				
 						array(	
 							'name' 	=> __( 'Number', 'avia_framework' ),
-							'desc' 	=> __( 'Add a number here. It will be animated. You can also add non numerical characters. Valid examples: 24/7, 50.45, 99.9$, 90&percnt;, 35k, 200mm etc. Leading 0 will be kept, seperated numbers will be animated individually.', 'avia_framework' ),
+							'desc' 	=> __( 'Add a number here. It will be animated. You can also add non numerical characters. Valid examples: 24/7, 50.45, 99.9$, 90&percnt;, 35k, 200mm etc. Leading 0 will be kept, separated numbers will be animated individually.', 'avia_framework' ),
 							'id' 	=> 'number',
 							'type' 	=> 'input',
 							'std' 	=> __( '100', 'avia_framework' )
@@ -256,8 +256,8 @@ if ( ! class_exists( 'avia_sc_animated_numbers' ) )
 						),
                     
 						array(
-							'name' 	=> __( 'Circle Appearence', 'avia_framework' ),
-							'desc' 	=> __( 'Define the appearence of the circle here', 'avia_framework' ),
+							'name' 	=> __( 'Circle Appearance', 'avia_framework' ),
+							'desc' 	=> __( 'Define the appearance of the circle here', 'avia_framework' ),
 							'id' 	=> 'circle_custom',
 							'type' 	=> 'select',
 							'std' 	=> '',
@@ -425,7 +425,7 @@ if ( ! class_exists( 'avia_sc_animated_numbers' ) )
 			$c = array(
 						array(	
 							'name' 	=> __( 'Animation Duration', 'avia_framework' ),
-							'desc' 	=> __( 'For large numbers higher values allow to slow down the animation from 0 to the given value. For smaller numbers minimum speed depends on the refresh cicle of the client screen.', 'avia_framework' ),
+							'desc' 	=> __( 'For large numbers higher values allow to slow down the animation from 0 to the given value. For smaller numbers minimum speed depends on the refresh cycle of the client screen.', 'avia_framework' ),
 							'id' 	=> 'timer',
 							'type' 	=> 'select',
 							'std' 	=> '',
@@ -512,7 +512,7 @@ if ( ! class_exists( 'avia_sc_animated_numbers' ) )
 						'icon' 			=> '1', 
 						'position' 		=> 'left', 
 						'link' 			=> '', 
-						'linktarget'	=> 'no', 
+						'linktarget'	=> '', 
 						'color' 		=> '', 
 						'custom_color'	=> '', 
 						'icon_select'	=> '', 
@@ -535,12 +535,12 @@ if ( ! class_exists( 'avia_sc_animated_numbers' ) )
 			
 			extract( $atts );
 	
-			$tags  		= array( 'div', 'div' );
-			$style 		= '';
+			$tags = array( 'div', 'div' );
+			$style = '';
 			$font_style = '';
 			$font_style2= '';
-			$linktarget = ( $linktarget == 'no' ) ? '' : 'target="_blank"';
-			$link 		= aviaHelper::get_url( $link );
+			$linktarget = AviaHelper::get_link_target( $linktarget );
+			$link = AviaHelper::get_url( $link );
 			$display_char = $before = $after = '';
 
 			if( ! empty( $link ) )

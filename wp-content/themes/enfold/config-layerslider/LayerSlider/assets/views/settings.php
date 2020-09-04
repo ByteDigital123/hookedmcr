@@ -5,11 +5,11 @@ defined( 'LS_ROOT_FILE' ) || exit;
 
 include LS_ROOT_PATH . '/helpers/admin.ui.tools.php';
 
-// Custom capability
-$custom_capability = $custom_role = get_option('layerslider_custom_capability', 'manage_options');
 
-// Privacy
+$custom_capability = $custom_role = get_option('layerslider_custom_capability', 'manage_options');
 $gdpr_google_fonts = get_option('layerslider-google-fonts-enabled', true );
+$custom_locale = get_option('ls_custom_locale', 'auto' );
+
 
 
 $default_capabilities = array(
@@ -67,6 +67,7 @@ $notifications = array(
 	<div class="km-tabs ls-plugin-settings-tabs">
 		<a href="#" class="active"><?php _e('Permissions', 'LayerSlider') ?></a>
 		<a href="#"><?php _e('Privacy', 'LayerSlider') ?></a>
+		<a href="#"><?php _e('Language', 'LayerSlider') ?></a>
 		<a href="#"><?php _e('Google Fonts', 'LayerSlider') ?></a>
 		<a href="#"><?php _e('Advanced', 'LayerSlider') ?></a>
 	</div>
@@ -122,6 +123,34 @@ $notifications = array(
 						</td>
 					</tr>
 				</table>
+
+				<div class="footer">
+					<button type="submit" class="button button-primary"><?php _e('Save changes', 'LayerSlider') ?></button>
+				</div>
+			</form>
+		</div>
+
+
+		<!-- Language -->
+		<div>
+
+			<figure><?php _e('Use custom localization for LayerSlider instead of your default site language.', 'LayerSlider') ?></figure>
+			<form method="post" id="ls-language-form" class="ls-box km-tabs-inner ls-global-settings">
+				<input type="hidden" name="ls_save_language_settings" value="1">
+				<?php wp_nonce_field('ls-save-language-settings'); ?>
+				<div class="inner">
+
+					<?php _e('LayerSlider language:', 'LayerSlider') ?></td>
+					<select name="ls_custom_locale">
+						<option value="auto" <?php echo ( $custom_locale === 'auto' ) ? 'selected' : ''?>><?php _e('Use default site language', 'LayerSlider') ?></option>
+						<option value="en_US" <?php echo ( $custom_locale === 'en_US' ) ? 'selected' : ''?>>English (United States)</option>
+						<option value="fr_FR" <?php echo ( $custom_locale === 'fr_FR' ) ? 'selected' : ''?>>Français</option>
+						<option value="hu_HU" <?php echo ( $custom_locale === 'hu_HU' ) ? 'selected' : ''?>>Magyar</option>
+						<option value="uk" <?php echo ( $custom_locale === 'uk' ) ? 'selected' : ''?>>Українська</option>
+					</select>
+
+					<p><?php echo sprintf(__('You can change the default site language in %sSettings -> General%s or in your %sprofile settings%s.', 'LayerSlider'), '<a href="'.admin_url('options-general.php').'">', '</a>', '<a href="'.admin_url('profile.php').'">', '</a>') ?></p>
+				</div>
 
 				<div class="footer">
 					<button type="submit" class="button button-primary"><?php _e('Save changes', 'LayerSlider') ?></button>
@@ -312,6 +341,13 @@ $notifications = array(
 					<?php _e('Troubleshooting &amp; Advanced Settings', 'LayerSlider') ?>
 				</figure>
 				<table>
+					<tr>
+						<td><?php _e('Clear 3rd party caches', 'LayerSlider') ?></td>
+						<td>
+							<?php echo lsGetOptionField('checkbox', 'clear_3rd_party_caches', true) ?>
+						</td>
+						<td class="desc"><?php _e('Attempts to automatically clear the caches of the most popular caching plugins. It can help to avoid certain issues like changes not showing up on your front-end pages.', 'LayerSlider') ?></td>
+					</tr>
 					<tr>
 						<td><?php _e('RocketScript compatibility', 'LayerSlider') ?></td>
 						<td>

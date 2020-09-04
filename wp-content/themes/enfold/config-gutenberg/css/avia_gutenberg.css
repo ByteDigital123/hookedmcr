@@ -5,7 +5,8 @@
     Author     : günter
 */
 
-body.block-editor-page.avia-advanced-editor-enabled.avia-wp54-fix .block-editor-editor-skeleton__content{
+body.block-editor-page.avia-advanced-editor-enabled.avia-wp54-fix .block-editor-editor-skeleton__content,
+body.block-editor-page.avia-advanced-editor-enabled.avia-wp55-fix .interface-interface-skeleton__content{
 	position: relative;
 }
 

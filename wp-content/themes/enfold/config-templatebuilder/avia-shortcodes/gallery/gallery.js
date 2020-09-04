@@ -10,7 +10,9 @@
 	{
 		return this.each(function()
 		{
-			var gallery = $(this), images = gallery.find('img'), big_prev = gallery.find('.avia-gallery-big');
+			var gallery = $(this), 
+				images = gallery.find('img'), 
+				big_prev = gallery.find('.avia-gallery-big');
 	
 	
 			//trigger displaying of thumbnails
@@ -75,14 +77,15 @@
 					else if(imagelink)
 					{
 						var imgurl = imagelink.attr("href");
-	
-						if(imagelink.hasClass('aviablank') && imgurl != '' )
+						var secure = imagelink.hasClass( 'custom_link' ) ? 'noopener,noreferrer' : '';
+						
+						if( imagelink.hasClass('aviablank') && imgurl != '' )
 						{
-							window.open(imgurl, '_blank');
+							window.open( imgurl, '_blank', secure );
 						}
 						else if( imgurl != '' )
 						{
-							window.open(imgurl, '_self');
+							window.open( imgurl, '_self', secure );
 						}
 					}
 					return false;

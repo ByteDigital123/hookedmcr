@@ -404,7 +404,7 @@ if( ! class_exists( 'Avia_Envato_Base_API' ) )
 			}
 			catch ( Avia_Envato_Exception $ex ) 
 			{
-				$this->errors->add( 'Additional info', __( 'Purchases: A problem occured accessing your purchases. Unable to check for updates.', 'avia_framework' ) );
+				$this->errors->add( 'Additional info', __( 'Purchases: A problem occurred accessing your purchases. Unable to check for updates.', 'avia_framework' ) );
 				throw $ex;
 			}
 		}
@@ -495,7 +495,7 @@ if( ! class_exists( 'Avia_Envato_Base_API' ) )
 			} 
 			catch ( Avia_Envato_Exception $ex ) 
 			{
-				$this->errors->add( 'Additional info', __( 'Download Package URL: A problem occured accessing your download link. Unable to perform update.', 'avia_framework' ) );
+				$this->errors->add( 'Additional info', __( 'Download Package URL: A problem occurred accessing your download link. Unable to perform update.', 'avia_framework' ) );
 				throw $ex;
 			}
 		}

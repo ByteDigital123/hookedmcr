@@ -127,7 +127,7 @@ $demoSliders = LS_Sources::getDemoSliders();
 						<figcaption>
 							<h5>
 								<?php echo $item['name'] ?>
-								<span>By Kreatura</span>
+								<span>By <?php echo ! empty( $item['info']['author'] ) ? $item['info']['author'] : 'Kreatura' ?> </span>
 							</h5>
 						</figcaption>
 						<div class="item-action item-preview">

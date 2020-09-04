@@ -114,18 +114,18 @@ if ( ! class_exists( 'avia_sc_testimonial' ) )
 			$this->config['version']		= '1.0';
 			$this->config['self_closing']	= 'no';
 
-			$this->config['name']		= __( 'Testimonials', 'avia_framework' );
-			$this->config['tab']		= __( 'Content Elements', 'avia_framework' );
-			$this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-testimonials.png';
-			$this->config['order']		= 20;
-			$this->config['target']		= 'avia-target-insert';
-			$this->config['shortcode'] 	= 'av_testimonials';
+			$this->config['name']			= __( 'Testimonials', 'avia_framework' );
+			$this->config['tab']			= __( 'Content Elements', 'avia_framework' );
+			$this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-testimonials.png';
+			$this->config['order']			= 20;
+			$this->config['target']			= 'avia-target-insert';
+			$this->config['shortcode']		= 'av_testimonials';
 			$this->config['shortcode_nested'] = array( 'av_testimonial_single' );
-			$this->config['tooltip'] 	= __( 'Creates a Testimonial Grid', 'avia_framework' );
-			$this->config['preview'] 	= 'xlarge';
+			$this->config['tooltip']		= __( 'Creates a Testimonial Grid', 'avia_framework' );
+			$this->config['preview']		= 'xlarge';
 			$this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 			$this->config['alb_desc_id']	= 'alb_description';
 		}
 
@@ -836,7 +836,7 @@ if ( ! class_exists( 'avia_sc_testimonial' ) )
 	
 			if( $link )	
 			{
-				$output .= 				"<a class='aviablank avia-testimonial-link' href='{$link}' >{$linktext}</a>";
+				$output .= 				"<a class='aviablank avia-testimonial-link' href='{$link}' rel=’noopener noreferrer’>{$linktext}</a>";
 			}
 	
 			$output .= 				'</div>';

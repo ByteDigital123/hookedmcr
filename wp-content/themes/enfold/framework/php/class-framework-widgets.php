@@ -3783,7 +3783,7 @@ if( ! class_exists('avia_instagram_widget') )
 					if( $id == $cached_file['id'] )
 					{
 						/**
-						 * If an error occured in a previous file load we try to reload all files again
+						 * If an error occurred in a previous file load we try to reload all files again
 						 */
 						if( ! empty( $cached_file['errors'] ) )
 						{

@@ -852,6 +852,11 @@
 
 /* Misc. */
 
+	.ls-fullsize:not(.ls-hidden),
+	.ls-fullwidth:not(.ls-hidden) {
+		max-width: 100%;
+	}
+
 	.ls-visible {
 		overflow: visible !important;
 	}

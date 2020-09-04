@@ -29,8 +29,8 @@ if ( ! class_exists( 'avia_sc_image' ) )
 			$this->config['tooltip'] 	    = __( 'Inserts an image of your choice', 'avia_framework' );
 			$this->config['preview'] 		= 1;
 			$this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 		}
 
 		function extra_assets()
@@ -391,6 +391,11 @@ if ( ! class_exists( 'avia_sc_image' ) )
 											__( 'Only display on hover', 'avia_framework' )		=> 'on-hover',
 										)
 						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
+						),
 				);
 			
 			$template = array(
@@ -502,7 +507,6 @@ if ( ! class_exists( 'avia_sc_image' ) )
 				$img = "<img src='" . esc_attr( $params['args']['src'] ) . "' alt=''  />";
 			}
 
-
 			$params['innerHtml']  = "<div class='avia_image avia_image_style avia_hidden_bg_box'>";
 			$params['innerHtml'] .=		'<div ' . $this->class_by_arguments( 'align', $params['args'] ) . '>';
 			$params['innerHtml'] .=			"<div class='avia_image_container' {$template}>{$img}</div>";
@@ -528,19 +532,22 @@ if ( ! class_exists( 'avia_sc_image' ) )
 
 			$output = '';
 			$class = '';
+			$src = '';
 			$alt = '';
 			$title = '';
 			$copyright_text = '';
+			$attachment_id = 0;
 
 			$atts = shortcode_atts( array(	
 						'src'				=> '', 
 						'title_attr'		=> '',
 						'alt_attr'			=> '',
 						'animation'			=> 'no-animation', 
+						'lazy_loading'		=> 'disabled',
 						'link'				=> '', 
 						'attachment'		=> '', 
 						'attachment_size'	=> '', 
-						'target'			=> 'no', 
+						'target'			=> '', 
 						'styling'			=> '', 
 						'caption'			=> '',
 						'copyright'			=> '',
@@ -576,6 +583,7 @@ if ( ! class_exists( 'avia_sc_image' ) )
 				if( is_array( $posts ) && ! empty( $posts ) )
 				{
 					$attachment_entry = $posts[0];
+					$attachment_id = $attachment_entry->ID;
 					
 					if( ! empty( $alt_attr ) )
 					{
@@ -638,7 +646,7 @@ if ( ! class_exists( 'avia_sc_image' ) )
 				if( is_numeric( $src ) )
 				{
 					//$output = wp_get_attachment_image( $src,'large' );
-					$img_atts 	= array( 'class' => "avia_image {$class} " . $this->class_by_arguments( 'align', $atts, true ) );
+					$img_atts = array( 'class' => "avia_image {$class} " . $this->class_by_arguments( 'align', $atts, true ) );
 
 					if( ! empty( $img_h ) ) 
 					{
@@ -648,15 +656,18 @@ if ( ! class_exists( 'avia_sc_image' ) )
 					{
 						$img_atts['width'] = $img_w;
 					}
+					
+					if( $lazy_loading != 'enabled' )
+					{
+						Av_Responsive_Images()->add_attachment_id_to_not_lazy_loading( $src );
+					}
 
 					$output = wp_get_attachment_image( $src, 'large', false, $img_atts );
 				}
 				else
 				{
-					$link = aviaHelper::get_url( $link, $attachment );
-
-					$blank = (strpos( $target, '_blank' ) !== false || $target == 'yes') ? ' target="_blank" ' : '';
-					$blank .= strpos( $target, 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
+					$link = AviaHelper::get_url( $link, $attachment );
+					$blank = AviaHelper::get_link_target( $target );
 
 					$overlay = '';
 					$style = '';
@@ -706,14 +717,17 @@ if ( ! class_exists( 'avia_sc_image' ) )
 					$markup_url = avia_markup_helper( array( 'context' => 'image_url', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
 					$markup = avia_markup_helper( array( 'context' => 'image', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
 
-					$output .= "<div {$meta['custom_el_id']} class='avia-image-container {$class} {$av_display_classes} ".$meta['el_class']." ".$this->class_by_arguments('align' ,$atts, true)."' $markup >";
+					$output .= "<div {$meta['custom_el_id']} class='avia-image-container {$class} {$av_display_classes} " . $meta['el_class'] . " " . $this->class_by_arguments( 'align' ,$atts, true ) . "' {$markup} >";
 					$output .= "<div class='avia-image-container-inner'>";
 
 					$output .= "<div class='avia-image-overlay-wrap'>";
 
 					if( $link )
 					{
-						$output.= "<a href='{$link}' class='avia_image'  {$blank}>{$overlay}<img class='avia_image ' src='{$src}' alt='{$alt}' title='{$title}' $markup_url /></a>";
+						$img_tag = "<img class='avia_image' src='{$src}' alt='{$alt}' title='{$title}' {$markup_url} />";
+						$img_tag = Av_Responsive_Images()->prepare_single_image( $img_tag, $attachment_id, $lazy_loading );
+						
+						$output.= "<a href='{$link}' class='avia_image'  {$blank}>{$overlay}{$img_tag}</a>";
 					}
 					else
 					{
@@ -727,8 +741,11 @@ if ( ! class_exists( 'avia_sc_image' ) )
 						{
 							$hw .= ' width="' . $img_w . '"';
 						}
-
-						$output.= "{$overlay}<img class='avia_image' src='{$src}' alt='{$alt}' title='{$title}' {$hw} $markup_url />";
+						
+						$img_tag = "<img class='avia_image' src='{$src}' alt='{$alt}' title='{$title}' {$hw} {$markup_url} />";
+						$img_tag = Av_Responsive_Images()->prepare_single_image( $img_tag, $attachment_id, $lazy_loading );
+						
+						$output.= "{$overlay}{$img_tag}";
 					}
 					
 					$output .= '</div>';
@@ -739,7 +756,7 @@ if ( ! class_exists( 'avia_sc_image' ) )
 				}
 			}
 
-			return $output;
+			return Av_Responsive_Images()->make_content_images_responsive( $output );
 		}
 
 	}

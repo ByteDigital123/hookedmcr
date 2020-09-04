@@ -523,7 +523,12 @@ if ( ! class_exists( 'avia_sc_masonry_entries' ) )
 												__( 'Animation activated', 'avia_framework' )	=> 'active',
 												__( 'Animation deactivated', 'avia_framework' )	=> '',
 											)
-						)
+						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
+						),
 
 				);
 			
@@ -570,9 +575,9 @@ if ( ! class_exists( 'avia_sc_masonry_entries' ) )
 			 * Currently not used because we have no modal_group defined for this element
 			 */
 
-			$img_template 		= $this->update_template( 'img_fakeArg', '{{img_fakeArg}}' );
-			$template 			= $this->update_template( 'title', '{{title}}' );
-			$content 			= $this->update_template( 'content', '{{content}}' );
+			$img_template = $this->update_template( 'img_fakeArg', '{{img_fakeArg}}' );
+			$template = $this->update_template( 'title', '{{title}}' );
+			$content = $this->update_template( 'content', '{{content}}' );
 
 			$thumbnail = isset( $params['args']['id'] ) ? wp_get_attachment_image( $params['args']['id'] ) : '';
 
@@ -618,12 +623,26 @@ if ( ! class_exists( 'avia_sc_masonry_entries' ) )
 			}
 
 			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( ! empty( $meta['siblings']['prev']['tag'] ) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
 
-			if($meta['index'] > 0) $params['class'] .= ' masonry-not-first';
-			if($meta['index'] == 0 && get_post_meta(get_the_ID(), 'header', true) != 'no') $params['class'] .= ' masonry-not-first';
-
+			if( $meta['index'] > 0 ) 
+			{
+				$params['class'] .= ' masonry-not-first';
+			}
+			
+			if( $meta['index'] == 0 && get_post_meta( get_the_ID(), 'header', true) != 'no' ) 
+			{
+				$params['class'] .= ' masonry-not-first';
+			}
+			
 			/**
 			 * Remove custom CSS from element if it is top level (otherwise added twice - $meta['el_class'] )
 			 */
@@ -633,7 +652,7 @@ if ( ! class_exists( 'avia_sc_masonry_entries' ) )
 				$atts['id'] = '';
 			}
 				
-			$masonry  = new avia_masonry( $atts );
+			$masonry = new avia_masonry( $atts );
 			$masonry->extract_terms();
 			$masonry->query_entries();
 			$masonry_html = $masonry->html();
@@ -649,7 +668,7 @@ if ( ! class_exists( 'avia_sc_masonry_entries' ) )
 				$params['class'] .= ' masonry-no-border';
 			}
 
-			$output .=  avia_new_section($params);
+			$output .= avia_new_section( $params );
 			$output .= $masonry_html;
 			$output .= avia_section_after_element_content( $meta , 'after_masonry' );
 

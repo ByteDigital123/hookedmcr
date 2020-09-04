@@ -162,6 +162,11 @@ if( ! defined('AVIA_FW' ) )
 //file includes
 
 /**
+ * This file holds the class that supports responsive images
+ */
+require( AVIA_PHP . 'class-responsive-images.php' );
+
+/**
 * This file holds a function set for commonly used operations done by the frameworks frontend
 */
 require( AVIA_PHP.'function-set-avia-frontend.php' );

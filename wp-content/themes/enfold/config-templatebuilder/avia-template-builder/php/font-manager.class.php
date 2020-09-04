@@ -489,13 +489,12 @@ class avia_font_manager
 	}
 	
 	
-	 /**
+	/**
 	 * Helper function that creates the necessary css code to include a custom font
 	 *
-	 * @param array $element requires an element that matches the structure of an elemen passed to the AviaHtmlHelper
-	 * @return string $output
+	 * @return string
 	 */
-	static function load_font()
+	static public function load_font()
 	{
 		$font_configs = self::load_iconfont_list();
 
@@ -504,6 +503,7 @@ class avia_font_manager
 		if( ! empty( $font_configs ) )
 		{
 			$output .= "<style type='text/css'>";
+			
 			foreach( $font_configs as $font_name => $font_list )
 			{
 				$append = empty( $font_list['append'] ) ? '' : $font_list['append'];
@@ -525,17 +525,17 @@ class avia_font_manager
 				
 				$output .= "
 @font-face {font-family: '{$font_name}'; font-weight: normal; font-style: normal; font-display: {$font_display};
-src: url('{$fstring}.eot{$append}');
-src: url('{$fstring}.eot{$qmark}#iefix') format('embedded-opentype'), 
+src: url('{$fstring}.woff2{$append}') format('woff2'),
 url('{$fstring}.woff{$append}') format('woff'),
-url('{$fstring}.woff2{$append}') format('woff2'),
 url('{$fstring}.ttf{$append}') format('truetype'), 
-url('{$fstring}.svg{$append}#{$font_name}') format('svg');
+url('{$fstring}.svg{$append}#{$font_name}') format('svg'),
+url('{$fstring}.eot{$append}'),
+url('{$fstring}.eot{$qmark}#iefix') format('embedded-opentype');
 } #top .avia-font-{$font_name}, body .avia-font-{$font_name}, html body [data-av_iconfont='{$font_name}']:before{ font-family: '{$font_name}'; }
 ";
 			}
 			
-		$output .="</style>";
+			$output .= '</style>';
 		
 		}
 		
@@ -546,7 +546,6 @@ url('{$fstring}.svg{$append}#{$font_name}') format('svg');
 		 */
 		return apply_filters( 'avf_font_manager_load_font', $output );
 	}
-	
 	
 	/**
 	 * Helper function that displays the icon symbol string in the frontend
@@ -578,46 +577,62 @@ url('{$fstring}.svg{$append}#{$font_name}') format('svg');
 		return $display_char;
 	}
 	
-	// helper function that displays the icon symbol in backend
-	static function backend_icon($params)
+	/**
+	 * Helper function that displays the icon symbol in backend
+	 * 
+	 * @param array $params
+	 * @return array
+	 */
+	static public function backend_icon( $params )
 	{
-		$font  = isset($params['args']['font']) ? $params['args']['font'] : key(AviaBuilder::$default_iconfont);
-		$icon  = !empty($params['args']['icon']) ? $params['args']['icon'] : "new";
+		$font = isset( $params['args']['font'] ) ? $params['args']['font'] : key( AviaBuilder::$default_iconfont );
+		$icon = ! empty( $params['args']['icon'] ) ? $params['args']['icon'] : 'new';
 		
-		$display_char = self::get_display_char($icon, $font);
+		$display_char = self::get_display_char( $icon, $font );
 		
-		return array('display_char' => $display_char, 'font' => $font);
+		return array( 'display_char' => $display_char, 'font' => $font );
 	}
 	
-	static function get_display_char($icon, $font)
+	/**
+	 * 
+	 * @param string $icon
+	 * @param string $font
+	 * @return string
+	 */
+	static public function get_display_char( $icon, $font )
 	{
 		//load a list of all fonts + characters that are used by the builder (includes default font and custom uploads merged into a single array)
 		$chars = self::load_charlist();
 		
 		//if this function is called by the backend on a new element use the first icon in the list
-		$icon = self::set_new_backend($icon, $chars);
+		$icon = self::set_new_backend( $icon, $chars );
 		
 		//check if we need to modify the $icon value (which represents the array key)
-		$icon  = self::try_modify_key($icon);
+		$icon  = self::try_modify_key( $icon );
 		
 		//set the display character if it exists
-		$display_char = isset($chars[$font][$icon]) ? $chars[$font][$icon] : "";
+		$display_char = isset( $chars[ $font ][ $icon ] ) ? $chars[ $font ][ $icon ] : '';
 
 		//json decode the character if necessary
-		$display_char = self::try_decode_icon($display_char);
+		$display_char = self::try_decode_icon( $display_char );
 		
 		return $display_char;
 	}
 	
-	
-	//sets a default backend icon
-	static function set_new_backend($icon, $chars)
+	/**
+	 * sets a default backend icon
+	 * 
+	 * @param string $icon
+	 * @param array $chars
+	 * @return string
+	 */
+	static public function set_new_backend( $icon, $chars )
 	{
-		if($icon == 'new') 
+		if( $icon == 'new' ) 
 		{
-			$char_list = key($chars);
-			asort($chars[$char_list]);
-			$icon = key($chars[$char_list]);
+			$char_list = key( $chars );
+			asort( $chars[ $char_list ] );
+			$icon = key( $chars[ $char_list ] );
 		}
 		
 		return $icon;

@@ -12,7 +12,7 @@
 if ( ! defined( 'AVIA_FW' ) ) {   exit( 'No direct script access allowed' );   }
 
 
-if(!function_exists('avia_option'))
+if( ! function_exists( 'avia_option' ) )
 {
 	/**
 	* This function serves as shortcut for avia_get_option and is used to retrieve options saved within the database with the first key set to "avia" which is the majority of all options
@@ -141,7 +141,7 @@ if( ! function_exists( 'avia_update_option' ) )
 }
 
 
-if(!function_exists('avia_delete_option'))
+if( ! function_exists( 'avia_delete_option' ) )
 {
 	/**
 	 * This function serves as shortcut to delete a single theme option
@@ -159,7 +159,7 @@ if(!function_exists('avia_delete_option'))
 
 
 
-if(!function_exists('avia_get_the_ID'))
+if( ! function_exists( 'avia_get_the_ID' ) )
 {
 	/**
 	* This function is similiar to the wordpress function get_the_ID, but other than the wordpress function this functions takes into account
@@ -338,13 +338,13 @@ if(!function_exists('avia_post_meta'))
 		return $meta;
 	}
 
-	add_action('the_post', 'avia_post_meta');
+	add_action( 'the_post', 'avia_post_meta' );
 }
 
 
 
 
-if(!function_exists('avia_get_option_set'))
+if( ! function_exists('avia_get_option_set' ) )
 {
 	/**
 	* This function serves as shortcut to retrieve option sets saved within the database by the option pages of the avia framework
@@ -364,17 +364,19 @@ if(!function_exists('avia_get_option_set'))
 	* @param string $subkey_value accepts a string
 	* @return array $result: the saved result. if no result was saved or the key doesnt exist returns an empty array
 	*/
-
-	function avia_get_option_set($key, $subkey = false, $subkey_value = false)
+	function avia_get_option_set( $key, $subkey = false, $subkey_value = false )
 	{
-		$result 	= array();
-		$all_sets 	= avia_get_option($key);
+		$result = array();
+		$all_sets = avia_get_option( $key );
 
-		if(is_array($all_sets) && $subkey && $subkey_value !== false)
+		if( is_array( $all_sets ) && $subkey && $subkey_value !== false )
 		{
-			foreach($all_sets as $set)
+			foreach( $all_sets as $set )
 			{
-				if(isset($set[$subkey]) && $set[$subkey] == $subkey_value) return $set;
+				if( isset( $set[ $subkey ] ) && $set[ $subkey ] == $subkey_value ) 
+				{
+					return $set;
+				}
 			}
 		}
 		else
@@ -386,10 +388,7 @@ if(!function_exists('avia_get_option_set'))
 	}
 }
 
-
-
-
-if(!function_exists('avia_get_modified_option'))
+if( ! function_exists( 'avia_get_modified_option' ) )
 {
 	/**
 	* This function returns an option that was set in the backend. However if a post meta key with the same name exists it retrieves this option instead
@@ -403,23 +402,23 @@ if(!function_exists('avia_get_modified_option'))
 	* @return string $result: the saved result. if no result was saved or the key doesnt exist returns an empty string
 	*/
 
-	function avia_get_modified_option($key, $extra_check = false)
+	function avia_get_modified_option( $key, $extra_check = false )
 	{
 		global $post;
 
 		//if we need to do an extra check get the post meta value for that key
-		if($extra_check && isset($post->ID))
+		if( $extra_check && isset( $post->ID ) )
 		{
-			$extra_check = get_post_meta($post->ID, $extra_check, true);
-			if($extra_check)
+			$extra_check = get_post_meta( $post->ID, $extra_check, true );
+			if( $extra_check )
 			{
 				//add underline to the post meta value since we always hide those values
-				$result = get_post_meta($post->ID, '_'.$key, true);
+				$result = get_post_meta( $post->ID, '_' . $key, true );
 				return $result;
 			}
 		}
 
-		$result = avia_get_option($key);
+		$result = avia_get_option( $key );
 		return $result;
 
 	}
@@ -427,7 +426,7 @@ if(!function_exists('avia_get_modified_option'))
 
 
 
-if(!function_exists('avia_set_follow'))
+if( ! function_exists( 'avia_set_follow' ) )
 {
 	/**
 	 * prevents duplicate content by setting archive pages to nofollow
@@ -435,30 +434,41 @@ if(!function_exists('avia_set_follow'))
 	 */
 	function avia_set_follow()
 	{
-		if ((is_single() || is_page() || is_home() ) && ( !is_paged() ))
+		$robots = avia_get_option( 'seo_robots', '' );
+		$blog_public = (int) get_option( 'blog_public', 0 );
+		
+		$meta = '';
+		
+		if( empty( $robots ) )
 		{
-			$meta = '<meta name="robots" content="index, follow" />' . "\n";
+			if( ( $blog_public === 0 ) || is_search() )
+			{
+				$meta .= '<meta name="robots" content="noindex, nofollow" />' . "\n";
+			}
+			else if( ( is_single() || is_page() || is_home() ) && ( ! is_paged() ) )
+			{
+				$meta .= '<meta name="robots" content="index, follow" />' . "\n";
+			}
+			else
+			{
+				$meta .= '<meta name="robots" content="noindex, follow" />' . "\n";
+			}
 		}
-		else if( is_search() )
-		{
-			$meta = '<meta name="robots" content="noindex, nofollow" />' . "\n";
-		}
-		else
-		{
-			$meta = '<meta name="robots" content="noindex, follow" />' . "\n";
-		}
-
-		$meta = apply_filters('avf_set_follow', $meta);
+		
+		/**
+		 * 
+		 * @param string $meta
+		 * @param string $robots			@since 4.7.5.1
+		 * @param int $blog_public			@since 4.7.6.2
+		 * @return string
+		 */
+		$meta = apply_filters( 'avf_set_follow', $meta, $robots, $blog_public );
 
 		return $meta;
 	}
 }
 
-
-
-
-
-if(!function_exists('avia_set_title_tag'))
+if( ! function_exists( 'avia_set_title_tag' ) )
 {
     /**
      * generates the html page title
@@ -473,77 +483,93 @@ if(!function_exists('avia_set_title_tag'))
 			_deprecated_function( 'avia_set_title_tag', '3.6', 'WP recommended function _wp_render_title_tag() - since WP 4.1 - ' );
 		}
 		
-        $title = get_bloginfo('name').' | ';
-        $title .= (is_front_page()) ? get_bloginfo('description') : wp_title('', false);
+        $title = get_bloginfo( 'name' ) . ' | ';
+        $title .= ( is_front_page() ) ? get_bloginfo( 'description' ) : wp_title( '', false );
 
-        $title = apply_filters('avf_title_tag', $title, wp_title('', false));
+        $title = apply_filters( 'avf_title_tag', $title, wp_title( '', false ) );
 
         return $title;
     }
 }
 
 
-if(!function_exists('avia_set_profile_tag'))
+if( ! function_exists( 'avia_set_profile_tag' ) )
 {
-    /**
-     * generates the html profile head tag
-     * @return string the html head tag
-     */
-    function avia_set_profile_tag($echo = true)
-    {
-        $output = apply_filters('avf_profile_head_tag', '<link rel="profile" href="http://gmpg.org/xfn/11" />'."\n");
-		
-        if($echo) echo $output;
-        if(!$echo) return $output;
-    }
-    
-    add_action( 'wp_head', 'avia_set_profile_tag', 10, 0 );
+	/**
+	 * generates the html profile head tag
+	 * @return string the html head tag
+	 */
+	function avia_set_profile_tag( $echo = true )
+	{
+		$output = apply_filters( 'avf_profile_head_tag', '<link rel="profile" href="http://gmpg.org/xfn/11" />' . "\n");
+
+		if( $echo ) 
+		{
+			echo $output;
+			return;
+		}
+
+		return $output;
+	}
+
+	add_action( 'wp_head', 'avia_set_profile_tag', 10, 0 );
 }
 
 
 
-if(!function_exists('avia_set_rss_tag'))
+if( ! function_exists( 'avia_set_rss_tag' ) )
 {
-    /**
-     * generates the html rss head tag
-     * @return string the rss head tag
-     */
-    function avia_set_rss_tag($echo = true)
-    {
-        $output = '<link rel="alternate" type="application/rss+xml" title="'.get_bloginfo('name').' RSS2 Feed" href="'.avia_get_option('feedburner',get_bloginfo('rss2_url')).'" />'."\n";
-        $output = apply_filters('avf_rss_head_tag', $output);
+	/**
+	 * generates the html rss head tag
+	 * @return string the rss head tag
+	 */
+	function avia_set_rss_tag( $echo = true )
+	{
+		$output = '<link rel="alternate" type="application/rss+xml" title="' . get_bloginfo( 'name' ) . ' RSS2 Feed" href="' . avia_get_option( 'feedburner', get_bloginfo( 'rss2_url' ) ) . '" />' . "\n";
+		$output = apply_filters( 'avf_rss_head_tag', $output );
 
-        if($echo) echo $output;
-        if(!$echo) return $output;
-    }
-    
-    add_action( 'wp_head', 'avia_set_rss_tag', 10, 0 );
+		if( $echo ) 
+		{
+			echo $output;
+			return;
+		}
+
+		return $output;
+	}
+
+	add_action( 'wp_head', 'avia_set_rss_tag', 10, 0 );
 }
 
 
 
-if(!function_exists('avia_set_pingback_tag'))
+if( ! function_exists( 'avia_set_pingback_tag' ) )
 {
-    /**
-     * generates the html pingback head tag
-     * @return string the pingback head tag
-     */
-    function avia_set_pingback_tag($echo = true)
-    {
-        $output = apply_filters('avf_pingback_head_tag', '<link rel="pingback" href="'.get_bloginfo( 'pingback_url' ).'" />'."\n");
+	/**
+	 * generates the html pingback head tag
+	 * 
+	 * @return string the pingback head tag
+	 */
+	function avia_set_pingback_tag( $echo = true )
+	{
+		$output = apply_filters( 'avf_pingback_head_tag', '<link rel="pingback" href="' . get_bloginfo( 'pingback_url' ) . '" />' . "\n" );
 
-        if($echo) echo $output;
-        if(!$echo) return $output;
+		if( $echo ) 
+		{
+			echo $output;
+			return;
+		}
+
+		return $output;
     }
     
-    add_action( 'wp_head', 'avia_set_pingback_tag', 10, 0 );
+	add_action( 'wp_head', 'avia_set_pingback_tag', 10, 0 );
 }
 
 
 
 
 
-if(!function_exists('avia_logo'))
+if( ! function_exists( 'avia_logo' ) )
 {
 	/**
 	 * return the logo of the theme. if a logo was uploaded and set at the backend options panel display it
@@ -558,12 +584,14 @@ if(!function_exists('avia_logo'))
 	 */
 	function avia_logo( $use_image = '', $sub = '', $headline_type = 'h1', $dimension = '' )
 	{
-//		$use_image 		= apply_filters( 'avf_logo', $use_image );	//	since 4.5.7.2 changed as inconsistenty used again when logo is set
+//		$use_image 		= apply_filters( 'avf_logo', $use_image );	//	since 4.5.7.2 changed as inconsistently used again when logo is set
 		$headline_type	= apply_filters( 'avf_logo_headline', $headline_type );
-		$sub 			= apply_filters( 'avf_logo_subtext',  $sub );
-		$alt 			= apply_filters( 'avf_logo_alt', get_bloginfo( 'name' ) );
-		$link 			= apply_filters( 'avf_logo_link', home_url( '/' ) );
-		$title			= '';
+		$sub			= apply_filters( 'avf_logo_subtext',  $sub );
+		$alt			= apply_filters( 'avf_logo_alt', get_bloginfo( 'name' ) );
+		$link			= apply_filters( 'avf_logo_link', home_url( '/' ) );
+		
+		$title = '';
+		$logo_id = 0;
 		
 		if( $sub ) 
 		{
@@ -572,7 +600,7 @@ if(!function_exists('avia_logo'))
 		
 		if( $dimension === true ) 
 		{
-			$dimension = "height='100' width='300'"; //basically just for better page speed ranking :P
+			$dimension = 'height="100" width="300"'; //basically just for better page speed ranking :P
 		}
 
 		$logo = avia_get_option( 'logo' );
@@ -601,6 +629,12 @@ if(!function_exists('avia_logo'))
 			$title = apply_filters( 'avf_logo_title', $title, 'option_set' );
 
 			$logo = "<img {$dimension} src='{$logo}' alt='{$alt}' title='{$title}' />";
+			
+			if( $logo_id != 0 )
+			{
+				$logo = Av_Responsive_Images()->make_image_responsive( $logo, $logo_id );
+			}
+			
 			$logo = "<{$headline_type} class='logo'><a href='{$link}'>{$logo}{$sub}</a></{$headline_type}>";
 		}
 		else
@@ -613,7 +647,6 @@ if(!function_exists('avia_logo'))
 			 */
 			$use_image = apply_filters( 'avf_logo', $use_image, 'option_not_set' );
 			
-			$use_image = '';
 			if( ! empty( $use_image ) )
 			{
 				/**
@@ -654,7 +687,7 @@ if( ! function_exists( 'avia_image_by_id' ) )
 	 * 
 	 * @param int $thumbnail_id
 	 * @param array $size
-	 * @param string $output
+	 * @param string $output		image | url
 	 * @param string $data
 	 * @return string				image url
 	 */
@@ -1931,7 +1964,7 @@ if( ! function_exists( 'handler_wp_targeted_link_rel' ) )
 	 * @since 4.6.3
 	 * @added_by Günter
 	 * @param string $rel				'noopener noreferrer'
-	 * @param string $link_html			space seperated string of a attributes
+	 * @param string $link_html			space separated string of a attributes
 	 * @return string
 	 */
 	function handler_wp_targeted_link_rel( $rel, $link_html )

@@ -1037,6 +1037,11 @@ if( ! class_exists( 'aviaElementManager' ) )
 		{
 			global $post;
 			
+			if( ! $post instanceof WP_Post )
+			{
+				return;
+			}
+			
 			if( $post->ID != $post_id )
 			{
 				return;
@@ -1058,6 +1063,11 @@ if( ! class_exists( 'aviaElementManager' ) )
 		public function handler_wp_untrash_post( $post_id )
 		{
 			global $post;
+			
+			if( ! $post instanceof WP_Post )
+			{
+				return;
+			}
 			
 			if( $post->ID != $post_id )
 			{

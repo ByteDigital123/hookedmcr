@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {  exit;  }    // Exit if accessed directly
+
 global $avia_config, $avia_pages, $avia_elements;
 
 //avia pages holds the data necessary for backend page creation
@@ -17,6 +19,7 @@ $avia_pages = array(
 	array( 'slug' => 'social', 		'parent'=>'avia', 'icon'=>"new/circle-user-7@3x.png", 			'title' =>  __('Social Profiles', 'avia_framework')),
     array( 'slug' => 'performance', 'parent'=>'avia', 'icon'=>"new/performance-7@3x.png", 			'title' =>  __('Performance', 'avia_framework')),
     array( 'slug' => 'cookie', 		'parent'=>'avia', 'icon'=>"new/cookie-7@3x.png", 				'title' =>  __('Privacy and Cookies', 'avia_framework')),
+	array( 'slug' => 'seo', 		'parent'=>'avia', 'icon'=>"new/seo-7@3x.png",					'title' =>  __( 'SEO Support', 'avia_framework' ) ),
 	array( 'slug' => 'newsletter', 	'parent'=>'avia', 'icon'=>"new/newspaper-7@3x.png", 			'title' =>  __('Newsletter', 'avia_framework')),
 	array( 'slug' => 'google', 		'parent'=>'avia', 'icon'=>"new/paper-map-7@3x.png", 			'title' =>  __('Google Services', 'avia_framework')),
 );
@@ -53,6 +56,44 @@ if( ! empty( $custom_path ) && file_exists( $custom_path ) )
 	include_once $custom_path;
 }
 
+/*	SEO - Search Engine Support		*/
+$avia_elements[] = array(	
+			'name'		=> __( 'Search Engine Optimization Support','avia_framework' ),
+			'desc'		=> __( 'The options here allow you to fine tune support of search engines or integration of search engine plugins.', 'avia_framework' ),
+			'id'		=> 'seo_header',
+			'std'		=> '',
+			'slug'		=> 'seo',
+			'type'		=> 'heading',
+			'nodescription' => true
+		);
+
+$avia_elements[] = array(	
+			'slug'		=> 'seo', 
+			'type'		=> 'visual_group_start', 
+			'id'		=> 'avia_seo_index_start', 
+			'nodescription' => true
+		);
+
+$avia_elements[] = array(
+			'slug'		=> 'seo',
+			'name'		=> __( 'Meta tag &quot;robots&quot;', 'avia_framework' ),
+			'desc'		=> __( 'Select how Enfold will handle this header meta tag (index, follow). If you use a SEO plugin, you should leave this to plugin.', 'avia_framework' ),
+			'id'		=> 'seo_robots',
+			'type'		=> 'select',
+			'std'		=> '',
+			'no_first'	=> true,
+			'subtype'	=> array( 
+								__( 'Use Enfold default settings', 'avia_framework' )	=> '',
+								__( 'Let SEO plugin set this tag', 'avia_framework' )	=> 'plugin',	
+							)
+		);
+
+$avia_elements[] = array(	
+			'slug'		=> 'seo', 
+			'type'		=> 'visual_group_end',   
+			'id'		=> 'avia_seo_index_close', 
+			'nodescription' => true
+		);
 
 
 /*Performance*/
@@ -134,13 +175,13 @@ $avia_elements[] =	array(
 								)
 						);
 
-$desc  = __( 'As long as you do not change the theme version number all changes to content of js or css files will result in the same hash extension - this means browsers will not recognize these changes until the browser cache expires. To fix this Enfold adds an additional unique timestamp (since 4.7).', 'avia_framework' ) . ' ';
-$desc .= __( 'Some server configurations cache internal WP data and therefore return wrong information about the existence of a compressed file - resulting in generating a new file again on every pageload and a rapidly growing folder ../wp-content/uploads/dynamic_avia.', 'avia_framework' ) . '<br /><br />';
-$desc .= __( 'To avoid this you can select here to supress adding the timestamp. Depending on your hoster it may still take some time till this setting will work correctly. Disable file merging, select &quot;Delete old CSS and JS files&quot; - wait for some time, clear server cache and then reactivate your settings.', 'avia_framework' );
+$desc  = __( 'As long as you do not change the theme version number all changes to content of js or css files will result in the same hash extension - this means browsers will not recognize these changes until the browser cache expires. To fix this Enfold adds an additional unique timestamp (since 4.7).', 'avia_framework' ) . '<br /><br />';
+$desc .= __( 'Some server configurations cache internal WP data and caused by a known but not yet fixed WP bug return wrong information about the existence of a compressed file - resulting in generating a new file again on every pageload and a rapidly growing folder ../wp-content/uploads/dynamic_avia.', 'avia_framework' ) . '<br /><br />';
+$desc .= __( 'To avoid this you can select here to fix this WP bug. You can also supress adding the timestamp - if you wish. Depending on your hoster it may still take some time till this setting will work correctly. Disable file merging, select &quot;Delete old CSS and JS files&quot; - wait for some time, clear server cache and then reactivate your settings.', 'avia_framework' );
 		
-$avia_elements[] =	array(
+$avia_elements[] = array(
 					'slug'	=> 'performance',
-					'name' 	=> __( 'Unique timestamp of merged files', 'avia_framework' ),
+					'name' 	=> __( 'Unique timestamp of merged files and WP object cache bug', 'avia_framework' ),
 					'desc' 	=> $desc,
 					'id' 	=> 'merge_disable_unique_timestamp',
 					'type' 	=> 'select',
@@ -148,12 +189,18 @@ $avia_elements[] =	array(
 					'no_first'	=> true,
 					'required'	=> array( 'merge_show_advanced', '{contains_array}merge_show_advanced' ),
 					'subtype'	=> array( 
-									__( 'Add unique timestamps (= default)', 'avia_framework' )	=> '',
-									__( 'Disable adding unique timestamps', 'avia_framework')	=> 'disable_unique_timestamp',
+									__( 'Add unique timestamps (= default)', 'avia_framework' )		=> '',
+									__( 'Disable adding unique timestamps only', 'avia_framework')	=> 'disable_unique_timestamp',
+									__( 'Fix WP bug, add unique timestamps', 'avia_framework' )		=> 'fix_wp_bug',
+									__( 'Fix WP bug, disable unique timestamps', 'avia_framework' )	=> 'disable_unique_timestamp fix_wp_bug'
+									
 								)
-						);
+				);
 
-$desc  = __( 'On some server configurations you might be recieving error messages like &quot;Remove query strings from static resources&quot;.', 'avia_framework' ) . ' ';
+
+
+
+$desc  = __( 'On some server configurations you might be receiving error messages like &quot;Remove query strings from static resources&quot;.', 'avia_framework' ) . ' ';
 $desc .= '<a href="https://kinsta.com/knowledgebase/remove-query-strings-static-resources/" target="_blank" rel="noopener noreferrer">' . __( 'Background information', 'avia_framework' ) . '</a>' . '<br /><br />';
 $desc .= __( 'Select here to remove the query string from static resources - but be aware the query strings allow browsers to detect changes to files and invalidate the browser cached files. Not doing this might break the layout or function of your site after an update until these files expire in browser cache.', 'avia_framework' ) . '<br /><br />';
 $desc .= __( 'THIS OPTION IS IGNORED WHEN WP_DEBUG = true.', 'avia_framework' );
@@ -308,7 +355,12 @@ $avia_elements[] = array(	"slug"	=> "performance", "type" => "visual_group_end",
 
 
 
-$avia_elements[] = array(	"slug"	=> "performance", "type" => "visual_group_start", "id" => "avia_performance_compression_start3", "nodescription" => true);
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'visual_group_start', 
+					'id'			=> 'avia_performance_compression_start3', 
+					'nodescription' => true
+				);
 
 
 $avia_elements[] =	array(	"name" => __("Change WordPress defaults",'avia_framework'),
@@ -331,7 +383,7 @@ $avia_elements[] = array(
 		"std"	=> "",
 		"slug"	=> "performance");
 
-if(avia_count_active_plugins() > 0)
+if( avia_count_active_plugins() > 0 )
 {	
 	
 $avia_elements[] = array(
@@ -362,7 +414,111 @@ $avia_elements[] = array(
 
 
 
-$avia_elements[] = array(	"slug"	=> "performance", "type" => "visual_group_end", "id" => "avia_compression_close2", "nodescription" => true);
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'visual_group_end', 
+					'id'			=> 'avia_compression_close3', 
+					'nodescription'	=> true
+				);
+
+
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'visual_group_start', 
+					'id'			=> 'avia_performance_compression_start4', 
+					'nodescription' => true
+				);
+
+$avia_elements[] = array(	
+					'slug'			=> 'performance',
+					'name'			=> __( 'Responsive Images And Lazy Loading', 'avia_framework' ),
+//					'desc'			=> __( 'Responsive images are supported using the logic provided by WP.', 'avia_framework') . '<br />',
+					'id'			=> 'performance_header_4',
+					'type'			=> 'heading',
+					'nodescription' => true
+				);
+
+$desc  = __( 'Select to enable lazy loading using native HTML. Currently WP only supports images, but this might be extended for iframes in future. Please keep in mind that lazy loading might break animations when scrolling to images.', 'avia_framework' ) . ' ';
+$desc .= __( 'If you disable lazy loading here this will override any specific element settings of ALB elements. It might not work for 3rd party plugins not using the WP API correctly.', 'avia_framework' );
+		
+$avia_elements[] = array(
+					'slug'	=> 'performance',
+					'name' 	=> __( 'Lazy Loading', 'avia_framework' ),
+					'desc' 	=> $desc,
+					'id' 	=> 'lazy_loading',
+					'type' 	=> 'select',
+					'std'	=> '',
+					'no_first'	=> true,
+					'subtype'	=> array( 
+										__( 'Enable lazy loading', 'avia_framework' )	=> '',
+										__( 'Disable lazy loading', 'avia_framework' )	=> 'no_lazy_loading_all',
+								)
+				);
+
+$avia_elements[] = array(
+					'slug'	=> 'performance',
+					'name' 	=> __( 'Responsive Images', 'avia_framework' ),
+					'desc' 	=> __( 'Check to enable theme support for responsive images using the standard WP implementation for this feature.', 'avia_framework' ),
+					'id' 	=> 'responsive_images',
+					'type' 	=> 'checkbox',
+					'std'	=> 'responsive_images'
+				);
+
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'visual_group_start', 
+					'id'			=> 'avia_performance_responsive_images_start',
+					'class'			=> 'visual-set-no-top-border',
+					'nodescription' => true,
+					'required'	=> array( 'responsive_images', '{contains_array}responsive_images' )
+				);
+
+$avia_elements[] = array(
+					'slug'		=> 'performance',
+					'name'		=> __( 'Image Thumbnails Info', 'avia_framework' ),
+					'desc'		=> __( 'Select to show a grouped overview of available image thumbnails.', 'avia_framework' ),
+					'id'		=> 'responsive_images_thumbs',
+					'type'		=> 'checkbox',
+					'std'		=> false
+				);
+
+$desc  = __( 'In case you need additional image sizes you can use a plugin like', 'avia_framework' ) . ' ';
+$desc .= '<a href="https://wordpress.org/plugins/simple-image-sizes/" target="_blank" rel="noopener noreferrer">Simple Image Sizes</a>. ';
+$desc .= __( 'For advanced users:', 'avia_framework' ) . ' ';
+$desc .= '<a href="https://github.com/KriesiMedia/enfold-library/blob/master/actions%20and%20filters/Layout/avf_modify_thumb_size.php" target="_blank" rel="noopener noreferrer">Enfold Code Snippets Library</a>.';
+
+$avia_elements[] = array(
+					'slug'			=> 'performance', 
+					'name'			=> __( 'Responsive Images Thumbnails Overview:', 'avia_framework' ),
+					'desc'			=> $desc,
+					'type'			=> 'heading',
+					'id'			=> 'performance_header_responsive_img', 
+					'nodescription'	=> true, 
+					'required'		=> array( 'responsive_images_thumbs', '{contains_array}responsive_images_thumbs' )
+				);
+
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'responsive_images_overview', 
+					'id'			=> 'responsive_images_overview',
+					'nodescription'	=> true,
+					'required'		=> array( 'responsive_images_thumbs', '{contains_array}responsive_images_thumbs' )
+				);
+
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'visual_group_end', 
+					'id'			=> 'avia_performance_responsive_images_end', 
+					'nodescription'	=> true
+				);
+
+
+$avia_elements[] = array(	
+					'slug'			=> 'performance', 
+					'type'			=> 'visual_group_end', 
+					'id'			=> 'avia_compression_close4', 
+					'nodescription'	=> true
+				);
 
 
 $avia_elements[] = array(
@@ -378,7 +534,10 @@ $avia_elements[] = array(
 		"too_many"	=>__("We were able to detect multiple active image optimization plugins. It is recommended to use only one!",'avia_framework'),
 		
 		"plugins"=> array(
-            'Optimus - WordPress Image Optimizer' 	=> array('download'=>'optimus', 					'file'=>'optimus/optimus.php', 'desc' => 
+            'Optimus - WordPress Image Optimizer' 	=> array(
+				'download'=>'optimus', 					
+				'file'=>'optimus/optimus.php', 
+				'desc' => 
             "<ul>
             	<li>Simple to use with only a few options</li>
             	<li>Good size reduction while keeping images pretty</li>
@@ -1139,7 +1298,7 @@ $recaptcha_doc = 'https://kriesi.at/documentation/enfold/contact-form/#captcha';
 
 $recaptcha_desc  = __( 'Add Google reCAPTCHA widget functionality to the theme to verify if user is a human. Currently only enfold contact forms are supported and you can choose for each form individually if you want to use a reCAPTCHA.', 'avia_framework' ) . '<br />';
 $recaptcha_desc .= sprintf( __( 'Info about <a href="%1$s" target="_blank" rel="noopener noreferrer">Google reCAPTCHA</a>. You need to create <a href="%2$s" target="_blank" rel="noopener noreferrer">API keys</a> for your site. Also check our <a href="%3$s" target="_blank" rel="noopener noreferrer">documentation.</a>', 'avia_framework' ), $recaptcha, $recaptcha_admin, $recaptcha_doc ) . '<br />';
-$recaptcha_v3 = sprintf( __( 'Please keep in mind that Version 3 needs to <a href="%1$s" target="_blank" rel="noopener noreferrer">monitor user behaviour and collects user data</a>. In case the score does not recognize a human Version 2 checkbox will be used additionally for verification. Therefore you must also register V2 keys.', ''), $recaptcha_v3 );
+$recaptcha_v3 = sprintf( __( 'Please keep in mind that Version 3 needs to <a href="%1$s" target="_blank" rel="noopener noreferrer">monitor user behaviour and collects user data</a>. In case the score does not recognize a human Version 2 checkbox will be used additionally for verification. Therefore you must also register V2 keys.', 'avia_framework'), $recaptcha_v3 );
 $recaptcha_score = __( 'A score of 1.0 is very likely a good interaction, 0.0 is very likely a bot. Google recommends a threshold of 0.5 by default. In case we encounter a non human we ask user to verify with Version 2 chckbox.', 'avia_framework' );
 
 $avia_elements[] = array(
@@ -1267,7 +1426,7 @@ if( current_theme_supports( 'avia_recaptcha_show_legal_information' ) )
 else
 {
 	$desc = '<strong>' . __( 'Google Legal Information - for developers', 'avia_framework' ) . '</strong><br />';
-	$desc .= __( 'If you want to change the default behaviour you can display a selectbox by adding to functions.php:', 'avia_framework' ) . '<br />';
+	$desc .= __( 'If you want to change the default behaviour you can display a select box by adding to functions.php:', 'avia_framework' ) . '<br />';
 	$desc .= 'add_theme_support( "avia_recaptcha_show_legal_information" );';
 	
 	$avia_elements[] =	array(
@@ -1837,11 +1996,11 @@ $avia_elements[] = array(
 
 
 $avia_elements[] = array(
-			'slug'	=> 'cookie', 
-			'type' => 'visual_group_start', 
-			'id' => 'avia_cookie_modal_window_start', 
-			'nodescription' => true, 
-			'required' => array( 'cookie_consent', '{contains_array}cookie_consent;cookie__consent_no_bar;message_bar' )
+			'slug'		=> 'cookie', 
+			'type'		=> 'visual_group_start', 
+			'id'		=> 'avia_cookie_modal_window_start', 
+			'nodescription'	=> true, 
+			'required'	=> array( 'cookie_consent', '{contains_array}cookie_consent;cookie__consent_no_bar;message_bar' )
 		);
 
 $desc  = __( 'Define a modal popup window to inform visitors about your privacy policy and to opt in or out of services and cookies.', 'avia_framework' );
@@ -2362,76 +2521,86 @@ $avia_elements[] = array(
 
 /*shop*/
 
-$avia_elements[] =	array(
-					"slug"	=> "shop",
-					"name" 	=> __("Header Shopping Cart Icon", 'avia_framework'),
-					"desc" 	=> __("You can choose the appearance of the cart icon here", 'avia_framework'),
-					"id" 	=> "cart_icon",
-					"type" 	=> "select",
-					"std" 	=> "",
-					"no_first"=>true,
-					"subtype" => array( __('Display Floating on the side, but only once product was added to the cart', 'avia_framework') =>'',
-										__('Always Display floating on the side', 'avia_framework') =>'always_display',
-										__('Always Display attached to the main menu', 'avia_framework') =>'always_display_menu',
-										));
+$avia_elements[] = array(
+						'slug'		=> 'shop',
+						'name'		=> __( 'Header Shopping Cart Icon', 'avia_framework' ),
+						'desc'		=> __( 'You can choose the appearance of the cart icon here', 'avia_framework' ),
+						'id'		=> 'cart_icon',
+						'type'		=> 'select',
+						'std'		=> '',
+						'no_first'	=> true,
+						'subtype'	=> array( 
+											__( 'Display Floating on the side, but only once product was added to the cart', 'avia_framework' ) => '',
+											__( 'Always Display floating on the side', 'avia_framework' )			=> 'always_display',
+											__( 'Always Display attached to the main menu', 'avia_framework' )		=> 'always_display_menu',
+											__( 'Do not show at all', 'avia_framework' )							=> 'no_cart'
+										)
+					);
 
 
-$avia_elements[] =	array(
-					"slug"	=> "shop",
-					"name" 	=> __("Product layout on overview pages", 'avia_framework'),
-					"desc" 	=> __("You can choose the appearance of your products here", 'avia_framework'),
-					"id" 	=> "product_layout",
-					"type" 	=> "select",
-					"std" 	=> "",
-					"no_first"=>true,
-					"subtype" => array( __('Default', 'avia_framework') =>'',
-										__('Default without buttons', 'avia_framework') =>'no_button',
-										__('Minimal (no borders or buttons)', 'avia_framework') =>'minimal',
-										__('Minimal Overlay with centered text', 'avia_framework') =>'minimal-overlay',
-										));
+$avia_elements[] = array(
+						'slug'		=> 'shop',
+						'name'		=> __( 'Product layout on overview pages', 'avia_framework' ),
+						'desc'		=> __( 'You can choose the appearance of your products here', 'avia_framework' ),
+						'id'		=> 'product_layout',
+						'type'		=> 'select',
+						'std'		=> '',
+						'no_first'	=> true,
+						'subtype'	=> array( 
+											__( 'Default', 'avia_framework' )								=> '',
+											__( 'Default without buttons', 'avia_framework' )				=> 'no_button',
+											__( 'Minimal (no borders or buttons)', 'avia_framework' )		=> 'minimal',
+											__( 'Minimal Overlay with centered text', 'avia_framework' )	=> 'minimal-overlay',
+										)
+					);
 
-$avia_elements[] =	array(
-					"slug"	=> "shop",
-					"name" 	=> __("Product gallery", 'avia_framework'),
-					"desc" 	=> __("You can choose the appearance of your product gallery here", 'avia_framework'),
-					"id" 	=> "product_gallery",
-					"type" 	=> "select",
-					"std" 	=> "",
-					"no_first"=>true,
-					"subtype" => array( __('Default enfold product gallery', 'avia_framework') =>'',
-										__('WooCommerce 3.0 product gallery', 'avia_framework') =>'wc_30_gallery',
-										));
+$avia_elements[] = array(
+						'slug'		=> 'shop',
+						'name'		=> __( 'Product gallery', 'avia_framework' ),
+						'desc'		=> __( 'You can choose the appearance of your product gallery here', 'avia_framework' ),
+						'id'		=> 'product_gallery',
+						'type'		=> 'select',
+						'std'		=> '',
+						'no_first'	=> true,
+						'subtype'	=> array( 
+											__( 'Default enfold product gallery', 'avia_framework' )	=> '',
+											__( 'WooCommerce 3.0 product gallery', 'avia_framework' )	=> 'wc_30_gallery',
+										)
+					);
 
-$avia_elements[] =	array(
-					"slug"	=> "shop",
-					"name" 	=> __("Main Shop Page Banner", 'avia_framework'),
-					"desc" 	=> __("You can choose to display a parallax banner with description on the shop page", 'avia_framework'),
-					"id" 	=> "shop_banner",
-					"type" 	=> "select",
-					"std" 	=> "",
-					"no_first"=>true,
-					"subtype" => array( __('No, display no banner', 'avia_framework') =>'',
-										__('Yes, display a banner image', 'avia_framework') =>'av-active-shop-banner',
-										));
+$avia_elements[] = array(
+						'slug'		=> 'shop',
+						'name'		=> __( 'Main Shop Page Banner', 'avia_framework' ),
+						'desc'		=> __( 'You can choose to display a parallax banner with description on the shop page', 'avia_framework' ),
+						'id'		=> 'shop_banner',
+						'type'		=> 'select',
+						'std'		=> '',
+						'no_first'	=> true,
+						'subtype'	=> array( 
+											__( 'No, display no banner', 'avia_framework' )			=> '',
+											__( 'Yes, display a banner image', 'avia_framework' )	=> 'av-active-shop-banner',
+										)
+					);
 					
-$avia_elements[] =	array(
-					"slug"	=> "shop",
-					"name" 	=> __("Shop Banner Image", 'avia_framework'),
-					"desc" 	=> __("Upload a large banner image which will be displayed as a background to the shop description", 'avia_framework'),
-					"id" 	=> "shop_banner_image",
-					"type" 	=> "upload",
-					"required" => array('shop_banner','{contains}av-active-shop-banner'),
-					"label"	=> __("Use Image as banner", 'avia_framework'));
+$avia_elements[] = array(
+						'slug'		=> 'shop',
+						'name'		=> __( 'Shop Banner Image', 'avia_framework' ),
+						'desc'		=> __( 'Upload a large banner image which will be displayed as a background to the shop description', 'avia_framework' ),
+						'id'		=> 'shop_banner_image',
+						'type'		=> 'upload',
+						'required'	=> array( 'shop_banner', '{contains}av-active-shop-banner' ),
+						'label'		=> __( 'Use Image as banner', 'avia_framework' )
+					);
 
-$avia_elements[] =	array(
-					"slug"	=> "shop",
-					"name" 	=> __("Shop Banner Image Color Overlay", 'avia_framework'),
-					"desc" 	=> __("Set a color to display a overlay above the banner image.", 'avia_framework'),
-					"id" 	=> "shop_banner_overlay_color",
-					"type" 	=> "colorpicker",
-					"required" => array('shop_banner','{contains}av-active-shop-banner'),
-					"class" => "av_2columns av_col_1",
-					"std" 	=> "#000000"
+$avia_elements[] = array(
+						'slug'		=> 'shop',
+						'name'		=> __( 'Shop Banner Image Color Overlay', 'avia_framework' ),
+						'desc'		=> __( 'Set a color to display a overlay above the banner image.', 'avia_framework' ),
+						'id'		=> 'shop_banner_overlay_color',
+						'type'		=> 'colorpicker',
+						'required'	=> array( 'shop_banner', '{contains}av-active-shop-banner' ),
+						'class'		=> 'av_2columns av_col_1',
+						'std'		=> '#000000'
 					);
 					
 $avia_elements[] =	array(
@@ -2910,7 +3079,28 @@ $avia_elements[] =	array(
 
 if( ! current_theme_supports( 'avia_disable_reset_options' ) ) 
 {
-				
+	$avia_elements[] = array(
+				'slug'	=> 'upload',
+				'name' 	=> __( 'Theme Reset All Options Button', 'avia_framework' ),
+				'desc' 	=> __( 'Select if you want to block reset of theme options and hide the reset button. You must select activate button before you can reset theme options.', 'avia_framework' ),
+				'id' 	=> 'reset_options_button',
+				'type' 	=> 'select',
+				'std'	=> '',
+				'no_first'	=> true,
+				'subtype'	=> array(
+								__( 'Activate reset all options button', 'avia_framework' )			=> '',
+								__( 'Block and hide reset all options button', 'avia_framework' )	=> 'block_hide',
+							)
+			);
+	
+	$avia_elements[] = array(
+				'slug'	=> 'upload', 
+				'type'	=> 'visual_group_start', 
+				'id'	=> 'avia_reset_button_group_start', 
+				'nodescription'	=> true, 
+				'required'	=> array( 'reset_options_button', '' ),
+			);
+	
 	$avia_elements[] = array(
 				'slug'	=> 'upload',
 				'name' 	=> __( 'Select Theme Options To Reset', 'avia_framework' ),
@@ -2951,13 +3141,20 @@ if( ! current_theme_supports( 'avia_disable_reset_options' ) )
 				'type' 	=> 'reset_selected_button',
 				'required'	=> array( 'reset_filter_checkbox', 'reset_filter_checkbox' ),
 			);
+	
+	$avia_elements[] = array(
+				'slug'	=> 'upload', 
+				'type'	=> 'visual_group_end', 
+				'id'	=> 'avia_reset_button_group_end', 
+				'nodescription'	=> true
+		);
 
 }
 
 $avia_elements[] =	array(
 			'slug'	=> 'upload',
 			'name' 	=> __( 'Export Layout Builder Templates', 'avia_framework' ),
-			'desc' 	=> __( 'Click the button to generate and download a file which contains the Layout Builder saved templates. You can use this file to import the templates on another sever.', 'avia_framework' ),
+			'desc' 	=> __( 'Click the button to generate and download a file which contains the Layout Builder saved templates. You can use this file to import the templates on another server.', 'avia_framework' ),
 			'id' 	=> 'alb_templates_export',
 			'type' 	=> 'alb_templates_export'
 		);
@@ -3017,44 +3214,38 @@ $avia_elements[] =	array(
     
 /*Frontpage Settings*/
 
+$avia_elements[] = array(
+			'slug'		=> 'avia',
+			'name'		=> __( 'Frontpage Settings', 'avia_framework' ),
+			'desc'		=> __( 'Select which page to display on your Frontpage. If left blank the Blog will be displayed. In case you do not see a select box - you have to publish pages.', 'avia_framework' ),
+			'id'		=> 'frontpage',
+			'type'		=> 'select',
+			'subtype'	=> 'page'
+		);
 
-$avia_elements[] =	array(
-					"slug"	=> "avia",
-					"name" 	=> __("Frontpage Settings", 'avia_framework'),
-					"desc" 	=> __("Select which page to display on your Frontpage. If left blank the Blog will be displayed", 'avia_framework'),
-					"id" 	=> "frontpage",
-					"type" 	=> "select",
-					"subtype" => 'page'
-					);
-
-
-
-
-
-$avia_elements[] =	array(
-					"slug"	=> "avia",
-					"name" 	=> __("And where do you want to display the Blog?", 'avia_framework'),
-					"desc" 	=> __("Select which page to display as your Blog Page. If left blank no blog will be displayed", 'avia_framework'),
-					"id" 	=> "blogpage",
-					"type" 	=> "select",
-					"subtype" => 'page',
-					"required" => array('frontpage','{true}')
-					);
+$avia_elements[] = array(
+			'slug'		=> 'avia',
+			'name'		=> __( 'And where do you want to display the Blog?', 'avia_framework'),
+			'desc'		=> __( 'Select which page to display as your Blog Page. If left blank no blog will be displayed. In case you do not see a select box - you have to publish pages.', 'avia_framework' ),
+			'id'		=> 'blogpage',
+			'type'		=> 'select',
+			'subtype'	=> 'page',
+			'required'	=> array( 'frontpage', '{true}' )
+		);
 
 $avia_elements[] =	array(	
-							"desc" => "<strong class='av-text-notice av-prev-el-notice'>".__("Notice: Your blog is currently disabled. You can enable it", 'avia_framework').' <a target="_blank" href="'.admin_url('admin.php?page=avia#goto_performance').'">'.__("here", 'avia_framework').'</a></strong>',
-							"id" => "widgetdescription",
-							"std" => "",
-							"slug"	=> "avia",
-							"type" => "heading",
-							"required" => array('disable_blog','{true}'),
-							"nodescription"=>true);	
-
-
+			'desc'		=> "<strong class='av-text-notice av-prev-el-notice'>" . __( 'Notice: Your blog is currently disabled. You can enable it', 'avia_framework' ) . ' <a target="_blank" href="' . admin_url( 'admin.php?page=avia#goto_performance' ) .'">' . __( 'here', 'avia_framework' ) . '</a></strong>',
+			'id'		=> 'widgetdescription',
+			'std'		=> '',
+			'slug'		=> 'avia',
+			'type'		=> 'heading',
+			'required'	=> array( 'disable_blog','{true}' ),
+			'nodescription'	=> true
+		);	
 
 $avia_elements[] =	array(
-					"slug"	=> "avia",
-					"name" 	=> __("Logo", 'avia_framework'),
+					'slug'	=> 'avia',
+					'name' 	=> __( 'Logo', 'avia_framework' ),
 					"desc" 	=> __("Upload a logo image, or enter the URL or ID of an image if its already uploaded. The themes default logo gets applied if the input field is left blank", 'avia_framework')."<br/><br/>".__("Logo Dimension: 340px * 156px (if your logo is larger you might need to change the Header size in your", 'avia_framework').
 					" <a href='#goto_header'>".
 					__( "Header Settings", 'avia_framework').
@@ -3794,7 +3985,7 @@ $avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_start", "
 
 $avia_elements[] =		array(	"name" 	=> __("Heading Font", 'avia_framework'),
 								"slug"	=> "styling",
-								"desc" 	=> __("The Font heading allows you to use a wide range of fonts for your headings. Upload your own fonts, use websave fonts (faster rendering) or Google webkit fonts (more unique).", 'avia_framework'),
+								"desc" 	=> __("The Font heading allows you to use a wide range of fonts for your headings. Upload your own fonts, use websave fonts (faster rendering, but not mandatory installed on all devices) or Google webkit fonts (more unique).", 'avia_framework'),
 					            "id" 	=> "google_webfont",
 					            "type" 	=> "select",
 					            "no_first" => true,
@@ -3806,7 +3997,7 @@ $avia_elements[] =		array(	"name" 	=> __("Heading Font", 'avia_framework'),
 
 $avia_elements[] =	array(	"name" 	=> __("Font for your body text", 'avia_framework'),
 							"slug"	=> "styling",
-							"desc" 	=> __("Choose between your own uploaded fonts, web safe fonts (faster rendering) and Google webkit fonts (more unique).", 'avia_framework')."<br/>",
+							"desc" 	=> __("Choose between your own uploaded fonts, web safe fonts (faster rendering, but not mandatory installed on all devices) and Google webkit fonts (more unique).", 'avia_framework')."<br/>",
 				            "id" 	=> "default_font",
 				            "type" 	=> "select",
 				            "no_first" => true,

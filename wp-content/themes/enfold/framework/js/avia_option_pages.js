@@ -88,7 +88,7 @@ jQuery(function($) {
 		
 		
 		
-	}
+	};
 })(jQuery);	
 
 
@@ -138,6 +138,7 @@ jQuery(function($) {
 
 			//add "form listener"
 			methods.activateSaveButton(container);
+			methods.activateResetAllButton( container, resetButtons );
 			
 			//sidebar toggle
 			methods.sidebarToggle(container);
@@ -156,7 +157,6 @@ jQuery(function($) {
 		/**
 		 * adds the functionality for the sidebar toggle on the left of the option pages
 		 */
-		 
 		sidebarToggle: function(container)
 		{
 			var button = $('.avia_shop_option_link', container),
@@ -182,12 +182,37 @@ jQuery(function($) {
 		
 		},
 		
-		
+		/**
+		 * Show/Hide/Activate Theme options "Reset All Button"
+		 */
+		activateResetAllButton: function( container, resetButtons )
+		{
+			var reset_switcher = container.find( 'select[name="reset_options_button"]' );
+			if( reset_switcher.length == 0 )
+			{
+				return;
+			}
+			
+			reset_switcher.on( 'change', function(){
+								var selected = $(this).children( "option:selected" ).val();
+								
+								if( '' == selected )
+								{
+									resetButtons.removeClass( 'avia_hidden avia_reset_inactive' ).addClass( 'avia_reset_active' );
+								}
+								else
+								{
+									resetButtons.removeClass( 'avia_reset_active' ).addClass( 'avia_hidden avia_reset_inactive' );
+								}
+								
+							});
+							
+			reset_switcher.trigger( 'change' );
+		},
 		
 		/**
 		 * Save Buttons are not active by default. They get active when the user changes an option 
 		 */
-		 
 		activateSaveButton: function(container)
 		{	
 			
@@ -203,7 +228,6 @@ jQuery(function($) {
 		 *  SAVE: gather all form data and convert it to a single string, then send that string via ajax request to the admin-ajax.php file
 		 *  
 		 */
- 
 		save: function(passed, hiddensave)
 		{
 			if(typeof hiddensave == 'undefined') hiddensave = false;
@@ -342,7 +366,8 @@ jQuery(function($) {
 			
 			if(button.is('.avia_button_inactive')) return false;
 			
-			activate = confirm('Importing the Parent Theme Settings will overwrite your current Settings. Proceed anyways?')
+			activate = confirm('Importing the Parent Theme Settings will overwrite your current Settings. Proceed anyways?');
+			
 			if(activate == false) return false;
 			
 			$.ajax({
@@ -545,6 +570,14 @@ jQuery(function($) {
 		reset: function(passed)
 		{
 			var me = passed.data.set;
+			var button = me.container.find( '.avia_reset' );
+
+			if( button.hasClass( 'avia_reset_inactive' ) )
+			{
+				alert( 'Reset of theme options has been blocked by option settings - no options have been changed.' );
+				return false;
+			}
+			
 			var filter = 'undefined' != typeof( me.filter ) ? me.filter : {};
 			var button_id = 'undefined' != typeof( me.button_id ) ? me.button_id : '';
 		

@@ -34,7 +34,8 @@
 	
 			tabs.prependTo(tab_titles).each(function(i)
 			{
-				var tab = $(this), the_oldtab = false;
+				var tab = $(this), 
+					the_oldtab = false;
 	
 				if(newtabs) the_oldtab = oldtabs.filter(':eq('+i+')');
 	
@@ -46,9 +47,10 @@
 				
 				tab.on('keydown', function(objEvent)
 				{
-					if (objEvent.keyCode === 13) { // if user presses 'enter'
-								tab.trigger('click');
-							}
+					if (objEvent.keyCode === 13)  // if user presses 'enter'
+					{
+						tab.trigger('click');
+					}
 				});
 	
 				if(newtabs)
@@ -61,9 +63,10 @@
 					
 					the_oldtab.on('keydown', function(objEvent)
 					{
-						if (objEvent.keyCode === 13) { // if user presses 'enter'
-									the_oldtab.trigger('click');
-								}
+						if (objEvent.keyCode === 13)  // if user presses 'enter'
+						{
+							the_oldtab.trigger('click');
+						}
 					});
 				}
 			});
@@ -83,7 +86,11 @@
 	
 			function set_size()
 			{
-				if(!options.sidebar) return;
+				if( ! options.sidebar) 
+				{
+					return;
+				}
+				
 				content.css({'min-height': tab_titles.outerHeight() + 1});
 			}
 	
@@ -97,9 +104,17 @@
 					tab.addClass(options.active);
 	
 					var new_loc = tab.data('fake-id');
-					if(typeof new_loc == 'string') location.replace(new_loc);
+					if( typeof new_loc == 'string' ) 
+					{
+						//	not adding "-active" breaks in FF v77 (hides visibility of tabs - might be fixed in future versions)
+						window.location.replace( new_loc + '-active' );
+					}
 	
-					if(alternate_tab) alternate_tab.addClass(options.active);
+					if( alternate_tab ) 
+					{
+						alternate_tab.addClass(options.active);
+					}
+					
 					var active_c = content.filter(':eq('+i+')').addClass(options.active+'_content').attr('aria-hidden', false);
 	
 					if(typeof click_container != 'undefined' && click_container.length)
@@ -122,14 +137,28 @@
 	
 			function trigger_default_open(hash)
 			{
-				if(!hash && window.location.hash) hash = window.location.hash;
-	            		if(!hash) return;
+				if( ! hash && window.location.hash ) 
+				{
+					hash = window.location.hash;
+				}
+	            
+				if( ! hash ) 
+				{
+					return;
+				}
+				
+				//	FF v77 fix hiding visibility of tabs
+				hash = hash.replace( '-active', '' );
 	            		
 				var open = tabs.filter('[data-fake-id="'+hash+'"]');
 	
 				if(open.length)
 				{
-					if(!open.is('.active_tab')) open.trigger('click');
+					if( ! open.is('.active_tab') ) 
+					{
+						open.trigger('click');
+					}
+					
 					window.scrollTo(0, container.offset().top - 70);
 				}
 			}

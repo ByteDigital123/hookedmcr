@@ -52,7 +52,7 @@ if( ! class_exists( 'Avia_Gutenberg' ) )
 		 * Holds the instance of this class
 		 * 
 		 * @since 4.4.2
-		 * @var AviaBuilder 
+		 * @var Avia_Gutenberg 
 		 */
 		static private $_instance = null;
 		
@@ -217,8 +217,6 @@ if( ! class_exists( 'Avia_Gutenberg' ) )
 			add_action( 'admin_bar_menu', array( $this, 'handler_wp_admin_bar_menu' ), 999, 1 );
 			
 			add_action( 'init', array( $this, 'handler_wp_register_scripts' ), 10 );
-			add_action( 'admin_enqueue_scripts', array( $this, 'handler_wp_admin_enqueue_scripts' ), 10 );
-			
 
 			/**
 			 * Add metaboxes and content and default timyMCE editor area
@@ -271,13 +269,24 @@ if( ! class_exists( 'Avia_Gutenberg' ) )
 		 */
 		public function handler_wp_register_scripts()
 		{	
-			
 			$vn = avia_get_theme_version();
 			
 			$template_url = get_template_directory_uri();
 			
 			wp_register_style( 'avia_gutenberg_css', $template_url . '/config-gutenberg/css/avia_gutenberg.css', array( 'avia-modal-style', 'avia-builder-style' ), $vn );
+			Avia_Builder()->add_registered_admin_style( 'avia_gutenberg_css' );
+			
 			wp_register_script( 'avia_gutenberg_script', $template_url . '/config-gutenberg/js/avia_gutenberg.js' , array( 'avia_builder_js' ), $vn, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_gutenberg_script' );
+			
+			$switch_block_msg  = __( 'You got content in your editor that can\'t be convert to Layout Builder content. Click OK if you want to proceed and lose this content.', 'avia_framework' ) . ' ';
+			//$switch_block_msg .= __( 'To have a fallback you can save this block editor page before switching the editors.', 'avia_framework' );
+			
+			$var = array( 
+					'switch_block_msg' => $switch_block_msg
+				);		
+				
+			wp_localize_script( 'avia_gutenberg_script', Avia_Gutenberg::AJAX_JS_VAR, $var );
 			
 			/**
 			 * Temp. fix for localhost and EDGE (might also be for other browsers) - works on live server
@@ -312,25 +321,6 @@ if( ! class_exists( 'Avia_Gutenberg' ) )
 			$new = str_replace( $search, $replace, $code );
 			
 			$wp_scripts->registered['wp-polyfill']->extra['after'][1] = $new;
-		}
-
-		/**
-		 * @since 4.5.1
-		 */
-		public function handler_wp_admin_enqueue_scripts()
-		{
-			wp_enqueue_style( 'avia_gutenberg_css' );
-		
-			wp_enqueue_script( 'avia_gutenberg_script' );
-			
-			$switch_block_msg  = __( 'You got content in your editor that can\'t be convert to Layout Builder content. Click OK if you want to proceed and lose this content.', 'avia_framework' ) . ' ';
-			//$switch_block_msg .= __( 'To have a fallback you can save this block editor page before switching the editors.', 'avia_framework' );
-			
-			$var = array( 
-					'switch_block_msg' => $switch_block_msg
-				);		
-				
-			wp_localize_script( 'avia_gutenberg_script', Avia_Gutenberg::AJAX_JS_VAR, $var );
 		}
 		
 		/**
@@ -555,12 +545,36 @@ if( ! class_exists( 'Avia_Gutenberg' ) )
 			if( $post instanceof WP_Post )
 			{
 				$post_type = $post->post_type;
-				$use_block = function_exists( 'use_block_editor_for_post' ) ? use_block_editor_for_post( $post ) : gutenberg_can_edit_post( $post );
+				
+				/**
+				 * Some cache plugins cause problems when using Appearance > Customize area though > WP 5.0
+				 * @since 4.7.5.1
+				 */
+				if( function_exists( 'use_block_editor_for_post' ) )
+				{
+					$use_block = use_block_editor_for_post( $post );
+				}
+				else if( function_exists( 'gutenberg_can_edit_post' ) )
+				{
+					$use_block = gutenberg_can_edit_post( $post );
+				}
 			}
 			else if( is_string( $post ) )
 			{
 				$post_type = $post;
-				$use_block = function_exists( 'use_block_editor_for_post_type' ) ? use_block_editor_for_post_type( $post_type ) : gutenberg_can_edit_post_type( $post_type );
+				
+				/**
+				 * Some cache plugins cause problems when using Appearance > Customize area though > WP 5.0
+				 * @since 4.7.5.1
+				 */
+				if( function_exists( 'use_block_editor_for_post_type' ) )
+				{
+					$use_block = use_block_editor_for_post_type( $post_type );
+				}
+				else if( function_exists( 'gutenberg_can_edit_post_type' ) )
+				{
+					$use_block = gutenberg_can_edit_post_type( $post_type );
+				}
 			}
 			
 			$this->no_custom_filters = false;

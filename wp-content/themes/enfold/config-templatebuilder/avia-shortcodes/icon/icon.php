@@ -328,16 +328,16 @@ if ( ! class_exists( 'av_font_icon' ) )
 			extract( av_backend_icon( $params ) ); // creates $font and $display_char if the icon was passed as param 'icon' and the font as 'font' 
 
 			extract( shortcode_atts( array(
-							'color'		=> '',
-							'size'		=> '',
-							'style'		=> '',
-							'caption'	=> '',
-							'use_link'	=> 'no',
-							'position'	=> 'left',
-							'link'		=>'',
-							'linktarget'	=> 'no',
-							'custom_class'	=> '',
-						), $params['args'], $this->config['shortcode'] ) );
+								'color'			=> '',
+								'size'			=> '',
+								'style'			=> '',
+								'caption'		=> '',
+								'use_link'		=> 'no',
+								'position'		=> 'left',
+								'link'			=>'',
+								'linktarget'	=> '',
+								'custom_class'	=> '',
+							), $params['args'], $this->config['shortcode'] ) );
 
 
 			$inner  = "<div class='avia_icon_element avia_textblock avia_textblock_style'>";
@@ -374,8 +374,8 @@ if ( ! class_exists( 'av_font_icon' ) )
             global $post, $avia_add_p;
 
             $add_p = '';
-            $custom_class = !empty($meta['custom_class']) ? $meta['custom_class'] : '';
-            if(isset($post->post_content) && strpos($post->post_content, '[av_font_icon') === 0 && $avia_add_p == false && is_singular())
+            $custom_class = ! empty( $meta['custom_class'] ) ? $meta['custom_class'] : '';
+            if( isset( $post->post_content ) && strpos( $post->post_content, '[av_font_icon' ) === 0 && $avia_add_p == false && is_singular() )
             {
                 $add_p = '<p>';
                 $avia_add_p = true;
@@ -394,8 +394,8 @@ if ( ! class_exists( 'av_font_icon' ) )
 						'position'		=> 'left',
 						'animation'		=> '',
 						'link'			=> '',
-						'linktarget'	=> 'no',
-						'font'			=> ''
+						'linktarget'	=> ''
+				
 					), $atts, $this->config['shortcode'] ) );
 
             $char = av_icon( $icon, $font );
@@ -416,8 +416,11 @@ if ( ! class_exists( 'av_font_icon' ) )
 			
 			if( ! empty( $style ) )
 			{
-				$size_string   .= "width:{$size};";
-				if(!empty($caption)) $caption = "<span class='av_icon_caption av-special-font'>{$caption}</span>";
+				$size_string .= "width:{$size};";
+				if( ! empty($caption ) ) 
+				{
+					$caption = "<span class='av_icon_caption av-special-font'>{$caption}</span>";
+				}
 			}
 			else
 			{
@@ -431,18 +434,16 @@ if ( ! class_exists( 'av_font_icon' ) )
                 $animation_class = ' avia-icon-animate ';
             }
 
-            $blank = (strpos($linktarget, '_blank') !== false || $linktarget == 'yes') ? ' target="_blank" ' : '';
-            $blank .= strpos($linktarget, 'nofollow') !== false ? ' rel="nofollow" ' : '';
-           
-            $link = aviaHelper::get_url($link);
+			$link = AviaHelper::get_url( $link );
+			$blank = AviaHelper::get_link_target( $linktarget );
             
-            $tags = !empty($link) ? array("a href='{$link}' {$blank} ",'a') : array('span','span');
+            $tags = ! empty( $link ) ? array( "a href='{$link}' {$blank} ", 'a' ) : array( 'span', 'span' );
             
-            $tooltip = empty($content) ? '' : 'data-avia-icon-tooltip="'.htmlspecialchars(do_shortcode($content)).'"';
+            $tooltip = empty( $content ) ? '' : 'data-avia-icon-tooltip="' . htmlspecialchars(do_shortcode( $content ) ) . '"';
             
             $display_char = "<{$tags[0]} class='av-icon-char' style='{$size_string}' {$char} {$tooltip}></{$tags[1]}>";
             
-            $output = '<span ' . $meta['custom_el_id'] . ' class="'.$shortcodename.' avia_animate_when_visible'.$animation_class.$av_display_classes.' av-icon-style-'.$style.' '.$custom_class.' avia-icon-pos-'.$position.' " style="'.$color.'">'.$display_char.$caption.'</span>';
+            $output = '<span ' . $meta['custom_el_id'] . ' class="' . $shortcodename . ' avia_animate_when_visible' . $animation_class . $av_display_classes . ' av-icon-style-' . $style . ' ' . $custom_class . ' avia-icon-pos-' . $position . ' " style="' . $color . '">' . $display_char.$caption . '</span>';
 
             return $output;
         }

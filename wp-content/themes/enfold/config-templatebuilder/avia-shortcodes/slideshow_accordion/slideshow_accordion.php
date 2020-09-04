@@ -452,6 +452,11 @@ if ( ! class_exists( 'avia_sc_slider_accordion' ) )
 							'std' 	=> '5',
 							'required'	=> array( 'autoplay', 'contains', 'true' ),
 							'subtype'	=> array( '3'=>'3', '4'=>'4', '5'=>'5', '6'=>'6', '7'=>'7', '8'=>'8', '9'=>'9', '10'=>'10', '15'=>'15', '20'=>'20', '30'=>'30', '40'=>'40', '60'=>'60', '100'=>'100' )
+						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
 						)
 					
 				);
@@ -758,6 +763,7 @@ if ( ! class_exists( 'avia_sc_slider_accordion' ) )
 							'custom_title_size'		=> '',
 							'custom_excerpt_size'	=> '',
 							'accordion_align'		=> '',
+							'lazy_loading'			=> 'disabled',
 
 							'av-desktop-hide'	=> '',
 							'av-medium-hide'	=> '',
@@ -795,21 +801,32 @@ if ( ! class_exists( 'avia_sc_slider_accordion' ) )
 			$params['custom_markup'] = $atts['custom_markup'] = $meta['custom_markup'];
 
 			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( ! empty($meta['siblings']['prev']['tag'] ) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
 
-			if($meta['index'] > 0) $params['class'] .= ' slider-not-first';
+			if( $meta['index'] > 0 ) 
+			{
+				$params['class'] .= ' slider-not-first';
+			}
 
 			$params['id'] = AviaHelper::save_string( $meta['custom_id_val'], '-', 'accordion_slider_' . avia_sc_slider_accordion::$slide_count );
 			$atts['el_id'] = ! empty( $meta['custom_el_id'] ) ? $meta['custom_el_id'] : ' id="accordion_slider_' . avia_sc_slider_accordion::$slide_count . '" ';
 			$atts['class'] = $meta['custom_class'];
+			
 			if( ShortcodeHelper::is_top_level() ) 
 			{
 				$atts['el_id'] = '';
 				$atts['class'] = '';
 			}
 
-			$slider  = new aviaccordion( $atts );
+			$slider = new aviaccordion( $atts );
 			$slide_html = $slider->html();
 
 
@@ -825,20 +842,20 @@ if ( ! class_exists( 'avia_sc_slider_accordion' ) )
 
 
 			//if the next tag is a section dont create a new section from this shortcode
-			if(!empty($meta['siblings']['next']['tag']) && in_array($meta['siblings']['next']['tag'],  AviaBuilder::$full_el ))
+			if( ! empty( $meta['siblings']['next']['tag'] ) && in_array( $meta['siblings']['next']['tag'],  AviaBuilder::$full_el ) )
 			{
 				$skipSecond = true;
 			}
 
 			//if there is no next element dont create a new section.
-			if(empty($meta['siblings']['next']['tag']))
+			if( empty( $meta['siblings']['next']['tag'] ) )
 			{
 				$skipSecond = true;
 			}
 
 			if( empty( $skipSecond ) ) 
 			{
-				$output .= avia_new_section(array('close'=>false, 'id' => 'after_full_slider_'.avia_sc_slider_full::$slide_count));
+				$output .= avia_new_section( array( 'close' => false, 'id' => 'after_full_slider_' . avia_sc_slider_full::$slide_count ) );
 			}
 
 			return $output;
@@ -915,25 +932,27 @@ if ( ! class_exists( 'aviaccordion' ) )
 			$this->screen_options = AviaHelper::av_mobile_sizes( $config ); //return $av_font_classes, $av_title_font_classes and $av_display_classes 
 			
 			$this->config = array_merge( array(
-								'slide_type'	=> 'image-based',
-								'link'			=> '',
-								'wc_prod_visible'	=>	'',
-								'prod_order_by'		=>	'',
-								'prod_order'		=>	'',
-								'size'			=> '',
-								'items'    	 	=> '',
-								'autoplay'		=> 'false',
-								'interval'		=> 5,
-								'offset'		=> 0,
-								'title'			=> 'active',
-								'excerpt'		=> '',
-								'content'		=> array(),
-								'custom_title_size'	=> '',
-								'custom_excerpt_size' => '',
-								'custom_markup'		=> '',
-								'accordion_align'	=> '',
-								'el_id'				=> '',
-								'class'				=> ''
+								'slide_type'			=> 'image-based',
+								'link'					=> '',
+								'wc_prod_visible'		=>	'',
+								'prod_order_by'			=>	'',
+								'prod_order'			=>	'',
+								'size'					=> '',
+								'items'					=> '',
+								'autoplay'				=> 'false',
+								'interval'				=> 5,
+								'offset'				=> 0,
+								'title'					=> 'active',
+								'excerpt'				=> '',
+								'content'				=> array(),
+								'custom_title_size'		=> '',
+								'custom_excerpt_size'	=> '',
+								'custom_markup'			=> '',
+								'accordion_align'		=> '',
+								'el_id'					=> '',
+								'class'					=> '',
+								'lazy_loading'			=> 'disabled'
+				
 							), $config );
 
 			$this->config = apply_filters( 'avf_aviaccordion_config', $this->config );
@@ -955,23 +974,23 @@ if ( ! class_exists( 'aviaccordion' ) )
 			//check how large the slider is and change the classname accordingly
 			global $_wp_additional_image_sizes;
 
-			if(isset($_wp_additional_image_sizes[$this->config['size']]['width']))
+			if( isset( $_wp_additional_image_sizes[ $this->config['size'] ]['width'] ) )
 			{
-				$width  = $_wp_additional_image_sizes[$this->config['size']]['width'];
-				$height = $_wp_additional_image_sizes[$this->config['size']]['height'];
+				$width  = $_wp_additional_image_sizes[ $this->config['size'] ]['width'];
+				$height = $_wp_additional_image_sizes[ $this->config['size'] ]['height'];
 			}
-			else if($width = get_option( $this->config['size'].'_size_w' ))
+			else if( $width = get_option( $this->config['size'] . '_size_w' ) )
 			{
-				$height = get_option( $this->config['size'].'_size_h' );
+				$height = get_option( $this->config['size'] . '_size_h' );
 			}
 			
-			$this->config['max-height']		= $height;
-			$this->config['default-height'] = (100/$width) * $height;
+			$this->config['max-height'] = $height;
+			$this->config['default-height'] = ( 100 / $width ) * $height;
 		}
 		
 		function get_slides()
 		{	
-			if($this->config['slide_type'] == 'image-based')
+			if( $this->config['slide_type'] == 'image-based' )
 			{
 				$this->get_image_based_slides();
 			}
@@ -982,12 +1001,18 @@ if ( ! class_exists( 'aviaccordion' ) )
 				
 				$dev_tags = aviaShortcodeTemplate::set_frontend_developer_heading_tag( $this->config );
 				
-				foreach($this->slides as $key => $slide)
+				foreach( $this->slides as $key => $slide )
 				{
-					$this->slides[$key]->av_attachment 	= wp_get_attachment_image( get_post_thumbnail_id($slide->ID) , $this->config['size'], false, array('class' => 'aviaccordion-image') );
-					$this->slides[$key]->av_permalink	= get_post_meta( $slide->ID ,'_portfolio_custom_link', true ) != '' ? get_post_meta( $slide->ID ,'_portfolio_custom_link_url', true ) : get_permalink( $slide->ID );
+					$thumb_id = get_post_thumbnail_id( $slide->ID );
+					if( $this->config['lazy_loading'] != 'enabled' )
+					{
+						Av_Responsive_Images()->add_attachment_id_to_not_lazy_loading( $thumb_id );
+					}
+					
+					$this->slides[$key]->av_attachment 	= wp_get_attachment_image( $thumb_id, $this->config['size'], false, array( 'class' => 'aviaccordion-image' ) );
+					$this->slides[$key]->av_permalink	= get_post_meta( $slide->ID, '_portfolio_custom_link', true ) != '' ? get_post_meta( $slide->ID, '_portfolio_custom_link_url', true ) : get_permalink( $slide->ID );
 					$this->slides[$key]->av_target		= '';
-					$this->slides[$key]->post_excerpt	= !empty($slide->post_excerpt) ? $slide->post_excerpt : avia_backend_truncate( $slide->post_content, apply_filters( 'avf_aviaccordion_excerpt_length', 120 ), apply_filters( 'avf_aviaccordion_excerpt_delimiter', ' ' ), '…', true, '' );
+					$this->slides[$key]->post_excerpt	= ! empty( $slide->post_excerpt ) ? $slide->post_excerpt : avia_backend_truncate( $slide->post_content, apply_filters( 'avf_aviaccordion_excerpt_length', 120 ), apply_filters( 'avf_aviaccordion_excerpt_delimiter', ' ' ), '…', true, '' );
 					$this->slides[$key]->heading_tag	= $dev_tags['heading_tag'];
 					$this->slides[$key]->heading_class	= $dev_tags['heading_class'];
 				}
@@ -1012,6 +1037,11 @@ if ( ! class_exists( 'aviaccordion' ) )
 				}
 				
 				$dev_tags = aviaShortcodeTemplate::set_frontend_developer_heading_tag( $slide['attr'] );
+				
+				if( $this->config['lazy_loading'] != 'enabled' && $slide['attr']['id'] )
+				{
+					Av_Responsive_Images()->add_attachment_id_to_not_lazy_loading( $slide['attr']['id'] );
+				}
 				
 				$this->slides[$key] = new stdClass();
 				$this->slides[$key]->post_title		= isset( $slide['attr']['title'] ) ? $slide['attr']['title'] : '';

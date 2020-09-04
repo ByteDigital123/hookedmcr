@@ -1721,7 +1721,7 @@ if ( ! class_exists( 'aviaShortcodeTemplate' ) )
 		public function get_default_args($args = array())
 		{
 			/**
-			 * PHP 7.0 fix: ensure we have an array, otherwise we recieve notices
+			 * PHP 7.0 fix: ensure we have an array, otherwise we receive notices
 			 * if shortcode is used without params (e.g. for a fallback situation) we get an empty string and not an array
 			 */
 			if( ! is_array( $args) )
@@ -1852,42 +1852,49 @@ if ( ! class_exists( 'aviaShortcodeTemplate' ) )
 		 * helper function for the editor_element function that creates the correct classnames
 		 * and data attributes for an AviaBuilder Canvas element in your backend
 		 *
-		 * @param string $classNames a string with classnames separated by coma
+		 * @param string $classNames			a string with classnames separated by comma
 		 * @param array $args
+		 * @param boolean $classNamesOnly
 		 * @return string
 		 */
-		public function class_by_arguments($classNames, $args, $classNamesOnly = false)
+		public function class_by_arguments( $classNames, $args, $classNamesOnly = false )
 		{
-			$classNames = str_replace(" ",'',$classNames);
+			$classNames = str_replace( ' ' ,'', $classNames );
+			
 			$dataString = "data-update_class_with='$classNames' ";
-			$classNames = explode(',',$classNames);
+			$classNames = explode( ',', $classNames );
 			$classString = "class='";
 			$classes = '';
 
-			foreach($classNames as $class)
+			foreach( $classNames as $class )
 			{
-				$replace  = is_array($args) ? $args[$class] : $args;
-				$classes .= "avia-$class-".str_replace(" ","_",$replace)." ";
+				$replace  = is_array( $args ) ? $args[ $class ] : $args;
+				$classes .= "avia-$class-" . str_replace( ' ', '_', $replace ) . ' ';
 			}
 
-			if($classNamesOnly) return $classes;
-			return $classString .$classes."' ".$dataString;
+			if( $classNamesOnly ) 
+			{
+				return $classes;
+			}
+			
+			return $classString . $classes . "' " . $dataString;
 		}
-
 
 
 		/**
 		 * helper function for the editor_element function that tells the javascript were to insert the returned content
 		 * you need to provide a "key" and a template
 		 *
-		 * @param string $key a string with argument or content key eg: img_src
-		 * @param string $template a template that tells which content to insert. eg: <img src='{{img_src}}' />
+		 * @param string $key				a string with argument or content key eg: img_src
+		 * @param string $template			a template that tells which content to insert. eg: <img src='{{img_src}}' />
+		 * @param array|null $data_array	an array ( $key => $human_readable_string )
 		 * @return string
 		 */
-
-		function update_template($key, $template)
+		function update_template( $key, $template, array $data_array = array() )
 		{
-			$data = "data-update_with='$key' data-update_template='".htmlentities($template, ENT_QUOTES, get_bloginfo( 'charset' ))."'";
+			$array = ( empty( $data_array ) ) ? '' : 'data-update_with_keys="' . htmlentities( json_encode( $data_array ), ENT_QUOTES, get_bloginfo( 'charset' ) ) . '"';
+			
+			$data = "data-update_with='$key' data-update_template='" . htmlentities( $template, ENT_QUOTES, get_bloginfo( 'charset' ) ) . "' {$array}";
 			return $data;
 		}
 

@@ -306,67 +306,106 @@ remove_action( 'woocommerce_after_shop_loop', 'woocommerce_pagination', 10 ); //
 #
 # set the shop page id, otherwise avia_get_the_ID() can return a wrong id on the shop page
 #
-add_filter('avf_avia_get_the_ID','avia_set_shop_page_id', 10, 1);
-function avia_set_shop_page_id($id)
+add_filter( 'avf_avia_get_the_ID', 'avia_set_shop_page_id', 10, 1 );
+
+function avia_set_shop_page_id( $id )
 {
-    if(is_shop()) $id = function_exists( 'wc_get_page_id' ) ? wc_get_page_id( 'shop' ) : woocommerce_get_page_id( 'shop' );
+    if( is_shop() ) 
+	{
+		$id = function_exists( 'wc_get_page_id' ) ? wc_get_page_id( 'shop' ) : woocommerce_get_page_id( 'shop' );
+	}
+	
     return $id;
 }
 
-#
-# removes the default post image from shop overview pages and replaces it with this image
-#
-add_action( 'woocommerce_before_shop_loop_item_title', 'avia_woocommerce_thumbnail', 10);
-remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
-
-
-
-
-function avia_woocommerce_thumbnail($asdf)
+if( ! function_exists( 'avia_woocommerce_thumbnail' ) )
 {
-	global $product, $avia_config;
-	
-	if(function_exists('wc_get_rating_html'))
-	{
-		$rating = wc_get_rating_html(  $product->get_average_rating() );
-	}
-	else
-	{
-		$rating = $product->get_rating_html(); //get rating
-	}
-	
-	$id = get_the_ID();
-	$size = 'shop_catalog';
+	/**
+	 * removes the default post image from shop overview pages and replaces it with this image
+	 */
+	add_action( 'woocommerce_before_shop_loop_item_title', 'avia_woocommerce_thumbnail', 10 );
+	remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
 
-	echo "<div class='thumbnail_container'>";
-		echo avia_woocommerce_gallery_first_thumbnail( $id , $size);
-		echo get_the_post_thumbnail( $id , $size );
-		if(!empty($rating)) echo "<span class='rating_container'>".$rating."</span>";
-		if($product->get_type() == 'simple') echo "<span class='cart-loading'></span>";
-	echo "</div>";
+	function avia_woocommerce_thumbnail()
+	{
+		global $product;
+
+		if( function_exists( 'wc_get_rating_html' ) )
+		{
+			$rating = wc_get_rating_html( $product->get_average_rating() );
+		}
+		else
+		{
+			$rating = $product->get_rating_html(); //get rating
+		}
+
+		$id = get_the_ID();
+		$size = 'shop_catalog';
+
+		$image = get_the_post_thumbnail( $id , $size );
+		
+		//	try to get fallback image
+		if( empty( $image ) )
+		{
+			$image_url = wc_placeholder_img_src( $size );
+			if( ! empty( $image_url ) )
+			{
+				$image = '<img src="' . $image_url . '" height="450" width="450" loading="lazy" alt="' . __( 'Placeholder image', 'avia_framework' ) . '">';
+			}
+		}
+		
+		$html  = "<div class='thumbnail_container'>";
+		$html .=	avia_woocommerce_gallery_first_thumbnail( $id , $size );
+		$html .=	$image;
+			
+		if( ! empty( $rating ) ) 
+		{
+			$html .= "<span class='rating_container'>{$rating}</span>";
+		}
+		if( $product->get_type() == 'simple' )
+		{
+			$html .= "<span class='cart-loading'></span>";
+		}
+			
+		$html .= '</div>';
+		
+		echo $html;
+	}
 }
 
-
-function avia_woocommerce_gallery_first_thumbnail($id, $size, $id_only = false)
+if( ! function_exists( 'avia_woocommerce_gallery_first_thumbnail' ) )
 {
-	$active_hover = get_post_meta( $id, '_product_hover', true );
-
-	if(!empty($active_hover))
+	/**
+	 * 
+	 * @param int $id
+	 * @param string $size
+	 * @param boolean $id_only
+	 * @return string|int
+	 */
+	function avia_woocommerce_gallery_first_thumbnail( $id, $size, $id_only = false )
 	{
-		$product_gallery = get_post_meta( $id, '_product_image_gallery', true );
+		$image = '';
+		$active_hover = get_post_meta( $id, '_product_hover', true );
 
-		if(!empty($product_gallery))
+		if( ! empty( $active_hover ) )
 		{
-			$gallery	= explode(',',$product_gallery);
-			$image_id 	= $gallery[0];
-			
-			//return id only
-			if(!empty($id_only)) return $image_id;
-			
-			$image 		= wp_get_attachment_image( $image_id, $size, false, array( 'class' => "attachment-$size avia-product-hover" ));
-			
-			//return image
-			if(!empty($image)) return $image;
+			$product_gallery = get_post_meta( $id, '_product_image_gallery', true );
+
+			if( ! empty( $product_gallery ) )
+			{
+				$gallery = explode( ',',$product_gallery );
+				$image_id = $gallery[0];
+
+				//return id only
+				if( ! empty( $id_only ) ) 
+				{
+					return $image_id;
+				}
+
+				$image = wp_get_attachment_image( $image_id, $size, false, array( 'class' => "attachment-$size avia-product-hover" ) );
+			}
+
+			return $image;
 		}
 	}
 }
@@ -1531,7 +1570,7 @@ if( ! function_exists( 'avia_woocommerce_ajax_search_params' ) )
 	 * Add support for WC product display settings
 	 * 
 	 * @since 4.7.3.1
-	 * @param array $params
+	 * @param array|string $params
 	 * @return array
 	 */
 	function avia_woocommerce_ajax_search_params( $params = array() )
@@ -1581,16 +1620,19 @@ if( ! function_exists( 'avia_woocommerce_ajax_search_params' ) )
 		avia_wc_set_hidden_prod_query_params( $meta_query, $tax_query, $prod_hidden );
 		avia_wc_set_featured_prod_query_params( $meta_query, $tax_query, $prod_featured );
 		
-		if( empty( $tax_query ) )
+		if( empty( $tax_query ) || ! is_array( $tax_query ) )
 		{
 			return $params;
 		}
+		
+		//	Plugins might render a query string -> transform to array
+		$params = wp_parse_args( $params );
 		
 		if( ! isset( $params['tax_query'] ) || ! is_array( $params['tax_query'] ) )
 		{
 			$params['tax_query'] = array();
 		}
-			
+		
 		foreach( $tax_query as $value ) 
 		{
 			$params['tax_query'][] = $value;
@@ -2051,31 +2093,35 @@ if(!function_exists('avia_woocommerce_disable_editor_option'))
 
 
 
-
-
-
-#
-# place the cart button according to the header layout (top/sidebar)
-#
-
-if(!function_exists('avia_woocommerce_cart_placement'))
+if( ! function_exists('avia_woocommerce_cart_placement'))
 {
-	add_action( 'init', 'avia_woocommerce_cart_placement', 10);
-	
+	/**
+	 * Place the cart button according to the header layout (top/sidebar)
+	 */
 	function avia_woocommerce_cart_placement()
 	{
-		$position 	= avia_get_option('header_position',  'header_top') == "header_top" ? "ava_main_header" : "ava_inside_main_menu";
-		if(avia_get_option('cart_icon') == "always_display_menu") 
+		$cart_pos = avia_get_option( 'cart_icon', '' );
+		
+		if( 'no_cart' == $cart_pos )
+		{
+			return;
+		}
+		
+		$position = avia_get_option( 'header_position',  'header_top' ) == "header_top" ? "ava_main_header" : "ava_inside_main_menu";
+		
+		if( $cart_pos == "always_display_menu" ) 
 		{
 			$position = "ava_inside_main_menu";
-			if( strpos( avia_get_option('header_layout'), 'bottom_nav_header') !== false && avia_get_option('header_position') == 'header_top')
+			if( strpos( avia_get_option( 'header_layout' ), 'bottom_nav_header' ) !== false && avia_get_option( 'header_position' ) == 'header_top' )
 			{
 				$position = "ava_before_bottom_main_menu";
 			}
 		}
 		
-		add_action( $position, 'avia_woocommerce_cart_dropdown', 10);
+		add_action( $position, 'avia_woocommerce_cart_dropdown', 10 );
 	}
+	
+	add_action( 'init', 'avia_woocommerce_cart_placement', 10 );
 }
 
 	
@@ -2089,24 +2135,31 @@ if(!function_exists('avia_woocommerce_cart_placement'))
 
 	
 
-if(!function_exists('avia_woocommerce_cart_pos'))
+if( ! function_exists( 'avia_woocommerce_cart_pos' ) )
 {
-	add_filter( 'avf_header_classes', 'avia_woocommerce_cart_pos' , 10 , 3);
+	add_filter( 'avf_header_classes', 'avia_woocommerce_cart_pos' ,10 , 3 );
     
-    function avia_woocommerce_cart_pos($class, $necessary, $prefix)
+    function avia_woocommerce_cart_pos( $class, $necessary, $prefix )
     {
-    	if($prefix == 'html_') // only for the html tag
+		$cart_pos = avia_get_option( 'cart_icon', '' );
+		
+		if( 'no_cart' == $cart_pos )
+		{
+			return $class;
+		}
+		
+    	if( $prefix == 'html_' ) // only for the html tag
     	{
 	    	global $woocommerce;
+			
 	    	$cart = $woocommerce->cart->get_cart();
-	    	$cart_pos = avia_get_option('cart_icon');
 	    	
 	    	if( $cart_pos == "always_display" || ( ! empty( $cart ) ) )
 	    	{
 				$class[] = "visible_cart";
 			}
 			
-			if($cart_pos == "always_display_menu")
+			if( $cart_pos == "always_display_menu" )
 			{
 				$class[] = "cart_at_menu";
 			}
@@ -2117,32 +2170,34 @@ if(!function_exists('avia_woocommerce_cart_pos'))
 
 }
 
-
-
-function avia_woocommerce_cart_dropdown()
+if( ! function_exists( 'avia_woocommerce_cart_dropdown' ) )
 {
-	global $woocommerce, $avia_config;
-	$cart_subtotal = $woocommerce->cart->get_cart_subtotal();
-	$link = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : $woocommerce->cart->get_cart_url();
-	$id = "";
-	$added = wc_get_notices('success');
-	$trigger = !empty($added) ? "av-display-cart-on-load" : "";
-	
-	if(avia_get_option('cart_icon') == "always_display_menu")
-	{
-		$id = 'id="menu-item-shop"';
-	}	
 
-	$output = "";
-	$output .= "<ul {$id} class = 'menu-item cart_dropdown {$trigger}' data-success='".__('was added to the cart', 'avia_framework')."'><li class='cart_dropdown_first'>";
-	$output .= "<a class='cart_dropdown_link' href='".$link."'><span ".av_icon_string('cart')."></span><span class='av-cart-counter'>0</span><span class='avia_hidden_link_text'>".__('Shopping Cart','avia_framework')."</span></a><!--<span class='cart_subtotal'>".$cart_subtotal."</span>-->";
-	$output .= "<div class='dropdown_widget dropdown_widget_cart'><div class='avia-arrow'></div>";
-	$output .= '<div class="widget_shopping_cart_content"></div>';
-	$output .= "</div>";
-	$output .= "</li></ul>";
-	
-	
-	echo $output;
+	function avia_woocommerce_cart_dropdown()
+	{
+		global $woocommerce, $avia_config;
+
+		$cart_subtotal = $woocommerce->cart->get_cart_subtotal();
+		$link = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : $woocommerce->cart->get_cart_url();
+		$id = '';
+		$added = wc_get_notices( 'success' );
+		$trigger = ! empty( $added ) ? "av-display-cart-on-load" : "";
+
+		if( avia_get_option( 'cart_icon' ) == "always_display_menu" )
+		{
+			$id = 'id="menu-item-shop"';
+		}	
+
+		$output  = "";
+		$output .= "<ul {$id} class = 'menu-item cart_dropdown {$trigger}' data-success='" . __( 'was added to the cart', 'avia_framework' ). "'><li class='cart_dropdown_first'>";
+		$output .= "<a class='cart_dropdown_link' href='".$link."'><span ".av_icon_string('cart')."></span><span class='av-cart-counter'>0</span><span class='avia_hidden_link_text'>".__('Shopping Cart','avia_framework')."</span></a><!--<span class='cart_subtotal'>".$cart_subtotal."</span>-->";
+		$output .= "<div class='dropdown_widget dropdown_widget_cart'><div class='avia-arrow'></div>";
+		$output .= '<div class="widget_shopping_cart_content"></div>';
+		$output .= "</div>";
+		$output .= "</li></ul>";
+
+		echo $output;
+	}
 	
 }
 

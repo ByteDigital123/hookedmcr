@@ -369,7 +369,7 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 				
 						array(
 							'name' 	=> __( 'Grid Borders', 'avia_framework' ),
-							'desc' 	=> __( 'Define the appearence of the grid borders here.', 'avia_framework' ),
+							'desc' 	=> __( 'Define the appearance of the grid borders here.', 'avia_framework' ),
 							'id' 	=> 'icongrid_borders',
 							'type' 	=> 'select',
 							'std' 	=> '3',
@@ -1372,20 +1372,35 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 			$this->custom_content_size = $custom_content_size;
 			$this->custom_icon_size = $custom_icon_size;
 
-			if ($font_color == 'custom') 
+			if( $font_color == 'custom' ) 
 			{
-				if ( !empty($custom_icon ) ) $this->icon_styling['color'] = $custom_icon;
-				if ( !empty($custom_title) ) $this->title_styling['color'] = $custom_title;
-				if ( !empty($custom_subtitle) ) $this->subtitle_styling['color'] = $custom_subtitle;
-				if ( !empty($custom_content) ) $this->content_styling['color'] = $custom_content;
+				if ( ! empty( $custom_icon ) ) 
+				{
+					$this->icon_styling['color'] = $custom_icon;
+				}
+				
+				if ( ! empty( $custom_title) ) 
+				{
+					$this->title_styling['color'] = $custom_title;
+				}
+				
+				if ( ! empty( $custom_subtitle ) ) 
+				{
+					$this->subtitle_styling['color'] = $custom_subtitle;
+				}
+				
+				if ( ! empty( $custom_content ) ) 
+				{
+					$this->content_styling['color'] = $custom_content;
+				}
 			}
 
 			if( $bg_color == 'custom' ) 
 			{
 				// front
-				if ($custom_front_bg_type == 'bg_color') 
+				if( $custom_front_bg_type == 'bg_color' ) 
 				{
-					if ( !empty($custom_front_bg) ) 
+					if( ! empty($custom_front_bg) ) 
 					{
 						$this->flipbox_front_styling['background_color'] = $custom_front_bg;
 					}
@@ -1394,34 +1409,37 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 				{
 					// gradient
 					$front_gradient_settings = array(
-							$custom_front_gradient_direction,
-							$custom_front_gradient_color1,
-							$custom_front_gradient_color2
-						);
+												$custom_front_gradient_direction,
+												$custom_front_gradient_color1,
+												$custom_front_gradient_color2
+											);
 
 					// fallback
 					$this->flipbox_front_styling['background_color'] = $custom_front_gradient_color1;
 					// gradient
-					$this->flipbox_front_styling['background'] = AviaHelper::css_background_string(array(), $front_gradient_settings);
+					$this->flipbox_front_styling['background'] = AviaHelper::css_background_string( array(), $front_gradient_settings );
 				}
 
 				// back
-				if ($custom_back_bg_type == 'bg_color') 
+				if( $custom_back_bg_type == 'bg_color' ) 
 				{
-					if ( !empty($custom_back_bg) ) $this->flipbox_back_styling['background_color'] = $custom_back_bg;
+					if ( ! empty( $custom_back_bg ) ) 
+					{
+						$this->flipbox_back_styling['background_color'] = $custom_back_bg;
+					}
 				}
 				else 
 				{
 					$back_gradient_settings = array(
-							$custom_back_gradient_direction,
-							$custom_back_gradient_color1,
-							$custom_back_gradient_color2
-						);
+												$custom_back_gradient_direction,
+												$custom_back_gradient_color1,
+												$custom_back_gradient_color2
+											);
 
 					// fallback
 					$this->flipbox_back_styling['background_color'] = $custom_back_gradient_color1;
 					// gradient
-					$this->flipbox_back_styling['background'] = AviaHelper::css_background_string(array(), $back_gradient_settings);
+					$this->flipbox_back_styling['background'] = AviaHelper::css_background_string( array(), $back_gradient_settings );
 				}
 
 			}
@@ -1441,18 +1459,18 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 				}
 			}
 
-			$this->flipbox_front_styling['padding'] = AviaHelper::css_4value_helper($icongrid_padding);
-			$this->flipbox_back_styling['padding'] = AviaHelper::css_4value_helper($icongrid_padding);
+			$this->flipbox_front_styling['padding'] = AviaHelper::css_4value_helper( $icongrid_padding );
+			$this->flipbox_back_styling['padding'] = AviaHelper::css_4value_helper( $icongrid_padding );
 
 			$list_styling_str = '';
 			if( ! empty( $this->list_styling ) ) 
 			{
-				if (array_key_exists('border-color',$this->list_styling))
+				if( array_key_exists( 'border-color', $this->list_styling ) )
 				{
-					$list_styling_str = AviaHelper::style_string($this->list_styling, 'border-color', 'border-color');
+					$list_styling_str = AviaHelper::style_string( $this->list_styling, 'border-color', 'border-color' );
 				}
 			}
-			$list_styling_str = ($list_styling_str !== '') ? AviaHelper::style_string($list_styling_str) : '';
+			$list_styling_str = ( $list_styling_str !== '' ) ? AviaHelper::style_string( $list_styling_str ) : '';
 
 			$output	 = '';
 			$output .=	"<div {$meta['custom_el_id']} class='avia-icon-grid-container {$flip_axis} {$av_display_classes} {$meta['el_class']}'>";
@@ -1464,6 +1482,13 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 			return $output;
 		}
 
+		/**
+		 * 
+		 * @param array $atts
+		 * @param string $content
+		 * @param string $shortcodename
+		 * @return string
+		 */
 		public function av_icongrid_item( $atts, $content = '', $shortcodename = '' )
 		{
 			/**
@@ -1528,10 +1553,25 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 			/* item specific styling */
 			if( $atts['item_font_color'] == 'custom' ) 
 			{
-				if ( !empty($atts['item_custom_icon'] ) ) $icon_styling['color'] = $atts['item_custom_icon'];
-				if ( !empty($atts['item_custom_title']) ) $title_styling['color'] = $atts['item_custom_title'];
-				if ( !empty($atts['item_custom_subtitle']) ) $subtitle_styling['color'] = $atts['item_custom_subtitle'];
-				if ( !empty($atts['item_custom_content']) ) $content_styling['color'] = $atts['item_custom_content'];
+				if( ! empty( $atts['item_custom_icon'] ) ) 
+				{
+					$icon_styling['color'] = $atts['item_custom_icon'];
+				}
+				
+				if( ! empty( $atts['item_custom_title']) ) 
+				{
+					$title_styling['color'] = $atts['item_custom_title'];
+				}
+				
+				if( ! empty( $atts['item_custom_subtitle'] ) ) 
+				{
+					$subtitle_styling['color'] = $atts['item_custom_subtitle'];
+				}
+				
+				if( ! empty( $atts['item_custom_content'] ) ) 
+				{
+					$content_styling['color'] = $atts['item_custom_content'];
+				}
 			}
 
 			if( $atts['item_bg_color'] == 'custom' ) 
@@ -1539,43 +1579,57 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 				// front
 				if( $atts['item_custom_front_bg_type'] == 'bg_color' ) 
 				{
-					if ( !empty($atts['item_custom_front_bg']) ) $flipbox_front_styling['background_color'] = $atts['item_custom_front_bg'];
+					if( ! empty($atts['item_custom_front_bg']) ) 
+					{
+						$flipbox_front_styling['background_color'] = $atts['item_custom_front_bg'];
+					}
+					
 					// remove gradient if any
-					if (array_key_exists('background',$flipbox_front_styling)) unset($flipbox_front_styling['background']);
+					if( array_key_exists( 'background', $flipbox_front_styling ) ) 
+					{
+						unset( $flipbox_front_styling['background'] );
+					}
 				}
 				else 
 				{
 					$item_front_gradient_settings = array(
-						$atts['item_custom_front_gradient_direction'],
-						$atts['item_custom_front_gradient_color1'],
-						$atts['item_custom_front_gradient_color2']
-					);
+														$atts['item_custom_front_gradient_direction'],
+														$atts['item_custom_front_gradient_color1'],
+														$atts['item_custom_front_gradient_color2']
+													);
+					
 					// fallback
 					$flipbox_front_styling['background_color'] = $atts['item_custom_front_gradient_color1'];
 					// gradient
-					$flipbox_front_styling['background'] = AviaHelper::css_background_string(array(), $item_front_gradient_settings);
+					$flipbox_front_styling['background'] = AviaHelper::css_background_string( array(), $item_front_gradient_settings );
 				}
 				
 				// back
 				if( $atts['item_custom_back_bg_type'] == 'bg_color' ) 
 				{
-					if ( !empty($atts['item_custom_back_bg']) ) $flipbox_back_styling['background_color'] = $atts['item_custom_back_bg'];
+					if( ! empty($atts['item_custom_back_bg']) ) 
+					{
+						$flipbox_back_styling['background_color'] = $atts['item_custom_back_bg'];
+					}
+					
 					// remove gradient if any
-					if (array_key_exists('background',$flipbox_back_styling)) unset($flipbox_back_styling['background']);
+					if( array_key_exists( 'background', $flipbox_back_styling ) ) 
+					{
+						unset( $flipbox_back_styling['background'] );
+					}
 				}
 				else 
 				{
 					$item_back_gradient_settings = array(
-						$atts['item_custom_back_gradient_direction'],
-						$atts['item_custom_back_gradient_color1'],
-						$atts['item_custom_back_gradient_color2']
-					);
+														$atts['item_custom_back_gradient_direction'],
+														$atts['item_custom_back_gradient_color1'],
+														$atts['item_custom_back_gradient_color2']
+													);
 					// fallback
 					$flipbox_back_styling['background_color'] = $atts['item_custom_back_gradient_color1'];
 					// gradient
-					$flipbox_back_styling['background'] = AviaHelper::css_background_string(array(), $item_back_gradient_settings);
+					$flipbox_back_styling['background'] = AviaHelper::css_background_string( array(), $item_back_gradient_settings );
 				}
-
 			}
 				
 			if( 'custom' == $atts['item_border_color'] )
@@ -1629,96 +1683,96 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 			if( ! empty( $flipbox_front_styling ) )
 			{
 				// flipbox                    
-				if ($this->icongrid_styling == 'avia-icongrid-flipbox')
+				if( $this->icongrid_styling == 'avia-icongrid-flipbox')
 				{
 					// gradients
-					if (array_key_exists('background_color',$flipbox_front_styling) && array_key_exists('background',$flipbox_front_styling)) 
+					if( array_key_exists( 'background_color', $flipbox_front_styling ) && array_key_exists( 'background', $flipbox_front_styling ) ) 
 					{
-						$flipbox_front_styling_str .= AviaHelper::style_string($flipbox_front_styling, 'background', 'background');
-						$flipbox_front_styling_str .= AviaHelper::style_string($flipbox_front_styling, 'background_color', 'background-color');
+						$flipbox_front_styling_str .= AviaHelper::style_string( $flipbox_front_styling, 'background', 'background' );
+						$flipbox_front_styling_str .= AviaHelper::style_string( $flipbox_front_styling, 'background_color', 'background-color' );
 					}
 					// solid bg color
-					elseif (array_key_exists('background_color',$flipbox_front_styling)) 
+					else if( array_key_exists( 'background_color', $flipbox_front_styling ) ) 
 					{
-						$flipbox_front_styling_str .= AviaHelper::style_string($flipbox_front_styling, 'background_color', 'background-color');
+						$flipbox_front_styling_str .= AviaHelper::style_string( $flipbox_front_styling, 'background_color', 'background-color' );
 					}
 				}    
+				
 				// tooltip
-				if ($this->icongrid_styling == 'avia-icongrid-tooltip')
+				if( $this->icongrid_styling == 'avia-icongrid-tooltip' )
 				{
 					// gradients
-					if (array_key_exists('background_color',$flipbox_front_styling) && array_key_exists('background',$flipbox_front_styling)) 
+					if( array_key_exists( 'background_color', $flipbox_front_styling ) && array_key_exists( 'background', $flipbox_front_styling ) ) 
 					{
-						$item_bg_str .= AviaHelper::style_string($flipbox_front_styling, 'background', 'background');
-						$item_bg_str .= AviaHelper::style_string($flipbox_front_styling, 'background_color', 'background-color');
+						$item_bg_str .= AviaHelper::style_string( $flipbox_front_styling, 'background', 'background' );
+						$item_bg_str .= AviaHelper::style_string( $flipbox_front_styling, 'background_color', 'background-color' );
 					}
 					// solid bg color
-					elseif (array_key_exists('background_color',$flipbox_front_styling)) 
+					elseif( array_key_exists( 'background_color', $flipbox_front_styling ) ) 
 					{
-						$item_bg_str .= AviaHelper::style_string($flipbox_front_styling, 'background_color', 'background-color');
+						$item_bg_str .= AviaHelper::style_string( $flipbox_front_styling, 'background_color', 'background-color' );
 					}
 				}    
 
-				if (array_key_exists('padding',$this->flipbox_front_styling))
+				if( array_key_exists( 'padding', $this->flipbox_front_styling ) )
 				{
-					$flipbox_front_styling_str .= AviaHelper::style_string($this->flipbox_front_styling, 'padding', 'padding');
+					$flipbox_front_styling_str .= AviaHelper::style_string( $this->flipbox_front_styling, 'padding', 'padding' );
 				}                    
 			}
 
-			if ( ! empty( $flipbox_back_styling ) )
+			if( ! empty( $flipbox_back_styling ) )
 			{
 				// gradients
-				if (array_key_exists('background_color',$flipbox_back_styling) && array_key_exists('background',$flipbox_back_styling)) 
+				if( array_key_exists( 'background_color', $flipbox_back_styling ) && array_key_exists( 'background', $flipbox_back_styling ) ) 
 				{
-					$flipbox_back_styling_str .= AviaHelper::style_string($flipbox_back_styling, 'background', 'background');
-					$flipbox_back_styling_str .= AviaHelper::style_string($flipbox_back_styling, 'background_color', 'background-color');
+					$flipbox_back_styling_str .= AviaHelper::style_string( $flipbox_back_styling, 'background', 'background' );
+					$flipbox_back_styling_str .= AviaHelper::style_string( $flipbox_back_styling, 'background_color', 'background-color' );
 				}
 				// solid bg color
-				elseif (array_key_exists('background_color',$flipbox_back_styling)) 
+				else if( array_key_exists( 'background_color', $flipbox_back_styling ) ) 
 				{
-					$flipbox_back_styling_str .= AviaHelper::style_string($flipbox_back_styling, 'background_color', 'background-color');
+					$flipbox_back_styling_str .= AviaHelper::style_string( $flipbox_back_styling, 'background_color', 'background-color' );
 				}
 
 				// tooltip border color
-				if ($this->icongrid_styling == 'avia-icongrid-tooltip')
+				if( $this->icongrid_styling == 'avia-icongrid-tooltip' )
 				{
-					if (array_key_exists('border_color',$this->flipbox_back_styling))
+					if( array_key_exists( 'border_color', $this->flipbox_back_styling ) )
 					{
-						$flipbox_back_styling_str .= AviaHelper::style_string($flipbox_back_styling, 'border_color', 'border-color');
+						$flipbox_back_styling_str .= AviaHelper::style_string( $flipbox_back_styling, 'border_color', 'border-color' );
 					}
 				}
 
-				if (array_key_exists('padding',$this->flipbox_back_styling))
+				if( array_key_exists( 'padding', $this->flipbox_back_styling ) )
 				{
-					$flipbox_back_styling_str .= AviaHelper::style_string($this->flipbox_back_styling, 'padding', 'padding');
+					$flipbox_back_styling_str .= AviaHelper::style_string( $this->flipbox_back_styling, 'padding', 'padding' );
 				}                    
 			}
 
 			if( ! empty( $this->wrapper_styling ) ) 
 			{
-				if (array_key_exists('color',$this->wrapper_styling))
+				if( array_key_exists( 'color', $this->wrapper_styling ) )
 				{
-					$wrapper_styling_str = AviaHelper::style_string($this->wrapper_styling, 'color', 'color');
+					$wrapper_styling_str = AviaHelper::style_string( $this->wrapper_styling, 'color', 'color' );
 				}
 			}
 
 			/* element wide styling */
-			$icon_styling_str = ($icon_styling_str !== '') ? AviaHelper::style_string($icon_styling_str) : '';
-			$title_styling_str = ($title_styling_str !== '') ? AviaHelper::style_string($title_styling_str) : '';
-			$subtitle_styling_str = ($subtitle_styling_str !== '') ? AviaHelper::style_string($subtitle_styling_str) : '';
-			$content_styling_str = ($content_styling_str !== '') ? AviaHelper::style_string($content_styling_str) : '';
-			$flipbox_front_styling_str = ($flipbox_front_styling_str !== '') ? AviaHelper::style_string($flipbox_front_styling_str) : '';
+			$icon_styling_str = ( $icon_styling_str !== '' ) ? AviaHelper::style_string( $icon_styling_str ) : '';
+			$title_styling_str = ( $title_styling_str !== '' ) ? AviaHelper::style_string( $title_styling_str ) : '';
+			$subtitle_styling_str = ( $subtitle_styling_str !== '' ) ? AviaHelper::style_string( $subtitle_styling_str ) : '';
+			$content_styling_str = ( $content_styling_str !== '' ) ? AviaHelper::style_string( $content_styling_str ) : '';
+			$flipbox_front_styling_str = ( $flipbox_front_styling_str !== '' ) ? AviaHelper::style_string( $flipbox_front_styling_str ) : '';
 
-			$item_bg_str = ($item_bg_str !== '') ? AviaHelper::style_string($item_bg_str) : '';
-			$flipbox_back_styling_str = ($flipbox_back_styling_str !== '') ? AviaHelper::style_string($flipbox_back_styling_str) : '';
-			$wrapper_styling_str = ($wrapper_styling_str !== '') ? AviaHelper::style_string($wrapper_styling_str) : '';
+			$item_bg_str = ( $item_bg_str !== '' ) ? AviaHelper::style_string( $item_bg_str ) : '';
+			$flipbox_back_styling_str = ( $flipbox_back_styling_str !== '' ) ? AviaHelper::style_string( $flipbox_back_styling_str ) : '';
+			$wrapper_styling_str = ( $wrapper_styling_str !== '' ) ? AviaHelper::style_string( $wrapper_styling_str ) : '';
 
-			$display_char = av_icon($atts['icon'], $atts['font']);
+			$display_char = av_icon( $atts['icon'], $atts['font'] );
 			$display_char_wrapper = array();
 
-			$blank = (strpos($atts['linktarget'], '_blank') !== false || $atts['linktarget'] == 'yes') ? ' target="_blank" ' : '';
-			$blank .= strpos($atts['linktarget'], 'nofollow') !== false ? ' rel="nofollow" ' : '';
-
+			$blank = AviaHelper::get_link_target( $atts['linktarget'] );
+			
 			$avia_icongrid_wrapper = array(
 										'start'	=> 'div',
 										'end'	=> 'div'
@@ -1726,20 +1780,19 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 
 			if( ! empty( $atts['link'] ) )
 			{
-				$atts['link'] = aviaHelper::get_url( $atts['link'] );
+				$atts['link'] = AviaHelper::get_url( $atts['link'] );
 
-				if( ! empty($atts['link'] ) )
+				if( ! empty( $atts['link'] ) )
 				{
 					$linktitle = $atts['title'];
 
-					$avia_icongrid_wrapper['start'] = "a href='{$atts['link']}' title='" . esc_attr($linktitle) . "' {$blank}";
+					$avia_icongrid_wrapper['start'] = "a href='{$atts['link']}' title='" . esc_attr( $linktitle ) . "' {$blank}";
 					$avia_icongrid_wrapper['end'] = 'a';
-
 				}
 			}
                
 			$contentClass = '';
-			if(trim($content) == '')
+			if( trim( $content ) == '' )
 			{
 				$contentClass = 'av-icongrid-empty';
 			}
@@ -1754,21 +1807,22 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 
 			$output  = '<li>';
 			$output .=	"<{$avia_icongrid_wrapper['start']} class='avia-icongrid-wrapper' {$wrapper_styling_str}>";
-			$output .=		'<article '.$item_bg_str.' class="article-icon-entry '.$contentClass.'" '.avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$atts['custom_markup'])).'>';
+			$output .=		'<article ' . $item_bg_str . ' class="article-icon-entry ' . $contentClass . '" ' . avia_markup_helper( array('context' => 'entry', 'echo' => false, 'custom_markup' => $atts['custom_markup'] ) ) . '>';
 			$output .=			"<div class='avia-icongrid-front' {$flipbox_front_styling_str}>";
 			$output .=				"<div class='avia-icongrid-inner'>";
 			$output .=					"<div {$icon_styling_str} class='avia-icongrid-icon {$av_font_classes_2} avia-font-{$atts['font']}'><span class='icongrid-char ' {$display_char}></span></div>";
 			$output .=					'<header class="entry-content-header">';
 
-			$markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$atts['custom_markup']));
-			$submarkup = avia_markup_helper(array('context' => 'entry_subtitle','echo'=>false, 'custom_markup'=>$atts['custom_markup']));
+			$markup = avia_markup_helper( array( 'context' => 'entry_title', 'echo' => false, 'custom_markup' => $atts['custom_markup'] ) );
+			$submarkup = avia_markup_helper( array( 'context' => 'entry_subtitle', 'echo' => false, 'custom_markup' => $atts['custom_markup'] ) );
+			
 			if( ! empty( $atts['title'] ) ) 
 			{
-				$output .=					"<{$title_el} class='av_icongrid_title icongrid_title{$icongrid_title} {$av_title_font_classes} {$title_el_cls}' {$markup} {$title_styling_str}>".$atts['title']."</{$title_el}>";
+				$output .=					"<{$title_el} class='av_icongrid_title icongrid_title{$icongrid_title} {$av_title_font_classes} {$title_el_cls}' {$markup} {$title_styling_str}>" . esc_html( $atts['title'] ). "</{$title_el}>";
 			}
 			if( ! empty( $atts['subtitle'] ) ) 
 			{
-				$output .=					"<{$subtitle_el} class='av_icongrid_subtitle icongrid_subtitle{$icongrid_subtitle} {$av_font_classes_1}' {$submarkup} {$subtitle_styling_str}>".$atts['subtitle']."</{$subtitle_el}>";
+				$output .=					"<{$subtitle_el} class='av_icongrid_subtitle icongrid_subtitle{$icongrid_subtitle} {$av_font_classes_1}' {$submarkup} {$subtitle_styling_str}>" . esc_html( $atts['subtitle'] ) . "</{$subtitle_el}>";
 			}
 				
 			$output .=					'</header>';
@@ -1777,9 +1831,9 @@ if ( ! class_exists( 'avia_sc_icongrid' ) )
 			$output .=			"<div class='avia-icongrid-content' {$flipbox_back_styling_str}>";
 			$output .=				"<div class='avia-icongrid-inner' {$content_styling_str}>";
 				
-			$markup  = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$atts['custom_markup']));
+			$markup  = avia_markup_helper( array( 'context' => 'entry_content', 'echo' => false, 'custom_markup' => $atts['custom_markup'] ) );
 
-			$output .=					"<div class='avia-icongrid-text {$av_font_classes}' {$markup}>".ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop( $content ) )."</div>";
+			$output .=					"<div class='avia-icongrid-text {$av_font_classes}' {$markup}>" . ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $content ) ) . '</div>';
 			$output .=				'</div>';
 			$output .=			'</div>';
 			$output .=		'</article>';

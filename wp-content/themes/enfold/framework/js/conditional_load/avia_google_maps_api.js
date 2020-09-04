@@ -91,7 +91,7 @@
 			if(typeof this.map != 'undefined') return;
 			if(!this.$data.marker || !this.$data.marker[0] || !this.$data.marker[0].lat || !this.$data.marker[0].long)
 			{
-				$.avia_utilities.log('Latitude or Longitude missing', 'map-error'); 
+				$.avia_utilities.log('Latitude or Longitude missing. Make sure you did not only enter an address. You need to fetch the coordinates too.', 'map-error'); 
 				return;
 			}
 			

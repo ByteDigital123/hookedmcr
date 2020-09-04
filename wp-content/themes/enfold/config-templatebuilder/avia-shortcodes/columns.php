@@ -385,7 +385,7 @@ if ( ! class_exists( 'avia_sc_columns' ) )
 			$c = array(
 						array(
 							'name' 	=> __( 'Highlight Column', 'avia_framework' ),
-							'desc' 	=> __( 'Hightlight this column by making it slightly bigger', 'avia_framework' ),
+							'desc' 	=> __( 'Highlight this column by making it slightly bigger', 'avia_framework' ),
 							'id' 	=> 'highlight',
 							'type' 	=> 'checkbox',
 							'std' 	=> '',
@@ -1228,7 +1228,7 @@ if ( ! class_exists( 'avia_sc_columns' ) )
 				
 				avia_sc_columns::$calculated_size += avia_sc_columns::$size_array[ $this->config['shortcode'] ];
 				
-				$link = aviaHelper::get_url( $atts['link'] );
+				$link = AviaHelper::get_url( $atts['link'] );
 				$link_data = '';
 				$screen_reader_link = '';
 				if( ! empty( $link ) )
@@ -1270,7 +1270,7 @@ if ( ! class_exists( 'avia_sc_columns' ) )
 					 * Add an invisible link also for screen readers
 					 */				
 					$screen_reader_link .=	'<a class="av-screen-reader-only" href=' . esc_attr( $link ) . " {$screen_reader}" . '>';
-					$screen_reader_link .=		aviaHelper::get_screen_reader_url_text( $atts['link'] );
+					$screen_reader_link .=		AviaHelper::get_screen_reader_url_text( $atts['link'] );
 					$screen_reader_link .=	'</a>';
 				}
 				

@@ -97,6 +97,13 @@ function layerslider_update_scripts( $oldVersion, $currentVersion ) {
 	layerslider_run_upgrade_scripts( $oldVersion );
 
 
+	// Attempt to empty all 3rd party plugin
+	// caches when it's enabled. It can help
+	// when there are changes in the markup
+	// or plugin files.
+	if( get_option('ls_clear_3rd_party_caches', true ) ) {
+		ls_empty_3rd_party_caches();
+	}
 
 	// Trigger 'layerslider_updated' action
 	// hook, so 3rd parties can run their own

@@ -110,6 +110,22 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 			wp_enqueue_script( 'avia-module-contact', AviaBuilder::$path['pluginUrlRoot'] . 'avia-shortcodes/contact/contact.js', array( 'avia-shortcodes' ), false, true );
 
 		}
+		
+		/**
+		 * 
+		 * @since 4.7.5.1
+		 * @param string $shortcode
+		 * @return boolean
+		 */
+		public function is_nested_self_closing( $shortcode ) 
+		{
+			if( in_array( $shortcode, $this->config['shortcode_nested'] ) )
+			{
+				return true;
+			}
+				
+			return false;
+		}
 
 		/**
 		 * Popup Elements
@@ -181,8 +197,8 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 					),
 						
 				array(
-						'type' 	=> 'tab',
-						'name'  => __( 'Content', 'avia_framework' ),
+						'type'	=> 'tab',
+						'name'	=> __( 'Content', 'avia_framework' ),
 						'nodescription' => true
 					),
 				
@@ -627,17 +643,17 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 					return '';
 				}
 				
-				$lists 		= get_option( 'av_chimplist' );
-				$newlist 	= array();
+				$lists = get_option( 'av_chimplist' );
+				$newlist = array();
 			
-				if(empty($lists))
+				if( empty( $lists ) )
 				{
 					return;
 				}
 				
-				foreach($lists as $key => $list_item)
+				foreach( $lists as $key => $list_item )
 				{
-					$newlist[$list_item['name']] = $key;
+					$newlist[ $list_item['name'] ] = $key;
 				}
 				
 				$lists = $newlist;
@@ -668,14 +684,14 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 				
 				//extract form fields
 				
-				if($atts['listonly'])
+				if( $atts['listonly'] )
 				{
 					$form_fields = $this->convert_fields_from_list( $atts['list'] );
 				}
 				else
 				{
-					$content = str_replace("\,", "&#44;", $content );
-					$form_fields = $this->helper_array2form_fields(ShortcodeHelper::shortcode2array($content, 1));
+					$content = str_replace( "\,", "&#44;", $content );
+					$form_fields = $this->helper_array2form_fields( ShortcodeHelper::shortcode2array( $content, 1 ) );
 				}
 				
 				if( empty( $form_fields ) ) 
@@ -685,8 +701,8 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 				
 				extract( $atts );
 
-				$post_id  = function_exists('avia_get_the_id') ? avia_get_the_id() : get_the_ID();
-				$redirect = !empty($on_send) ? AviaHelper::get_url($link) : '';
+				$post_id  = function_exists( 'avia_get_the_id' ) ? avia_get_the_id() : get_the_ID();
+				$redirect = ! empty( $on_send ) ? AviaHelper::get_url( $link ) : '';
 				
 				$default_heading = 'h3';
 				$args = array(
@@ -705,7 +721,10 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 				$heading = ! empty( $args['heading'] ) ? $args['heading'] : $default_heading;
 				$css = ! empty( $args['extra_class'] ) ? $args['extra_class'] : '';
 				
-				if(!empty($form_align)) $meta['el_class'] .= ' av-centered-form ';
+				if( ! empty( $form_align ) ) 
+				{
+					$meta['el_class'] .= ' av-centered-form ';
+				}
 				
 				$form_args = array(
 								'heading' 				=> '',
@@ -715,7 +734,7 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 								'action'  				=> get_permalink( $post_id ),
 								'myblogname' 			=> get_option( 'blogname' ),
 								'subject'				=> $subject,
-								'form_class' 			=> $meta['el_class'].' '.$color.' avia-mailchimp-form'.' '.$av_display_classes,
+								'form_class' 			=> $meta['el_class'] . ' ' . $color . ' avia-mailchimp-form' . ' ' . $av_display_classes,
 								'form_data' 			=> array( 'av-custom-send' => 'mailchimp_send' ),
 								'multiform'  			=> true, //allows creation of multiple forms without id collision
 								'label_first'  			=> true,
@@ -729,153 +748,163 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 				
 				
 				
-				if(trim($form_args['myemail']) == '') $form_args['myemail'] = get_option('admin_email');
+				if( trim( $form_args['myemail'] ) == '' ) 
+				{
+					$form_args['myemail'] = get_option('admin_email');
+				}
 
-
-				$content = str_replace("\,", "&#44;", $content );
+				$content = str_replace( "\,", "&#44;", $content );
 
 				//fake username field that is not visible. if the field has a value a spam bot tried to send the form
-				$elements['avia_username']  = array('type'=>'decoy', 'label'=>'', 'check'=>'must_empty');
+				$elements['avia_username'] = array( 'type' => 'decoy', 'label' => '', 'check' => 'must_empty' );
 
 				//captcha field for the user to verify that he is real
-				if($captcha)
-				$elements['avia_age'] =	array('type'=>'captcha', 'check'=>'captcha', 'label'=> __('Please prove that you are human by solving the equation','avia_framework' ));
-
-				//merge all fields
-				$form_fields = apply_filters('ava_mailchimp_contact_form_elements', array_merge($form_fields, $elements));
-				$form_fields = apply_filters('avf_sc_mailchimp_form_elements', $form_fields, $atts );
-				$form_args   = apply_filters('avia_mailchimp_form_args', $form_args, $post_id);
-
-				$contact_form = new avia_form($form_args);
-				$contact_form->create_elements($form_fields);
-				$output = $contact_form->display_form(true);
-
+				if( $captcha )
+				{
+					$elements['avia_age'] =	array(
+												'type'	=> 'captcha', 
+												'check'	=> 'captcha', 
+												'label'	=> __( 'Please prove that you are human by solving the equation', 'avia_framework' )
+											);
+				}
 				
+				//merge all fields
+				$form_fields = apply_filters( 'ava_mailchimp_contact_form_elements', array_merge( $form_fields, $elements ) );
+				$form_fields = apply_filters( 'avf_sc_mailchimp_form_elements', $form_fields, $atts );
+				$form_args = apply_filters( 'avia_mailchimp_form_args', $form_args, $post_id );
+
+				$contact_form = new avia_form( $form_args );
+				$contact_form->create_elements( $form_fields );
+				$output = $contact_form->display_form( true );
+
 				return $output;
 				
 		}
 
+		/**
+		 * 
+		 * @param object $instance
+		 * @return boolean
+		 */
 		public function send( &$instance )
 		{
-				$params = $instance->form_params;
-				
-				if( isset( $_POST['avia_generated_form' . $params['avia_formID']] ) )
+			$params = $instance->form_params;
+
+			if( isset( $_POST[ 'avia_generated_form' . $params['avia_formID'] ] ) )
+			{
+				$form_suffix = '_' . $params['avia_formID'];
+				$suffix_length = ( strlen( $form_suffix ) * -1 );
+				$merge_fields = array();
+				$post_data = array();
+				$mail = '';
+				$status = ! empty( $params['double_opt_in'] ) ? 'pending' : 'subscribed'; // subscribed // pending
+					
+				foreach( $_POST as $key => $value )
 				{
-					$form_suffix 	= '_' . $params['avia_formID'];
-					$suffix_length	= (strlen($form_suffix) * -1);
-					$merge_fields 	= array();
-					$post_data 		= array();
-					$mail			= '';
-					$status			= !empty( $params['double_opt_in'] ) ? 'pending' : 'subscribed'; // subscribed // pending
-					
-					foreach($_POST as $key => $value)
+					$key = substr( $key, 0, $suffix_length );
+					$key = str_replace( 'avia_', '', $key );
+
+					if( isset( $_POST['ajax_mailchimp'] ) )
 					{
-						$key = substr($key, 0, $suffix_length);
-						$key = str_replace('avia_','',$key);
-						
-						if(isset($_POST['ajax_mailchimp']))
-						{
-							$value = urldecode($value);	
-						}
-						
-						$post_data[ $key ] = $value;
-						
+						$value = urldecode( $value );	
 					}
-					
-					//make sure that the username is not filled in, otherwise a bot has sent the form. if so simply fake the send event
-					if( ! empty( $post_data['username'] ) )
-					{
-						$instance->submit_error = __( 'Illegal request.', 'avia_framework' );
-						return false;
-					}
-					
-					//iterate over form fields to generate the merge field data
-					if( empty( $this->fields ) ) 
-					{
-						$all_fields 	= get_option('av_chimplist_field');
-						$this->fields 	= $all_fields[$params['mailchimp']];
-					}
-					
-					foreach ($this->fields as $field)
-					{
-						$value = !empty( $post_data[ $field->merge_id ] ) ? $post_data[ $field->merge_id ] : false;
-						
-						if($value !== false)
-						{
-							if($field->merge_id != 0)
-							{
-								$merge_fields[ $field->tag ] = $value;
-							}
-							else
-							{
-								$mail = $value;
-							}
-						}
-					}
-					
-					$data_to_send = array(
-						'email_address' => $mail,
-						'status'		=> $status,
-					);
-					
-					if( !empty( $merge_fields ) )
-					{
-						$data_to_send['merge_fields'] = $merge_fields;
-					}
-					
-					$data_to_send 	= apply_filters( 'avf_mailchimp_subscriber_data' , $data_to_send , $this );
-					$api  			= new av_mailchimp_api( $this->api_key );
-					$this->add_user = $api->post( 'lists/'.$params['mailchimp'].'/members' ,$data_to_send); 
-			
-					//user was successfully added
-					if( isset($this->add_user->id))
-					{
-						return true;
-					}
-					
-					//if we got no id the user was not added which means we got an error. 
-					$error_key = 'general';
-					
-					if($this->add_user->title == 'Invalid Resource')
-					{
-						$error_key = 'all';
-						
-						if( strpos($this->add_user->detail, 'email') !== false)
-						{
-							$error_key = 'email';
-						}
-						
-						if( strpos($this->add_user->detail, 'merge fields') !== false)
-						{
-							$error_key = 'invalid_field';
-						}
-					}
-					
-					if($this->add_user->title == 'Member Exists')
-					{
-						$error_key = 'already';
-					}
-					
-					$instance->error_msg = "<div class='avia-mailchimp-ajax-error av-form-error-container'>" . $api->message($error_key) . '</div>';
-					
-					
-					add_action('wp_footer', array( $this, 'print_js_error' ), 2, 100000 );
+
+					$post_data[ $key ] = $value;
+
 				}
+					
+				//make sure that the username is not filled in, otherwise a bot has sent the form. if so simply fake the send event
+				if( ! empty( $post_data['username'] ) )
+				{
+					$instance->submit_error = __( 'Illegal request.', 'avia_framework' );
+					return false;
+				}
+					
+				//iterate over form fields to generate the merge field data
+				if( empty( $this->fields ) ) 
+				{
+					$all_fields = get_option( 'av_chimplist_field' );
+					$this->fields = $all_fields[ $params['mailchimp'] ];
+				}
+					
+				foreach( $this->fields as $field )
+				{
+					$value = ! empty( $post_data[ $field->merge_id ] ) ? $post_data[ $field->merge_id ] : false;
+
+					if( $value !== false )
+					{
+						if( $field->merge_id != 0 )
+						{
+							$merge_fields[ $field->tag ] = $value;
+						}
+						else
+						{
+							$mail = $value;
+						}
+					}
+				}
+					
+				$data_to_send = array(
+									'email_address' => $mail,
+									'status'		=> $status,
+								);
+					
+				if( ! empty( $merge_fields ) )
+				{
+					$data_to_send['merge_fields'] = $merge_fields;
+				}
+
+				$data_to_send = apply_filters( 'avf_mailchimp_subscriber_data' , $data_to_send , $this );
+				$api = new av_mailchimp_api( $this->api_key );
+				$this->add_user = $api->post( 'lists/' . $params['mailchimp'] . '/members' , $data_to_send ); 
+			
+				//user was successfully added
+				if( isset( $this->add_user->id ) )
+				{
+					return true;
+				}
+
+				//if we got no id the user was not added which means we got an error. 
+				$error_key = 'general';
+					
+				if($this->add_user->title == 'Invalid Resource')
+				{
+					$error_key = 'all';
+
+					if( strpos( $this->add_user->detail, 'email' ) !== false )
+					{
+						$error_key = 'email';
+					}
+
+					if( strpos($this->add_user->detail, 'merge fields' ) !== false )
+					{
+						$error_key = 'invalid_field';
+					}
+				}
+
+				if( $this->add_user->title == 'Member Exists' )
+				{
+					$error_key = 'already';
+				}
+					
+				$instance->error_msg = "<div class='avia-mailchimp-ajax-error av-form-error-container'>" . $api->message($error_key) . '</div>';
+
+
+				add_action( 'wp_footer', array( $this, 'print_js_error' ), 2, 100000 );
+			}
 				
-				
-				
-				return false;
+			return false;
 		}
 
 		public function print_js_error()
 		{
 			echo "<script type='text/javascript'>";
-			echo "var av_mailchimp_errors = ".json_encode( $this->add_user ).";";
-			echo "if(console) console.log( 'Mailchimp Error:' , av_mailchimp_errors );";
+			echo	"var av_mailchimp_errors = " . json_encode( $this->add_user ) . ";";
+			echo	"if(console) console.log( 'Mailchimp Error:' , av_mailchimp_errors );";
 			echo "</script>";
 		}
 
-
+		
 		public function sort_elements( $a, $b )
 		{
 			return $a['order'] - $b['order'];
@@ -885,85 +914,124 @@ if ( ! class_exists( 'avia_sc_mailchimp' ) )
 		/*helper function that converts the shortcode sub array into the format necessary for the contact form*/
 		private function convert_fields_from_list( $key )
 		{
-			$all_fields 	= get_option('av_chimplist_field');
-			$this->fields 	= $all_fields[$key];
+			$all_fields = get_option( 'av_chimplist_field' );
+			$this->fields = $all_fields[ $key ];
 
-			$converted 	= array();
+			$converted = array();
 
-			if(!empty($this->fields))
+			if( ! empty( $this->fields ) )
 			{
-				foreach ($this->fields as $field)
+				foreach( $this->fields as $field )
 				{
-					if($field->public == 1)
+					if( $field->public == 1 )
 					{
-						$required 	= $field->required;
-						$options 	= isset( $field->options->choices ) ? $field->options->choices : '';
-						$type	 	= 'text';
-						$check		= '';
+						$required = $field->required;
+						$options = isset( $field->options->choices ) ? $field->options->choices : '';
+						$type = 'text';
+						$check = '';
 
 						switch( $field->type )
 						{
-							case 'dropdown': 	$type = 'select'; break;
-							case 'date': 		$type = 'datepicker'; break;
-							case 'radio': 		$type = 'select'; break;
-							case 'number': 		if(!empty($required)){ $check = 'is_number'; } break;
-							case 'email': 		$type = 'text'; if(!empty($required)){ $check = 'is_email';  } break;
-							default: 			$type = 'text';
+							case 'dropdown': 	
+								$type = 'select'; 
+								break;
+							case 'date': 		
+								$type = 'datepicker'; 
+								break;
+							case 'radio': 		
+								$type = 'select'; 
+								break;
+							case 'number': 		
+								if( ! empty( $required ) )
+								{ 
+									$check = 'is_number'; 
+								} 
+								break;
+							case 'email': 		
+								$type = 'text'; 
+								if( ! empty( $required ) )
+								{ 
+									$check = 'is_email';  
+								} 
+								break;
+							default: 			
+								$type = 'text';
+								break;
 						}
 
-						if( empty($check) )
+						if( empty( $check ) )
 						{
-							$check = !empty($required) ? 'is_empty' : '';
+							$check = ! empty( $required ) ? 'is_empty' : '';
 						}
 
 						$converted[ $field->merge_id ] = array(
-
-							'id' 		=> $field->merge_id,
-							'label' 	=> $field->name,
-							'type'  	=> $type,
-							'check' 	=> $check,
-							'options' 	=> $options,
-							'order'		=> $field->display_order,
-							'value'		=> $field->default_value
-						);
+															'id' 		=> $field->merge_id,
+															'label' 	=> $field->name,
+															'type'  	=> $type,
+															'check' 	=> $check,
+															'options' 	=> $options,
+															'order'		=> $field->display_order,
+															'value'		=> $field->default_value
+														);
 					}
 				}
 
-				usort($converted, array( $this , 'sort_elements') );
+				usort( $converted, array( $this , 'sort_elements' ) );
 			}
 
 			return $converted;
 		}
 
 		/*helper function that converts the shortcode sub array into the format necessary for the contact form*/
-		function helper_array2form_fields($base)
+		function helper_array2form_fields( $base )
 		{
 			$form_fields = array();
 			$labels = array();
 
-			if(is_array($base))
+			if( is_array( $base ) )
 			{
-				foreach($base as $key => $field)
+				foreach( $base as $key => $field )
 				{
-					if(!empty($field['attr']['disabled']) && empty( $field['attr']['check'] ) && $field['attr']['type'] != 'button' ) continue;
-
+					if( ! empty( $field['attr']['disabled'] ) && empty( $field['attr']['check'] ) && $field['attr']['type'] != 'button' ) 
+					{
+						continue;
+					}
+					
 					switch( $field['attr']['type'] )
 					{
-						case 'dropdown': 	$field['attr']['type'] = 'select'; break;
-						case 'date': 		$field['attr']['type'] = 'datepicker'; break;
-						case 'radio': 		$field['attr']['type'] = 'select'; break;
-						case 'button': 		$field['attr']['type'] = 'button'; break;
-						case 'number': 		$field['attr']['type'] = 'number'; break;
-						default: 			$field['attr']['type'] = 'text';
+						case 'dropdown': 	
+							$field['attr']['type'] = 'select'; 
+							break;
+						case 'date': 		
+							$field['attr']['type'] = 'datepicker'; 
+							break;
+						case 'radio': 		
+							$field['attr']['type'] = 'select'; 
+							break;
+						case 'button': 		
+							$field['attr']['type'] = 'button'; 
+							break;
+						case 'number': 		
+							$field['attr']['type'] = 'number'; 
+							break;
+						default: 			
+							$field['attr']['type'] = 'text';
+							break;
 					}
 
 					$sanizited_id = $field['attr']['id'];
 
-					$labels[$sanizited_id] = empty($labels[$sanizited_id]) ? 1 : $labels[$sanizited_id] + 1;
-					if($labels[$sanizited_id] > 1) $sanizited_id = $sanizited_id . '_' . $labels[$sanizited_id];
+					$labels[ $sanizited_id ] = empty( $labels[ $sanizited_id ] ) ? 1 : $labels[ $sanizited_id ] + 1;
+					if( $labels[ $sanizited_id ] > 1 ) 
+					{
+						$sanizited_id = $sanizited_id . '_' . $labels[ $sanizited_id ];
+					}
 
-					$form_fields[$sanizited_id] = $field['attr'];
-					if(!empty($field['content'])) $form_fields[$sanizited_id]['content'] = ShortcodeHelper::avia_apply_autop($field['content']);
+					$form_fields[ $sanizited_id ] = $field['attr'];
+					if( ! empty( $field['content'] ) ) 
+					{
+						$form_fields[ $sanizited_id ]['content'] = ShortcodeHelper::avia_apply_autop( $field['content'] );
+					}
 				}
 			}
 

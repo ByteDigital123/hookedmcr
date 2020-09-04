@@ -110,6 +110,20 @@ function avia_nl2br (str, is_xhtml)
 		this.disable_autoswitch_editor_style = false;
 		
 		this.builder_drag_drop_container = 'body';
+		
+		// Stores last selected tab and toggle state in modal popup (main popup and subitem popup). Limited to last used element - reset when element changes.
+		// After a page reload only checks if same type of element is clicked to prevent a reset.
+		// false if session storage is blocked by user
+		this.modal_popup_state_default = { 
+								post_id:			0,
+								shortcode:			'',
+								tab_text:			'',
+								toggle_text:		'',
+								group_shortcode:	'',
+								group_tab_text:		'',
+								group_toggle_text:	''
+							};
+		this.modal_popup_state = $.extend( {}, this.modal_popup_state_default );
         
         //activate the plugin
         this.set_up();
@@ -128,9 +142,10 @@ function avia_nl2br (str, is_xhtml)
 		*/
 		set_up: function()
 		{
-		    this.place_top();
+			this.place_top();
 			this.convertTextToInterface();
 			this.add_behavior();
+			this.init_modal_popup_state();
 		},
 		
 		/**
@@ -325,32 +340,39 @@ function avia_nl2br (str, is_xhtml)
 			//edit item via modal window
 			$body.on('click', '.avia-edit-element', function()
 			{
-				var parent				  = $(this).parents('.avia_sortable_element:eq(0)');
-				if(!parent.length) parent = $(this).parents('.avia_layout_column:eq(0)');
-				if(!parent.length) parent = $(this).parents('.avia_layout_section:eq(0)');
+				var parent = $(this).parents('.avia_sortable_element:eq(0)');
+				if( ! parent.length ) 
+				{
+					parent = $(this).parents('.avia_layout_column:eq(0)');
+				}
+				if( ! parent.length ) 
+				{
+					parent = $(this).parents('.avia_layout_section:eq(0)');
+				}
 					
-					var params			= parent.data(), modal;
-					
-					params.scope		= obj;
-					params.on_load		= parent.data('modal_on_load');
-					params.before_save	= parent.data('before_save');
-					params.on_save		= obj.send_to_datastorage;
-					params.save_param	= parent;
-					params.ajax_param	= {extract: true, shortcode: parent.find('>.avia_inner_shortcode>'+ obj.datastorage + ':eq(0)').val(), allowed: params.allowedShortcodes, _ajax_nonce: $('#avia-loader-nonce').val() };
+				var params			= parent.data();
 
-					var preview_scale_markup = '';
-					if (!isNaN(params.preview_scale)) {
-						preview_scale_markup = "<span class='avia-modal-preview-scale'>"+window.avia_preview.scale+" "+params.preview_scale+"%</span>";
-					}
+				params.scope		= obj;
+				params.on_load		= parent.data('modal_on_load');
+				params.before_save	= parent.data('before_save');
+				params.on_save		= obj.send_to_datastorage;
+				params.save_param	= parent;
+				params.ajax_param	= {extract: true, shortcode: parent.find('>.avia_inner_shortcode>'+ obj.datastorage + ':eq(0)').val(), allowed: params.allowedShortcodes, _ajax_nonce: $('#avia-loader-nonce').val() };
 
-					if(params.preview) //check for preview window
-					{
-						var bg_colors = "<a href='#' style='background:#fff;'></a><a href='#' style='background:#f1f1f1;'></a><a href='#' style='background:#222;'></a>";
-						params.modal_class = " modal-preview-active modal-preview-"+params.preview;
-						params.on_load = params.on_load != "" ? params.on_load + ", modal_preview_script" : "modal_preview_script";
-						params.attach_content = "<div class='avia-modal-preview'><div class='avia-modal-preview-header'><h3 class='avia-modal-title'>"+window.avia_preview.title+"</h3><div class='avia_loading'></div></div><div class='avia-modal-preview-content' data-preview-scale='"+params.preview_scale+"'></div><div class='avia-modal-preview-footer'><span>"+window.avia_preview.background+"</span>"+bg_colors+preview_scale_markup+"</div></div>";
-					}
-				
+				var preview_scale_markup = '';
+				if (!isNaN(params.preview_scale)) 
+				{
+					preview_scale_markup = "<span class='avia-modal-preview-scale'>"+window.avia_preview.scale+" "+params.preview_scale+"%</span>";
+				}
+
+				if( params.preview ) //check for preview window
+				{
+					var bg_colors = "<a href='#' style='background:#fff;'></a><a href='#' style='background:#f1f1f1;'></a><a href='#' style='background:#222;'></a>";
+					params.modal_class = " modal-preview-active modal-preview-"+params.preview;
+					params.on_load = params.on_load != "" ? params.on_load + ", modal_preview_script" : "modal_preview_script";
+					params.attach_content = "<div class='avia-modal-preview'><div class='avia-modal-preview-header'><h3 class='avia-modal-title'>"+window.avia_preview.title+"</h3><div class='avia_loading'></div></div><div class='avia-modal-preview-content' data-preview-scale='"+params.preview_scale+"'></div><div class='avia-modal-preview-footer'><span>"+window.avia_preview.background+"</span>"+bg_colors+preview_scale_markup+"</div></div>";
+				}
+
 				var modal = new $.AviaModal(params);
 				return false;
 			});
@@ -363,22 +385,23 @@ function avia_nl2br (str, is_xhtml)
 				var parent				= $(this).parents('.avia-modal-group-element:eq(0)'),
 					params				= parent.data();
 					
-					if( ( 'undefined' !== typeof parent.data('modal_open') ) && ( 'no' == parent.data('modal_open') ) )
+				if( ( 'undefined' !== typeof parent.data('modal_open') ) && ( 'no' == parent.data('modal_open') ) )
+				{
+					//	reroute click event to another button/element in this modal group
+					if( ( 'undefined' !== typeof parent.data('trigger_button') ) && ( '' != parent.data('trigger_button').trim() ) )
 					{
-						//	reroute click event to another button/element in this modal group
-						if( ( 'undefined' !== typeof parent.data('trigger_button') ) && ( '' != parent.data('trigger_button').trim() ) )
-						{
-							parent.closest( '.avia-modal-group-wrapper ' ).find('.' + parent.data('trigger_button').trim() ).trigger( 'click' );
-						}
-						return false;
+						parent.closest( '.avia-modal-group-wrapper ' ).find('.' + parent.data('trigger_button').trim() ).trigger( 'click' );
 					}
-					
-					params.scope		= obj;
-					params.on_load		= parent.data('modal_on_load');
-					params.before_save	= parent.data('before_save');
-					params.on_save		= obj.send_to_datastorage;
-					params.save_param	= parent;
-					params.ajax_param	= {subelement: true, extract: true, shortcode: parent.find(obj.datastorage + ':eq(0)').val() , _ajax_nonce: $('#avia-loader-nonce').val()  };
+					return false;
+				}
+
+				params.scope		= obj;
+				params.on_load		= parent.data('modal_on_load');
+				params.before_save	= parent.data('before_save');
+				params.on_save		= obj.send_to_datastorage;
+				params.save_param	= parent;
+
+				params.ajax_param	= {subelement: true, extract: true, shortcode: parent.find(obj.datastorage + ':eq(0)').val() , _ajax_nonce: $('#avia-loader-nonce').val()  };
 					
 				var modal = new $.AviaModal(params);
 				return false;
@@ -429,6 +452,112 @@ function avia_nl2br (str, is_xhtml)
 			
 		},
 		
+		init_modal_popup_state: function()
+		{
+			var form = $( 'form[id="post"]' );
+			if( form.length == 0 )
+			{
+				this.modal_popup_state = false;
+				return;
+			}
+			
+			var post_id = form.find( '#post_ID' ).val();
+			var stored = this.get_modal_popup_state();
+			
+			if( false === stored )
+			{
+				return;
+			}
+			
+			if( 'undefined' == typeof stored || 'undefined' == typeof stored.post_id || stored.post_id != post_id )
+			{
+				this.modal_popup_state = $.extend( {}, this.modal_popup_state_default );
+				this.modal_popup_state.post_id = post_id;
+			}
+			else
+			{
+				this.modal_popup_state = stored;
+			}
+			
+			this.save_modal_popup_state();
+			return;
+		},
+		
+		clear_modal_popup_state: function( shortcode, is_group_element )
+		{
+			if( false === this.modal_popup_state )
+			{
+				return;
+			}
+			
+			var current = this.modal_popup_state;
+			this.modal_popup_state = $.extend( {}, this.modal_popup_state_default );
+			this.modal_popup_state.post_id = current.post_id;
+			
+			if( is_group_element )
+			{
+				this.modal_popup_state.shortcode = current.shortcode;
+				this.modal_popup_state.tab_text = current.tab_text;
+				this.modal_popup_state.toggle_text = current.toggle_text;
+				this.modal_popup_state.group_shortcode = shortcode;
+			}
+			else
+			{
+				this.modal_popup_state.shortcode = shortcode;
+			}
+			
+			this.save_modal_popup_state();
+			
+			return this.modal_popup_state;
+		},
+		
+		set_modal_popup_state: function( context, value, modal_instance )
+		{
+			if( false === this.modal_popup_state )
+			{
+				return;
+			}
+			
+			this.modal_popup_state[ context ] = value;
+			this.save_modal_popup_state();
+			
+			var group_element = modal_instance.options.save_param.hasClass( 'avia-modal-group-element' );
+			var last_element_class = group_element ? 'avia-modal-group-last-open' : 'avia-modal-element-last-open';
+			
+			//	Remember last selected element - this is only availale when page is not reloaded
+			$( 'body' ).find( '.' + last_element_class ).removeClass( last_element_class );
+			modal_instance.options.save_param.addClass( last_element_class );
+		},
+		
+		get_modal_popup_state: function()
+		{
+			var stored = null;
+			
+			//	FF throws error when all cookies blocked !!
+			try
+			{
+				stored = sessionStorage.getItem( 'aviaModalPopupState' );
+				stored = ( null == stored ) ? {} : JSON.parse( stored );
+			}
+			catch(e)
+			{
+				this.modal_popup_state = false;
+				return this.modal_popup_state;
+			}
+			
+			return stored;
+		},
+		
+		save_modal_popup_state: function()
+		{
+			if( false === this.modal_popup_state )
+			{
+				return;
+			}
+			
+			var value = JSON.stringify( this.modal_popup_state );
+			sessionStorage.setItem( 'aviaModalPopupState', value );
+		},
 		
 		sort_shortcode_buttons: function( sort_order )
 		{
@@ -1518,7 +1647,8 @@ function avia_nl2br (str, is_xhtml)
 				column = element_container.parents('.avia_layout_column:eq(0)'),
 				section = element_container.parents('.avia_layout_section:eq(0)'),
 				shortcode = element_container.data('shortcodehandler'),
-				output = "", tags = {};
+				output = "", 
+				tags = {};
 			
 			avia_log(values, false);
 		  
@@ -1687,7 +1817,6 @@ function avia_nl2br (str, is_xhtml)
 								visual_template = visual_el.data('update_template');
 								visual_update_object = visual_el.data('update_object');
 								
-								
 								if(typeof values[visual_key] === "string" || typeof values[visual_key] === "number" || typeof values[visual_key] === "object")
 								{
 									replace_val = values[visual_key];
@@ -1728,9 +1857,16 @@ function avia_nl2br (str, is_xhtml)
 									}
 									
 									//check for a template
-									if(visual_template)
+									if( visual_template )
 									{
-										update_html = visual_template.replace("{{"+visual_key+"}}", replace_val);
+										var tmpl_replace_val = replace_val;
+										var data = visual_el.data( 'update_with_keys' );
+										if( 'undefined' != typeof data && 'undefined' != typeof data[ replace_val ] )
+										{
+											tmpl_replace_val = data[ replace_val ];
+										}
+										
+										update_html = visual_template.replace( "{{" + visual_key + "}}", tmpl_replace_val );
 									}
 									else
 									{

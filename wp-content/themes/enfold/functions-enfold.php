@@ -1724,7 +1724,7 @@ if(!function_exists('avia_add_compat_header'))
 if( ! function_exists( 'avia_add_hide_featured_image_select' ) )
 {	
 	/**
-	 * Add a selectbox to hide featured image on single post
+	 * Add a select box to hide featured image on single post
 	 * 
 	 * @param array $elements
 	 * @return array
@@ -1798,11 +1798,11 @@ if(!function_exists('avia_active_caching'))
 
 
 
-if(!function_exists('avia_menu_button_style'))
+if( ! function_exists('avia_menu_button_style' ) )
 {
-	add_action('wp_nav_menu_item_custom_fields', 'avia_menu_button_style', 10, 4);
+	add_action( 'wp_nav_menu_item_custom_fields', 'avia_menu_button_style', 10, 5 );
 
-	function avia_menu_button_style($output, $item, $depth, $args)
+	function avia_menu_button_style( $output, $item, $depth, $args, $current_object_id = 0 )
 	{
 	        $item_id = $item->ID;
 	        $key = "style";
@@ -2287,102 +2287,115 @@ if( ! function_exists( 'av_print_custom_font_size' ) )
 }
 
 
-/**
- * disable element live preview
- */
 if( ! function_exists( 'av_disable_live_preview' ) )
 {
+	/**
+	 * Disable element live preview
+	 * 
+	 * @param array $data
+	 * @return array
+	 */
 	function av_disable_live_preview( $data ) 
 	{
-		if(avia_get_option('preview_disable') == "preview_disable")
+		if( avia_get_option( 'preview_disable' ) == 'preview_disable' )
 		{
 			$data['preview'] = 0;
 		}
-		
+
 		return $data;
 	}
 
-	add_filter( 'avb_backend_editor_element_data_filter', 'av_disable_live_preview' );
+	add_filter( 'avb_backend_editor_element_data_filter', 'av_disable_live_preview', 10, 1 );
 }
-
-
-/**
- * Adds a copyright field to the upload and edit dialogue of the media manager
- *
- * @author tinabillinger
- * @since 4.3
- */
-
 
 if( ! function_exists( 'av_attachment_copyright_field_edit' ) )
 {
-    function av_attachment_copyright_field_edit($form_fields, $post)
-    {
+	/**
+	 * Adds a copyright field to the upload and edit dialogue of the media manager
+	 * 
+	 * @author tinabillinger
+	 * @since 4.3
+	 * @param array $form_fields
+	 * @param WP_Post $post
+	 * @return array
+	 */
+	function av_attachment_copyright_field_edit( $form_fields, $post )
+	{
 
-        $form_fields['av_copyright_field'] = array(
-            'label' => __('Copyright'),
-            'input' => 'text',
-            'value' => get_post_meta( $post->ID, '_avia_attachment_copyright', true ),
-        );
+		$form_fields['av_copyright_field'] = array(
+												'label'	=> __( 'Copyright', 'avia_framework' ),
+												'input'	=> 'text',
+												'value'	=> get_post_meta( $post->ID, '_avia_attachment_copyright', true ),
+											);
 
-        return $form_fields;
-    }
-    add_filter( 'attachment_fields_to_edit', 'av_attachment_copyright_field_edit', null, 2 );
+		return $form_fields;
+	}
+	
+	add_filter( 'attachment_fields_to_edit', 'av_attachment_copyright_field_edit', 99, 2 );
 }
-
-
-/**
- * Saves the copyright field created by filter above
- *
- * @author tinabillinger
- * @since 4.3
- */
 
 
 if( ! function_exists( 'av_attachment_copyright_field_save' ) )
 {
-    function av_attachment_copyright_field_save($post, $attachment)
-    {
-        if ( ! empty( $attachment['av_copyright_field'] ) )
-        {
-            update_post_meta( $post['ID'], '_avia_attachment_copyright', $attachment['av_copyright_field'] );
-        }
-        else {
-            delete_post_meta( $post['ID'], '_avia_attachment_copyright' );
-        }
-        return $post;
-    }
+	/**
+	 * Saves the copyright field created by filter above
+	 * 
+	 * @author tinabillinger
+	 * @since 4.3
+	 * @param array $post
+	 * @param array $attachment
+	 * @return array
+	 */
+	function av_attachment_copyright_field_save( $post, $attachment )
+	{
+		if( ! empty( $attachment['av_copyright_field'] ) )
+		{
+			update_post_meta( $post['ID'], '_avia_attachment_copyright', $attachment['av_copyright_field'] );
+		}
+		else 
+		{
+			delete_post_meta( $post['ID'], '_avia_attachment_copyright' );
+		}
+		
+		return $post;
+	}
 
-    add_filter( 'attachment_fields_to_save', 'av_attachment_copyright_field_save', null, 2 );
+	add_filter( 'attachment_fields_to_save', 'av_attachment_copyright_field_save', 99, 2 );
 }
-
-
-/**
- * Attaches the information from the copyright field to get_the_post_thumbnail()
- * The added tag is initally hidden by CSS, and can be made visible by choice
- *
- * @author tinabillinger
- * @since 4.3
- */
-/*
- * Add 'copyright info to get_the_post_thumbnail()
- */
 
 if( ! function_exists( 'avia_post_thumbnail_html' ) )
 {
-    function avia_post_thumbnail_html($html, $post_id, $post_thumbnail_id, $size, $attr)
-    {
-        $attachment_id = get_post_thumbnail_id($post_id);
-        $copyright_text = get_post_meta($attachment_id, '_avia_attachment_copyright', true );
+	
+	/**
+	 * Attaches the information from the copyright field to get_the_post_thumbnail().
+	 * The added tag is initally hidden by CSS, and can be made visible by choice
+	 * 
+	 * @author tinabillinger
+	 * @since 4.3
+	 * @param string $html
+	 * @param int $post_id
+	 * @param int $post_thumbnail_id
+	 * @param string|array $size
+	 * @param string $attr
+	 * @return string
+	 */
+	function avia_post_thumbnail_html( $html, $post_id, $post_thumbnail_id, $size, $attr )
+	{
+		$attachment_id = get_post_thumbnail_id( $post_id );
+		$copyright_text = get_post_meta( $attachment_id, '_avia_attachment_copyright', true );
 
-        if ($copyright_text) {
-            $html .= "<small class='avia-copyright'>{$copyright_text}</small>";
-        }
-        return $html;
-    }
-    if (! is_admin()){
-        add_filter('post_thumbnail_html', 'avia_post_thumbnail_html', 99, 5);
-    }
+		if( $copyright_text ) 
+		{
+			$html .= "<small class='avia-copyright'>{$copyright_text}</small>";
+		}
+
+		return $html;
+	}
+
+	if( ! is_admin() )
+	{
+		add_filter( 'post_thumbnail_html', 'avia_post_thumbnail_html', 99, 5 );
+	}
 }
 
 
@@ -2406,21 +2419,21 @@ if( ! function_exists( 'av_builder_meta_box_elements_content' ) )
 		{
 			$desc = __( 'Display the footer page?', 'avia_framework' );
 			$subtype = array(
-							__("Default Layout - set in",'avia_framework')." ".THEMENAME." > ". __('Footer','avia_framework') => '',
-							__('Use selected page to display as footer and socket','avia_framework')	=> 'page_in_footer_socket',
-							__('Use selected page to display as footer (no socket)','avia_framework')	=> 'page_in_footer',
-							__('Don\'t display the socket & page','avia_framework')							=> 'nofooterarea'
+							__( 'Default Layout - set in', 'avia_framework' ) . ' ' . THEMENAME. ' > ' . __( 'Footer', 'avia_framework' )	=> '',
+							__( 'Use selected page to display as footer and socket', 'avia_framework' )		=> 'page_in_footer_socket',
+							__( 'Use selected page to display as footer (no socket)', 'avia_framework' )	=> 'page_in_footer',
+							__( 'Don\'t display the socket & page', 'avia_framework' )						=> 'nofooterarea'
 						);
 		}
 		else 
 		{
 			$desc = __( 'Display the footer widgets?', 'avia_framework' );
 			$subtype = array(
-							__("Default Layout - set in",'avia_framework')." ".THEMENAME." > ". __('Footer','avia_framework') => '',
-							__('Display the footer widgets & socket','avia_framework')					=> 'all',
-							__('Display only the footer widgets (no socket)','avia_framework')			=> 'nosocket',
-							__('Display only the socket (no footer widgets)','avia_framework')			=> 'nofooterwidgets',
-							__('Don\'t display the socket & footer widgets','avia_framework')			=> 'nofooterarea'
+							__( 'Default Layout - set in', 'avia_framework' ) . ' ' . THEMENAME . ' > ' . __( 'Footer', 'avia_framework' ) => '',
+							__( 'Display the footer widgets & socket', 'avia_framework' )					=> 'all',
+							__( 'Display only the footer widgets (no socket)', 'avia_framework' )			=> 'nosocket',
+							__( 'Display only the socket (no footer widgets)', 'avia_framework' )			=> 'nofooterwidgets',
+							__( 'Don\'t display the socket & footer widgets', 'avia_framework' )			=> 'nofooterarea'
 						);
 		}
 		
@@ -2437,20 +2450,6 @@ if( ! function_exists( 'av_builder_meta_box_elements_content' ) )
 	}
 	
 	add_filter( 'avf_builder_elements', 'av_builder_meta_box_elements_content', 10000, 1 );
-}
-
-
-if( ! function_exists( 'av_return_100' ) )
-{
-	/**
-	* Sets the default image to 100% quality for more beautiful images when used in conjunction with img optimization plugins
-	*
-	* @since 4.3
-	* @added_by Kriesi
-	*/
-	function av_return_100(){ return 100; }
-	add_filter('jpeg_quality', 'av_return_100');
-	add_filter('wp_editor_set_quality', 'av_return_100');
 }
 
 
@@ -2511,4 +2510,3 @@ if( ! function_exists( 'avia_remove_query_strings' ) )
 	
 }
 		
-

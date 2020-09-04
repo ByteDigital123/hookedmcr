@@ -51,7 +51,6 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 				//load js
 			wp_enqueue_script( 'avia-module-gallery-hor', AviaBuilder::$path['pluginUrlRoot'] . 'avia-shortcodes/gallery_horizontal/gallery_horizontal.js', array( 'avia-shortcodes' ), false, true );
 
-
 		}
 
 		/**
@@ -123,6 +122,11 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 						array(	
 								'type'			=> 'template',
 								'template_id'	=> $this->popup_key( 'advanced_link' )
+							),
+				
+						array(
+								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation' ),
 							),
 				
 						array(	
@@ -292,13 +296,27 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 			$c = array(
 						array(
 							'name' 	=> __( 'Image Link', 'avia_framework' ),
-							'desc' 	=> __( 'By default images got a small link to a larger image version in a lightbox. You can deactivate that link. You can also set custom links when editing the images in the gallery', 'avia_framework' ),
+							'desc' 	=> __( 'By default images link to a larger image version in a lightbox. You can change this here. A custom link can be added when editing the images in the gallery.', 'avia_framework' ),
 							'id' 	=> 'links',
 							'type' 	=> 'select',
 							'std' 	=> 'active',
 							'subtype'	=> array(
-												__( 'Lightbox linking active', 'avia_framework' )		=> 'active',
-												__( 'Lightbox linking deactivated', 'avia_framework' )	=> '',
+												__( 'Lightbox linking active', 'avia_framework' )				=> 'active',
+												__( 'Use custom link (fallback is no link)', 'avia_framework' )	=> '',
+												__( 'No links', 'avia_framework' )								=> 'no_links',
+											)
+						),
+				
+						array(
+							'name'		=> __( 'Custom link destination', 'avia_framework' ),
+							'desc'		=> __( 'Select where an existing custom link should be opened.', 'avia_framework' ),
+							'id'		=> 'link_dest',
+							'type'		=> 'select',
+							'std'		=> '',
+							'required'	=> array( 'links', 'equals', '' ),
+							'subtype'	=> array(
+												__( 'Open in same window', 'avia_framework' )		=> '',
+												__( 'Open in a new window', 'avia_framework' )		=> '_blank'
 											)
 						),
 					
@@ -308,28 +326,15 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 							'id'		=> 'lightbox_text',
 							'type'		=> 'select',
 							'std'		=> '',
-							'required'	=> array( 'links', 'equals', 'active'),
+							'required'	=> array( 'links', 'equals', 'active' ),
 							'subtype'	=> array(
 												__( 'No text', 'avia_framework' )										=> 'no_text',
 												__( 'Image title', 'avia_framework' )									=> '',
 												__ ('Image description (or image title if empty)', 'avia_framework' )	=> 'description',
 												__( 'Image caption (or image title if empty)', 'avia_framework' )		=> 'caption'
 											)
-						),
-					
-						array(
-							'name'		=> __( 'Custom link destination', 'avia_framework' ),
-							'desc'		=> __( 'Select where an existing custom link should be opend.', 'avia_framework' ),
-							'id'		=> 'link_dest',
-							'type'		=> 'select',
-							'std'		=> '',
-							'required'	=> array( 'links', 'equals', ''),
-							'subtype'	=> array(
-												__( 'Open in same window', 'avia_framework' )		=> '',
-												__( 'Open in a new window', 'avia_framework' )		=> '_blank'
-											)
 						)
-				
+						
 				);
 			
 			$template = array(
@@ -342,6 +347,27 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 					);
 			
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_link' ), $template );
+			
+			
+			$c = array(
+				
+						array(	
+								'type'			=> 'template',
+								'template_id'	=> 'lazy_loading'
+							),
+				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
+								'title'			=> __( 'Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+			
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			
 		}
 
 		/**
@@ -363,7 +389,10 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 			
 			
 			
-			
+		/**
+		 * 
+		 * @return string
+		 */
 		protected function slide_navigation_arrows()
 		{
 			$html  = '';
@@ -401,7 +430,8 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 							'active'    		=> 'enlarge',
 							'control_layout'	=> 'av-control-default',
 							'initial'			=> '',
-							'id'				=> ''
+							'id'				=> '',
+							'lazy_loading'		=> 'enabled'
 
 						), $atts, $this->config['shortcode'] ) );
 
@@ -416,14 +446,14 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 							)
 						);
 
-			$display_char = av_icon('ue869', 'entypo-fontello');
+			$display_char = av_icon( 'ue869', 'entypo-fontello' );
 			$padding = '';
 
-			if($active == 'enlarge')
+			if( $active == 'enlarge' )
 			{
 				$enlarge_by = 1.3;
-				$padding 	= (( $height * $enlarge_by ) - $height ) / 2;
-				$padding 	= "style='padding: {$padding}% 0px;' data-av-enlarge='{$enlarge_by}' ";
+				$padding = ( ( $height * $enlarge_by ) - $height ) / 2;
+				$padding = "style='padding: {$padding}% 0px;' data-av-enlarge='{$enlarge_by}' ";
 			}
 				
 			if( ! empty( $attachments ) && is_array( $attachments ) )
@@ -441,10 +471,8 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 					$initial = "data-av-initial='{$initial}' ";
 				}
 
-				$counter 	= 0;
-				$markup 	= avia_markup_helper(
-					array('context' => 'image','echo'=>false, 'custom_markup'=>$meta['custom_markup'])
-				);
+				$counter = 0;
+				$markup = avia_markup_helper( array( 'context' => 'image', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
 
 				$add_id = ShortcodeHelper::is_top_level() ? '' : $meta['custom_el_id'];
 
@@ -459,19 +487,19 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 				foreach( $attachments as $attachment )
 				{
 					$counter ++;
-					$img  	 		= wp_get_attachment_image_src( $attachment->ID, $size );
-					$lightbox	 	= wp_get_attachment_image_src( $attachment->ID, 'large' );
-					$lightbox		= $lightbox[0];
+					$img = wp_get_attachment_image_src( $attachment->ID, $size );
+					$lightbox = wp_get_attachment_image_src( $attachment->ID, 'large' );
+					$lightbox = $lightbox[0];
 
-					$alt			= get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true );
-					$alt			= ! empty( $alt ) ? esc_attr( $alt ) : '';
+					$alt = get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true );
+					$alt = ! empty( $alt ) ? esc_attr( $alt ) : '';
 
-					$title			= trim( $attachment->post_title ) ? esc_attr( $attachment->post_title ) : '';
-					$description	= trim( $attachment->post_content ) ? esc_attr( $attachment->post_content ) : '';
-					$caption		= trim( $attachment->post_excerpt ) ? esc_attr( $attachment->post_excerpt ) : '';
+					$title = trim( $attachment->post_title ) ? esc_attr( $attachment->post_title ) : '';
+					$description = trim( $attachment->post_content ) ? esc_attr( $attachment->post_content ) : '';
+					$caption = trim( $attachment->post_excerpt ) ? esc_attr( $attachment->post_excerpt ) : '';
 
-					$custom_link	= get_post_meta( $attachment->ID, 'av-custom-link', true );
-					$custom_link	= ! empty( $custom_link ) ? esc_attr( $custom_link ) : '';
+					$custom_link = get_post_meta( $attachment->ID, 'av-custom-link', true );
+					$custom_link = ! empty( $custom_link ) ? esc_attr( $custom_link ) : '';
 
 					$lightbox_title = $title;
 					switch( $lightbox_text )
@@ -503,25 +531,26 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 
 					if( ( '' == $links ) && ( $custom_link != '' ) ) 
 					{
-						$target = ( $link_dest != '' ) ?  ' target="' . $link_dest . '"' : '';
+						$target = ( $link_dest != '' ) ?  ' target="' . $link_dest . '" rel="noopener noreferrer"' : '';
 						$output .= '<a href="' . $custom_link . '"' . $target . '>';
 					}
 
-					$output .= "<img class='av-horizontal-gallery-img' ";
-					$output .= "width='{$img[1]}' height='{$img[2]}' src='{$img[0]}' title='" . esc_attr( $title ) . "' alt='" . esc_attr( $alt ) . "' />";	
+					$img_tag = "<img class='av-horizontal-gallery-img' width='{$img[1]}' height='{$img[2]}' src='{$img[0]}' title='{$title}' alt='{$alt}' />";	
+					$img_tag = Av_Responsive_Images()->prepare_single_image( $img_tag, $attachment->ID, $lazy_loading );
+					
+					$output .= $img_tag;
 
-					if( $links != '' )
+					if( ( '' == $links ) && ( $custom_link != '' ) ) 
 					{
-						$output .= "<a href='{$lightbox}'  class='av-horizontal-gallery-link' {$display_char} title='{$lightbox_title}'>";		
 						$output .= '</a>';
 					}
-					else if( $custom_link != '' )
+					else if( $links == 'active' )
 					{
+						$output .= "<a href='{$lightbox}' class='av-horizontal-gallery-link' {$display_char} title='{$lightbox_title}' alt='{$alt}'>";		
 						$output .= '</a>';
 					}
 								
 					$output .= '</div>';
-
 				}
 					
 				$output .= '</div>';
@@ -529,6 +558,8 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 				$output .= '</div>';
 
 			}
+			
+			$output = Av_Responsive_Images()->make_content_images_responsive( $output );
 
 			if( ! ShortcodeHelper::is_top_level() ) 
 			{
@@ -539,29 +570,39 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 			$params = array();
 			$params['class'] = "main_color av-horizontal-gallery-fullwidth avia-no-border-styling {$av_display_classes} {$meta['el_class']}";
 			$params['open_structure'] = false;
-			$params['id'] = AviaHelper::save_string( $meta['custom_id_val'] ,'-', 'av-horizontal-gallery-' . avia_sc_gallery_horizontal::$hor_gallery );
+			$params['id'] = AviaHelper::save_string( $meta['custom_id_val'] , '-', 'av-horizontal-gallery-' . avia_sc_gallery_horizontal::$hor_gallery );
 			$params['custom_markup'] = $meta['custom_markup'];
-			if($meta['index'] == 0) $params['class'] .= ' avia-no-border-styling';
+			
+			if( $meta['index'] == 0 ) 
+			{
+				$params['class'] .= ' avia-no-border-styling';
+			}
 
 			//we dont need a closing structure if the element is the first one or if a previous fullwidth element was displayed before
-			if($meta['index'] == 0) $params['close'] = false;
-			if(!empty($meta['siblings']['prev']['tag']) && in_array($meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section )) $params['close'] = false;
+			if( $meta['index'] == 0 ) 
+			{
+				$params['close'] = false;
+			}
+			
+			if( ! empty( $meta['siblings']['prev']['tag'] ) && in_array( $meta['siblings']['prev']['tag'], AviaBuilder::$full_el_no_section ) ) 
+			{
+				$params['close'] = false;
+			}
 
 			$html = $output;
 
-			$output  =  avia_new_section($params);
+			$output  = avia_new_section( $params );
 			$output .= $html;
 			$output .= '</div><!-- close section -->'; //close section
 
-
 			//if the next tag is a section dont create a new section from this shortcode
-			if(!empty($meta['siblings']['next']['tag']) && in_array($meta['siblings']['next']['tag'], AviaBuilder::$full_el ))
+			if( ! empty( $meta['siblings']['next']['tag']) && in_array( $meta['siblings']['next']['tag'], AviaBuilder::$full_el ) )
 			{
 				$skipSecond = true;
 			}
 
 			//if there is no next element dont create a new section.
-			if(empty($meta['siblings']['next']['tag']))
+			if( empty( $meta['siblings']['next']['tag'] ) )
 			{
 				$skipSecond = true;
 			}
@@ -572,7 +613,6 @@ if ( ! class_exists( 'avia_sc_gallery_horizontal' ) )
 			}
 
 			return $output;
-				
 		}
 
 	}

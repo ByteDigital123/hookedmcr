@@ -86,11 +86,16 @@
 						current = parseInt(element.text(),10), 
 						zeroOnly = /^0+$/.test(countTo), 
 						increment = 0,
-						number_format = element.data('number_format');
+						number_format = '';
 						
 					if( 'undefined' != typeof element.data('start_from') )
 					{
 						current = element.data('start_from');
+					}
+					
+					if( 'undefined' != typeof element.data('number_format') )
+					{
+						number_format = element.data('number_format');
 					}
 					
 					//fallback for decimals like 00 or 000

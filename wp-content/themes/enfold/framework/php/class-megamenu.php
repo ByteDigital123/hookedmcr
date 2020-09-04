@@ -16,7 +16,7 @@
  */
 
 
-if( !class_exists( 'avia_megamenu' ) )
+if( ! class_exists( 'avia_megamenu' ) )
 {
 
 	/**
@@ -358,13 +358,13 @@ if( !class_exists( 'avia_backend_walker' ) )
 		 * @see Walker::start_el()
 		 * @since 3.0.0
 		 *
-		 * @param string $output Passed by reference. Used to append additional content.
-		 * @param object $item Menu item data object.
-		 * @param int $depth Depth of menu item. Used for padding.
-		 * @param int $current_page Menu item ID.
+		 * @param string $output	Passed by reference. Used to append additional content.
+		 * @param object $item		Menu item data object.
+		 * @param int $depth		Depth of menu item. Used for padding.
 		 * @param object $args
+		 * @param int $current_object_id	Menu item ID.
 		 */
-		function start_el(&$output, $item, $depth = 0, $args = array(), $current_object_id = 0 ) {
+		function start_el( &$output, $item, $depth = 0, $args = array(), $current_object_id = 0 ) {
 			global $_wp_nav_menu_max_depth;
 		$_wp_nav_menu_max_depth = $depth > $_wp_nav_menu_max_depth ? $depth : $_wp_nav_menu_max_depth;
 
@@ -531,7 +531,7 @@ if( !class_exists( 'avia_backend_walker' ) )
 					//this hook should provide compatibility with a lot of wordpress plugins altering the walker like http://wordpress.org/plugins/nav-menu-roles/
 					//learn more here: http://shazdeh.me/2014/06/25/custom-fields-nav-menu-items/
 					
-					do_action( 'wp_nav_menu_item_custom_fields', $item_id, $item, $depth, $args ); 
+					do_action( 'wp_nav_menu_item_custom_fields', $item_id, $item, $depth, $args, $current_object_id ); 
 					
 					?>
 					

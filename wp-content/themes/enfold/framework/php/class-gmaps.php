@@ -14,7 +14,7 @@ if( ! class_exists( 'av_google_maps' ) )
 	{
 			//	maintain URL and version number here for all objects using this element
 		const API_URL			=	'https://maps.googleapis.com/maps/api/js';
-		const API_VERSION		=	'3.38';				
+		const API_VERSION		=	'3.41';				
 		const MAPS_SEARCH_URL	=	'https://www.google.com/maps/search/';
 		
 		const AJAX_NONCE		=	'av_google_maps_nonce';
@@ -161,6 +161,22 @@ if( ! class_exists( 'av_google_maps' ) )
 		 */
 		public function handler_wp_admin_enqueue_scripts()
 		{
+			/**
+			 * Some 3rd party plugins need to supress loading scripts
+			 * Not loading the scripts might result in breaking backend !!!
+			 * 
+			 * @since 4.7.5.1
+			 * @param boolean
+			 * @param string $context
+			 * @return string			return 'skip_loading' to prohibit loading of backend scripts
+			 */
+			$skip_loading = apply_filters( 'avf_skip_enqueue_scripts_backend_gmaps', '', 'header' );
+			
+			if( 'skip_loading' === $skip_loading )
+			{
+				return;
+			}
+			
 			/**
 			 * In backend we must enqueue to validate key
 			 */
@@ -352,6 +368,25 @@ if( ! class_exists( 'av_google_maps' ) )
 		 */
 		public function handler_wp_admin_footer()
 		{
+			if( is_admin() )
+			{
+				/**
+				 * Some 3rd party plugins need to supress loading scripts
+				 * Not loading the scripts might result in breaking backend !!!
+				 * 
+				 * @since 4.7.5.1
+				 * @param boolean
+				 * @param string $context
+				 * @return string			return 'skip_loading' to prohibit loading of backend scripts
+				 */
+				$skip_loading = apply_filters( 'avf_skip_enqueue_scripts_backend_gmaps', '', 'footer' );
+
+				if( 'skip_loading' === $skip_loading )
+				{
+					return;
+				}
+			}
+			
 			$api_key = $this->get_key();
 		
 			$api_source = av_google_maps::api_url( $api_key );
@@ -578,7 +613,7 @@ var avia_framework_globals = avia_framework_globals || {};
 					}
 					else if( 'verify_error' == $last_verified_key )
 					{
-						$response_text  = __( 'A connection error occured last time we tried verify your key with Google Maps - please revalidate the key.', 'avia_framework' );
+						$response_text  = __( 'A connection error occurred last time we tried verify your key with Google Maps - please revalidate the key.', 'avia_framework' );
 					}
 					else if( '' == $last_verified_key )
 					{

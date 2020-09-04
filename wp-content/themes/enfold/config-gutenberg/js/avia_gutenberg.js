@@ -466,10 +466,15 @@
 			this.gutenberg_switch_button_source.text( button.text );
 		},
 		
-		alb_secureContent_changed: function()
+		alb_secureContent_changed: function( context )
 		{
 			var content = this.aviaBuilder.secureContent.val();
-			this.set_gutenberg_post_content( content );
+			
+			//	Fix WP 5.5: if empty content and title is edited in chrome title field looses focus
+			if( ! ( typeof context == 'string' && context == 'title' && content.trim() == '' ) )
+			{
+				this.set_gutenberg_post_content( content );
+			}
 			
 			//	Blockeditor sometimes switches to block tab - reset
 			this.select_document_tab();
@@ -487,7 +492,7 @@
 			
 			var title = $(element).val();
 			this.set_gutenberg_title( title );
-			this.alb_secureContent_changed();
+			this.alb_secureContent_changed( 'title' );
 		},
 		
 		set_gutenberg_post_content: function( content )

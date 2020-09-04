@@ -50,16 +50,13 @@ if( ! class_exists( 'Avia_WC_Block_Editor' ) )
 			
 			if( 'theme_styles' == AviaGutenberg()->block_editor_theme_support() )
 			{
-				add_action( 'admin_enqueue_scripts', array( $this, 'handler_wp_admin_enqueue_scripts' ), 10 );
-
+				add_action( 'admin_init', array( $this, 'handler_wp_register_scripts' ), 10 );
+				
 				add_filter( 'avf_gutenberg_fonts_selectors', array( $this, 'handler_avf_gutenberg_fonts_selectors' ), 10, 4 );
 				add_filter( 'avf_gutenberg_create_styles_rules', array( $this, 'handler_avf_create_styles_rules' ), 10, 2 );
 				
 				add_filter( 'avia_dynamic_css_output', array( $this, 'handler_avia_dynamic_css_output' ), 10, 2 );
 			}
-			
-			add_action( 'init', array( $this, 'handler_wp_register_scripts' ), 10 );
-			
 		}
 		
 		/**
@@ -68,22 +65,12 @@ if( ! class_exists( 'Avia_WC_Block_Editor' ) )
 		 */
 		public function handler_wp_register_scripts()
 		{	
-			
 			$vn = avia_get_theme_version();
 			$template_url = get_template_directory_uri();
 			
 			wp_register_style( 'avia_wc_blocks_admin_css', $template_url . '/config-woocommerce/admin/woo-admin-blocks.css', array( 'avia-modal-style', 'avia-builder-style', 'avia_gutenberg_css' ), $vn );
-
+			Avia_Builder()->add_registered_admin_style( 'avia_wc_blocks_admin_css' );
 		}
-		
-		/**
-		 * @since 4.6.4
-		 */
-		public function handler_wp_admin_enqueue_scripts()
-		{
-			wp_enqueue_style( 'avia_wc_blocks_admin_css' );
-		}
-		
 		
 		/**
 		 * Fix problem that icon fonts are not loaded

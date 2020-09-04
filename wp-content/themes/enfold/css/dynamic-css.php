@@ -366,6 +366,25 @@ background-color: $secondary;
 }
 
 
+
+#top $key .avia-font-color-theme-color,
+#top $key .avia-font-color-theme-color-hover:hover{
+color: $button_font;
+}
+
+$key .avia-font-color-theme-color-subtle{
+color: $color;
+}
+
+$key .avia-font-color-theme-color-subtle-hover:hover{
+color: $heading;
+}
+
+#top $key .avia-font-color-theme-color-highlight,
+#top $key .avia-font-color-theme-color-highlight-hover:hover{
+color: $button_font;
+}
+
 ";
 
 //icon list

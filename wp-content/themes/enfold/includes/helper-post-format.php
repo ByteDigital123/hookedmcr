@@ -227,7 +227,7 @@ if(!function_exists('avia_image_slideshow_filter'))
 		}
 
 		/**
-		 * Backwards comp. to checkbox prior v4.5.3 (now selectbox with '' or '1')
+		 * Backwards comp. to checkbox prior v4.5.3 (now select box with '' or '1')
 		 */
 		$hide_featured_image = get_post_meta( get_the_ID(), '_avia_hide_featured_image', true );
 		$hide_featured_image = empty( $hide_featured_image ) ? false : true;

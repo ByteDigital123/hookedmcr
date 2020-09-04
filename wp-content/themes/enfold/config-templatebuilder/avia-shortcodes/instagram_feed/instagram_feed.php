@@ -861,7 +861,7 @@ if ( ! class_exists( 'avia_sc_sb_instagram_feed' ) )
 			
 						array(
 							'name'		=> __( 'Carousel Interval Time', 'avia_framework' ),
-							'desc'		=> __( 'The interval time between slides for autoplay in miliseconds. Any number.', 'avia_framework' ) . $default_setting,
+							'desc'		=> __( 'The interval time between slides for autoplay in milliseconds. Any number.', 'avia_framework' ) . $default_setting,
 							'id'		=> 'carouseltime',
 							'type'		=> 'input_number',
 							'min'		=> 1000,

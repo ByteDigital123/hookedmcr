@@ -122,10 +122,8 @@ $lsDefaults = array(
 			'value' => '',
 			'name' => __('Max-width', 'LayerSlider'),
 			'keys' => 'maxwidth',
-			'desc' => __('The maximum width your slider can take in pixels when responsive mode is enabled.', 'LayerSlider'),
+			'desc' => __('The maximum width your slider can take in pixels or percents when responsive mode is enabled.', 'LayerSlider'),
 			'attrs' => array(
-				'type' => 'number',
-				'min' => 0,
 				'placeholder' => '100%'
 			),
 			'props' => array(
@@ -2621,7 +2619,6 @@ $lsDefaults = array(
 			'name' => __('Filter', 'LayerSlider'),
 			'keys' => 'filterin',
 			'tooltip' => __('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the “Filter” link for more information.', 'LayerSlider'),
-			'premium' => true,
 			'attrs' => array(
 				'data-options' => '[{
 					"name": "'.__('Blur', 'LayerSlider').'",
@@ -2912,7 +2909,6 @@ $lsDefaults = array(
 			'name' => __('Filter', 'LayerSlider'),
 			'keys' => 'filterout',
 			'tooltip' => __('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the “Filter” link for more information.', 'LayerSlider'),
-			'premium' => true,
 			'attrs' => array(
 				'data-options' => '[{
 					"name": "'.__('Blur', 'LayerSlider').'",
@@ -3876,7 +3872,6 @@ $lsDefaults = array(
 			'name' => __('Filter', 'LayerSlider'),
 			'keys' => 'loopfilter',
 			'tooltip' => __('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the “Filter” link for more information.', 'LayerSlider'),
-			'premium' => true,
 			'attrs' => array(
 				'data-options' => '[{
 					"name": "'.__('Blur', 'LayerSlider').'",
@@ -4844,7 +4839,6 @@ $lsDefaults = array(
 			'name' => __('Blend mode', 'LayerSlider'),
 			'keys' => 'mix-blend-mode',
 			'tooltip' => __('Choose how layers and the slide background should blend into each other. Blend modes are an easy way to add eye-catching effects and is one of the most frequently used features in graphic and print design.', 'LayerSlider'),
-			'premium' => true,
 			'options' => array(
 				'unset' => __('Inherit from theme', 'LayerSlider'),
 				'normal' => 'Normal',
@@ -4871,7 +4865,6 @@ $lsDefaults = array(
 			'name' => __('Filter', 'LayerSlider'),
 			'keys' => 'filter',
 			'tooltip' => __('Filters provide effects like blurring or color shifting your layers. Click into the text field to see a selection of filters you can use. Although clicking on the pre-defined options will reset the text field, you can apply multiple filters simply by providing a space separated list of all the filters you would like to use. Click on the “Filter” link for more information.', 'LayerSlider'),
-			'premium' => true,
 			'attrs' => array(
 				'data-options' => '[{
 					"name": "'.__('Blur', 'LayerSlider').'",

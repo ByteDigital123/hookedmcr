@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {  exit;  }    // Exit if accessed directly
+
 $weight 	= array(
     __('Default','avia_framework') => '' ,
     __('Normal','avia_framework') =>'normal',

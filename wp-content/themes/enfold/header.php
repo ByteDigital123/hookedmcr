@@ -24,6 +24,15 @@
     $sidebar_styling 		= avia_get_option('sidebar_styling');
 	$filterable_classes 	= avia_header_class_filter( avia_header_class_string() );
 	$av_classes_manually	= "av-no-preview"; /*required for live previews*/
+	
+	/**
+	 * If title attribute is missing for an image default lightbox displays the alt attribute
+	 * 
+	 * @since 4.7.6.2
+	 * @param bool
+	 * @return false|mixed			anything except false will activate this feature
+	 */
+	$mfp_alt_text = false !== apply_filters( 'avf_lightbox_show_alt_text', false ) ? 'avia-mfp-show-alt-text' : '';
 
 	/**
 	 * Allows to alter default settings Enfold-> Main Menu -> General -> Menu Items for Desktop
@@ -50,11 +59,12 @@
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
 <?php
+
 /*
  * outputs a rel=follow or nofollow tag to circumvent google duplicate content for archives
  * located in framework/php/function-set-avia-frontend.php
  */
- if (function_exists('avia_set_follow')) { echo avia_set_follow(); }
+ if( function_exists('avia_set_follow')) { echo avia_set_follow(); }
 
 ?>
 
@@ -83,7 +93,7 @@ wp_head();
 
 
 
-<body id="top" <?php body_class( $custom_body_classes . ' ' . $rtl_support . $style." ".$avia_config['font_stack']." ".$blank." ".$sidebar_styling); avia_markup_helper(array('context' => 'body')); ?>>
+<body id="top" <?php body_class( $custom_body_classes . ' ' . $mfp_alt_text .' ' . $rtl_support . $style." ".$avia_config['font_stack']." ".$blank." ".$sidebar_styling); avia_markup_helper(array('context' => 'body')); ?>>
 
 	<?php 
 	

@@ -128,7 +128,7 @@ class LS_Sliders {
 
 			$exclude = array();
 			if( $args['groups'] ) {
-				$exclude[] = "group_id IS NULL";
+				$exclude[] = "( group_id IS NULL OR group_id = '0' )";
 			} else {
 				$exclude[] = "flag_group = '0'";
 			}
@@ -546,6 +546,33 @@ class LS_Sliders {
 			$wpdb->prefix.LS_DB_TABLE,
 			array( 'id' => $groupId ),
 			array( '%d' )
+		);
+
+		return true;
+	}
+
+
+	/**
+	 * Removes all groups. Sliders remain untouched.
+	 *
+	 * @since 6.11.2
+	 * @access public
+	 * @return bool Returns true on success, false otherwise
+	 */
+	public static function removeAllGroups( $groupId = 0 ) {
+
+		global $wpdb;
+		$table = $wpdb->prefix.LS_DB_TABLE;
+
+		// Remove sliders from any group.
+		$wpdb->query("UPDATE $table SET group_id = NULL");
+
+		// Delete groups
+		$wpdb->query(
+			$wpdb->prepare("
+				DELETE FROM $table
+				WHERE flag_group = %d
+			", 1 )
 		);
 
 		return true;

@@ -58,18 +58,18 @@ if( ! class_exists( 'avia_sc_timeline' ) )
 			$this->config['version']		= '1.0';
             $this->config['self_closing']	= 'no';
 
-            $this->config['name']		= __( 'Timeline', 'avia_framework' );
-            $this->config['tab']		= __( 'Content Elements', 'avia_framework' );
-            $this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-timeline.png';
-            $this->config['order']		= 70;
-            $this->config['target']		= 'avia-target-insert';
-            $this->config['shortcode']	= 'av_timeline';
+            $this->config['name']			= __( 'Timeline', 'avia_framework' );
+            $this->config['tab']			= __( 'Content Elements', 'avia_framework' );
+            $this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-timeline.png';
+            $this->config['order']			= 70;
+            $this->config['target']			= 'avia-target-insert';
+            $this->config['shortcode']		= 'av_timeline';
             $this->config['shortcode_nested'] = array( 'av_timeline_item' );
-            $this->config['tooltip']	= __( 'Creates a timeline', 'avia_framework' );
-            $this->config['preview']	= 'large';
+            $this->config['tooltip']		= __( 'Creates a timeline', 'avia_framework' );
+            $this->config['preview']		= 'large';
             $this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 			$this->config['alb_desc_id']	= 'alb_description';
         }
 
@@ -296,8 +296,8 @@ if( ! class_exists( 'avia_sc_timeline' ) )
 						),
 				
 						array(
-							'name'	=> __( 'Content Appearence', 'avia_framework' ),
-							'desc'	=> __( 'Define the appearence of the content box', 'avia_framework' ),
+							'name'	=> __( 'Content Appearance', 'avia_framework' ),
+							'desc'	=> __( 'Define the appearance of the content box', 'avia_framework' ),
 							'id'	=> 'content_appearence',
 							'type'	=> 'select',
 							'std'	=> '',
@@ -352,7 +352,7 @@ if( ! class_exists( 'avia_sc_timeline' ) )
 												'mini'		=> AviaHtmlHelper::number_array( 10, 50, 1, array( __( 'Use Default', 'avia_framework' ) => '', __( 'Hidden', 'avia_framework' ) => 'hidden' ), 'px' )
 											),
 							'id_sizes'		=> array(
-												'default'	=> 'custom_date_size',
+												'default'	=> 'custom_title_size',
 												'medium'	=> 'av-medium-font-size',
 												'small'		=> 'av-small-font-size',
 												'mini'		=> 'av-mini-font-size'
@@ -1313,10 +1313,9 @@ if( ! class_exists( 'avia_sc_timeline' ) )
 
             if( ! empty( $atts['link'] ) ) 
 			{
-                $atts['link'] = aviaHelper::get_url( $atts['link'] );
+                $atts['link'] = AviaHelper::get_url( $atts['link'] );
+				$linktarget = AviaHelper::get_link_target( $atts['linktarget'] );
                 $linktitle = $atts['title'];
-                $linktarget = ( strpos( $atts['linktarget'], '_blank' ) !== false || $atts['linktarget'] == 'yes' ) ? ' target="_blank" ' : '';
-                $linktarget .= strpos( $atts['linktarget'], 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
             }
 
             $vertical_alignment = '';

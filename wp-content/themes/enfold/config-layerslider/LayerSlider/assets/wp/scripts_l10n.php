@@ -144,7 +144,12 @@ $l10n_ls = array(
 
 
 	// Transition Builder
-	'TBTransitionName' 		=> __('Type transition name', 'LayerSlider'),
-	'TBRemoveTransition' 	=> __('Remove transition', 'LayerSlider'),
-	'TBRemoveConfirmation' 	=> __('Are you sure you want to remove this transition?', 'LayerSlider'),
+	'TBTransitionName' 			=> __('Type transition name', 'LayerSlider'),
+	'TBRemoveTransition' 		=> __('Remove transition', 'LayerSlider'),
+	'TBRemoveConfirmation' 		=> __('Are you sure you want to remove this transition?', 'LayerSlider'),
+
+
+
+	// System Status
+	'SSClearGroupsConfirmation'	=> __("Are you sure you want to clear all groups? All your sliders will be moved and remain available on the main grid. Your groups, however, will irreversibly be removed.\n\n Do you wish to continue?", 'LayerSlider')
 );

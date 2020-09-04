@@ -22,7 +22,7 @@ if( ! class_exists( 'ShortcodeParser' ) )
 		protected $needed_close_tags;
 		
 		/**
-		 * State of the selectbox in dashboard
+		 * State of the select box in dashboard
 		 * 
 		 * @since 4.2.1
 		 * @var string		'disabled' | 'check_only' | 'auto_repair'

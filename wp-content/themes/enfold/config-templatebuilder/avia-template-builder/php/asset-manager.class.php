@@ -18,13 +18,13 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 	class aviaAssetManager
 	{
 		//the database prefix we use to store the script name
-		var $db_prefix = "aviaAsset_";
+		var $db_prefix = 'aviaAsset_';
 		
 		//which files to include by default (all, none, all theme files, only module files)
-		var $which_files 	= array('css' => 'avia-module', 'js' => 'avia-module');
+		var $which_files 	= array( 'css' => 'avia-module', 'js' => 'avia-module' );
 		
 		//type of files to compress
-		var $compress_files = array('css' => true, 'js' => true);
+		var $compress_files = array( 'css' => true, 'js' => true );
 		
 		//files to exclude
 		var $exclude_files	= array( 'css' => array( 'admin-bar', 'dashicons' ), 'js' => array( 'jquery-core', 'admin-bar','comment-reply' ) );
@@ -36,56 +36,60 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		var $force_print_to_head = array( 'css' => array( 'layerslider', 'layerslider-front' ), 'js' => array( 'avia-compat' ) );
 		
 		//files that will be printed to the head in addition to staying enqueued if they are enqueed. Helps with above the fold render blocking
-		var $additional_print_to_head = array('css' => array(), 'js' => array());
+		var $additional_print_to_head = array( 'css' => array(), 'js' => array() );
 		
 		//file that will be added to the compression, even if the $whichfiles setting does not include them
-		var $force_include = array('css' => array(), 'js' => array('wp-embed')); 
+		var $force_include = array( 'css' => array(), 'js' => array( 'wp-embed' ) ); 
 		
 		//if active the files get regenerated at each page request
 		var $testmode 		= false;
 		
-		public function __construct( $builder ) 
+		/**
+		 * 
+		 * @since 4.2.4
+		 */
+		public function __construct() 
 		{
 			// allow to change the files that should be merged:
 			// 'none' 		 	=> merging is deactivated
 			// 'avia-module' 	=> only module files
 			// 'avia'			=> all framework files
 			// 'all'			=> all enqueued files
-			$this->which_files  = apply_filters( 'avf_merge_assets'  , $this->which_files  );
+			$this->which_files  = apply_filters( 'avf_merge_assets', $this->which_files );
 			
 			// allow to change the files that should be compressed:
 			// true and false allowed
-			$this->compress_files  = apply_filters( 'avf_compress_assets'  , $this->compress_files  );
+			$this->compress_files  = apply_filters( 'avf_compress_assets', $this->compress_files );
 			
 			// files that are always excluded like admin bar files
 			// files that are processed are added to this list as well, in case another file should be generated
-			$this->exclude_files  = apply_filters( 'avf_exclude_assets'  , $this->exclude_files  );
+			$this->exclude_files  = apply_filters( 'avf_exclude_assets', $this->exclude_files );
 			
 			//filter to add file to the list that are force included inline in the head if they are loaded on the page
-			$this->force_print_to_head  = apply_filters( 'avf_force_print_asset_to_head'  , $this->force_print_to_head  );
+			$this->force_print_to_head  = apply_filters( 'avf_force_print_asset_to_head', $this->force_print_to_head );
 			
 			//filter that allows you to tell the script to also print an asset instead of only enqueuing it
-			$this->additional_print_to_head  = apply_filters( 'avf_also_print_asset'  , $this->additional_print_to_head  );
+			$this->additional_print_to_head  = apply_filters( 'avf_also_print_asset', $this->additional_print_to_head );
 			
 			//force include an asset, even if the $whichfiles setting does not include it
-			$this->force_include  = apply_filters( 'avf_force_include_asset'  , $this->force_include  );
+			$this->force_include  = apply_filters( 'avf_force_include_asset', $this->force_include  );
 
 
 			//before enqueuing the css and js files check if we can serve a compressed version (only frontend)
-			add_action('wp_enqueue_scripts', 	array( $this, 'try_minifying_scripts') , 999999 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'try_minifying_scripts' ), 999999 );
 			
-			add_action('wp_print_footer_scripts', 	array( $this, 'minimize_footer_scripts') , 9 );
+			add_action( 'wp_print_footer_scripts', array( $this, 'minimize_footer_scripts' ), 9 );
 			
 			//if we got any compressed/combined scripts remove the default registered files
 			//add_action('wp_enqueue_scripts', 	array(&$this, 'try_deregister_scripts') , 9999999 );
 						
 			//print assets that are set for printing
-			add_action('wp_head', 	array( $this, 'inline_print_assets') , 20 );
+			add_action( 'wp_head', array( $this, 'inline_print_assets' ), 20 );
 			
 		}
 		
 		
-		//default calling of the merging/compression script. the "merge" function can in theory also be called from outside
+		//default calling of the merging/compression script. the 'merge' function can in theory also be called from outside
 		public function try_minifying_scripts()
 		{
 			// check if we got a compressed version that includes all the elements that we need. 
@@ -97,7 +101,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			$this->merge( 'css', 'avia-merged-styles' );
 			
 			//compresses JS files and stores them in a file called avia-head-scripts-HASH_ID.js/avia-footer-scripts-HASH_ID.js// - footer scripts attr: (group 1)
-			$this->merge( 'js', 'avia-head-scripts',   array( 'groups' => 0 ) );
+			$this->merge( 'js', 'avia-head-scripts', array( 'groups' => 0 ) );
 			
 			
 		}
@@ -119,7 +123,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		 */
 		public function merge( $file_type , $file_group_name , $conditions = array())
 		{
-			if( ! isset( $this->which_files[ $file_type ] ) || $this->which_files[$file_type] == "none" )
+			if( ! isset( $this->which_files[ $file_type ] ) || $this->which_files[ $file_type ] == 'none' )
 			{
 				return;
 			}
@@ -128,15 +132,15 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			global $wp_styles, $wp_scripts;
 			
 			//get the data of the file we would generate
-			$enqueued	= ( $file_type == "css" ) ? $wp_styles : $wp_scripts;
-			$data 		= $this->get_file_data( $file_type , $file_group_name , $enqueued , $conditions );
+			$enqueued = ( $file_type == 'css' ) ? $wp_styles : $wp_scripts;
+			$data = $this->get_file_data( $file_type , $file_group_name , $enqueued , $conditions );
 						
 
 			/**
 			 * Check if we got a db entry with this hash. if so, no further merging needed and we can remove the registered files from the enque array.
 			 * 
-			 * A problem occurs that if user makes changes to file content without changing theme version numbers or adding/removing files the same hash is returned and browsers
-			 * do not recognise the changing until their cache expires.
+			 * A problem occurs that if user makes changes to file content without changing theme version numbers or adding/removing files: 
+			 * the same hash is returned and browsers do not recognise the changing until their cache expires.
 			 * Therefore we add a timestamp to each new generated hash.
 			 */
 			$generated_files = get_option( $this->db_prefix . $file_group_name );
@@ -185,11 +189,11 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 				/**
 				 * @since 4.7.3.1
 				 */
-				$uniqid = ( 'disable_unique_timestamp' != avia_get_option( 'merge_disable_unique_timestamp' ) ) ? uniqid() : '';
-				
+				$uniqid = ( false === strpos( avia_get_option( 'merge_disable_unique_timestamp' ), 'disable_unique_timestamp' ) ) ? uniqid() : '';
+
 				/**
 				 * Some server configurations seem to cache WP options and do not return changed options - so we generate a new file again and again
-				 * This filter allows to return the same value (or a custom value) for each file. "---" is added to seperate and identify as added value.
+				 * This filter allows to return the same value (or a custom value) for each file. '---' is added to seperate and identify as added value.
 				 * Return empty string to avoid adding.
 				 * 
 				 * @since 4.7.2.1
@@ -210,7 +214,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 				$generated_files[ $data['hash'] ] = $this->generate_file( $file_type, $data, $enqueued );
 			}
 			
-			//if the file exists and was properly generated at one time in the past, enque the new file and remove all the others. otherwise do nothing
+			//if the file exists and was properly generated at one time in the past, enqueue the new file and remove all the others. otherwise do nothing
 			if( $generated_files[ $data['hash'] ] && $generated_files[ $data['hash'] ] !== 'error-generating-file' )
 			{
 				if( is_array( $data['remove'] ) )
@@ -230,7 +234,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 				
 				$avia_dyn_file_url = $this->get_file_url($data, $file_type);
 				
-				//if file exists enque it
+				//if file exists enqueue it
 				if( $file_type == 'css' )
 				{
 					wp_enqueue_style( $file_group_name , $avia_dyn_file_url, array(), null, 'all' );
@@ -261,13 +265,24 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 				}
 			}
 			
-			
-			
-			//store that we tried to generate the file but it did not work. therefore no more future tries but simple enqueuing of the single files
+			/**
+			 * store that we tried to generate the file but it did not work. 
+			 * Therefore no more future tries but simple enqueuing of the single files.
+			 */
 			if( empty( $generated_files[ $data['hash'] ] ) )
 			{
-				$generated_files[$data['hash']] = 'error-generating-file';
-				update_option( $this->db_prefix . $file_group_name, $generated_files );
+				/**
+				 * Remove unique timestamp again to avoid multiple entries in db.
+				 * Saving theme options will clean up option - only modifying will leave a single entry only for each hash
+				 * 
+				 * @since 4.7.5.1
+				 */
+				unset( $generated_files[ $data['hash'] ] );
+				$split = strpos( $data['hash'], '---' );
+				$hash = false !== $split ? substr( $data['hash'], 0, $split ) : $data['hash'];
+				
+				$generated_files[ $hash ] = 'error-generating-file';
+				$this->update_option_fix_cache( $this->db_prefix . $file_group_name, $generated_files );
 			}
 			
 			//deregister everything that was compressed
@@ -297,17 +312,22 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		
 		// returns a file data array with hash, version number and scripts we need to dequeue. 
 		// the hash we generate consists of parent theme version, child theme version and files to include. if any of this changes we create a new file
-		public function get_file_data( $file_type , $file_group_name, $enqueued , $conditions)
+		public function get_file_data( $file_type , $file_group_name, $enqueued , $conditions )
 		{			
-			$data = array( 'hash' => '' , 'version' => '' , 'remove' => array(), 'file_group_name' => $file_group_name );
+			$data = array( 
+						'hash'		=> '' , 
+						'version'	=> '' , 
+						'remove'	=> array(), 
+						'file_group_name' => $file_group_name 
+					);
 			
 			//generate the version number
-			$theme 	 		= wp_get_theme();
-			$data['version']= $theme->get( 'Version' );
+			$theme = wp_get_theme();
+			$data['version'] = $theme->get( 'Version' );
 			
 			if( false !== $theme->parent() )
 			{
-				$theme 	 		 = $theme->parent();
+				$theme = $theme->parent();
 				$data['version'] = $theme->get( 'Version' ) . '-' . $data['version'];
 			}
 			
@@ -316,7 +336,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			
 			
 			//stored files in the db
-			$stored_assets 	= get_option( $this->db_prefix . $file_type . '_filecontent' );
+			$stored_assets = get_option( $this->db_prefix . $file_type . '_filecontent' );
 			if( empty( $stored_assets ) ) 
 			{
 				$stored_assets = array();
@@ -325,39 +345,51 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			//generate the name string for all the files included. store the data of those files so we can properly include them later and then dequeue them
 			foreach( $enqueued->to_do as $enqueued_index => $file )
 			{
-				$force_print = in_array($file, $this->force_print_to_head[$file_type]);
+				$force_print = in_array( $file, $this->force_print_to_head[ $file_type ] );
 				
 				// check which files to include based on the $which_files setting (all, none, modules only, all framework files)
-				if( ('all' == $this->which_files[$file_type] ) || 
-					('avia-module' == $this->which_files[$file_type] && strpos($file, 'avia-module') !== false ) ||
-					('avia' == $this->which_files[$file_type] && strpos($file, 'avia') !== false ) ||
+				if( ( 'all' == $this->which_files[ $file_type ] ) || 
+					( 'avia-module' == $this->which_files[ $file_type ] && strpos( $file, 'avia-module' ) !== false ) ||
+					( 'avia' == $this->which_files[ $file_type ] && strpos( $file, 'avia' ) !== false ) ||
 					( $force_print ) ||
 					( in_array( $file, $this->force_include[ $file_type ] ) ) 
 				   ) 
 					{
 						//dont use excluded files like admin bar or already used files
-						if(in_array($file, $this->exclude_files[$file_type])) continue;
+						if( in_array( $file, $this->exclude_files[ $file_type ] ) ) 
+						{
+							continue;
+						}
 						
 						//dont use print stylesheets
-						if($enqueued->registered[$file]->args == 'print') continue;
+						if( $enqueued->registered[ $file ]->args == 'print' ) 
+						{
+							continue;
+						}
 						
 						//if a group condition is set check if the file matches
-						if( isset($conditions['groups']) && $enqueued->groups[$file] != $conditions['groups'] && !$force_print) continue;
+						if( isset( $conditions['groups'] ) && $enqueued->groups[ $file ] != $conditions['groups'] && ! $force_print ) 
+						{
+							continue;
+						}
 						
 						//the file string we need to generate the final hash
-						if(!$force_print) $data['hash'] .= $file;
+						if( ! $force_print ) 
+						{
+							$data['hash'] .= $file;
+						}
 					
 						//set up correct path
 						//all the files we need to remove from the worpdress queue once we verified that a compressed version is available
-						$key = $file."-".$file_type;
-						$data['remove'][$key] = array(
-							'name' => $file,
-							'url'  => $enqueued->registered[$file]->src,
-							'path' => $this->set_path($enqueued->registered[$file]->src),
-							'print'=> $force_print,
-							'type' => $file_type,
-							'file_content' => "" //only gets generated on new asset file creation or when a file is not stored in the db and required
-						);
+						$key = $file . '-' . $file_type;
+						$data['remove'][ $key ] = array(
+													'name' => $file,
+													'url'  => $enqueued->registered[ $file ]->src,
+													'path' => $this->set_path( $enqueued->registered[ $file ]->src ),
+													'print'=> $force_print,
+													'type' => $file_type,
+													'file_content' => '' //only gets generated on new asset file creation or when a file is not stored in the db and required
+												);
 						
 						/**
 						 * Allow plugins to alter $data parameters (e.g. like path)
@@ -378,8 +410,8 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 						if( ! isset( $stored_assets[ $key ] ) || $this->testmode )
 						{
 							$db_update = true;
-							$data['remove'][$key]['file_content'] = $this->get_file_content( $data['remove'][$key]['path'] , $file_type , $data['remove'][$key]['url']);
-							$stored_assets[$key] = $data['remove'][$key];
+							$data['remove'][ $key ]['file_content'] = $this->get_file_content( $data['remove'][$key]['path'] , $file_type , $data['remove'][ $key ]['url']);
+							$stored_assets[ $key ] = $data['remove'][ $key ];
 						}
 		
 						//activate to test if we print all assets to body
@@ -388,16 +420,16 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			}
 			
 			
-			if(isset($db_update))
+			if( isset( $db_update ) )
 			{
-				update_option( $this->db_prefix.$file_type."_filecontent" , $stored_assets );
+				$this->update_option_fix_cache( $this->db_prefix . $file_type . '_filecontent' , $stored_assets );
 			}
 			
 			//clean up the todo list
 			$enqueued->to_do = array();
 			
 			//generate a unique hash based on file name string and version number
-			$data['hash'] 	= $file_group_name .'-'. md5( $data['hash'] . $data['version'] );
+			$data['hash'] = $file_group_name . '-' . md5( $data['hash'] . $data['version'] );
 			
 			return $data;
 		}
@@ -412,7 +444,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		 */
 		public function get_dyn_stylesheet_dir_path()
 		{
-			$wp_upload_dir  = wp_upload_dir();
+			$wp_upload_dir = wp_upload_dir();
 		    $stylesheet_dir = $wp_upload_dir['basedir'] . '/dynamic_avia';
 		    $stylesheet_dir = str_replace( '\\', '/', $stylesheet_dir );
 		    $stylesheet_dir = apply_filters( 'avia_dyn_stylesheet_dir_path',  $stylesheet_dir );
@@ -516,13 +548,13 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			$content = '';
 			
 			//iterate over existing styles and save the content so we can add it to the compressed file
-			if( is_array($data['remove'] ) )
+			if( is_array( $data['remove'] ) )
 			{
-				$stored_assets = get_option( $this->db_prefix . $file_type . "_filecontent" );
+				$stored_assets = get_option( $this->db_prefix . $file_type . '_filecontent' );
 				
 				foreach( $data['remove'] as $key => $remove )
 				{
-					if( $remove['path'] != "" )
+					if( $remove['path'] != '' )
 					{
 						if( ! $remove['print'] )
 						{
@@ -533,15 +565,15 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			}
 			
 			//create a new file if we got any content
-			if(trim($content) != "")
+			if( trim( $content ) != '' )
 			{
-				$file_path		= trailingslashit( $stylesheet_dir ) . $data['hash'] . "." . $file_type;
-				$file_created 	= avia_backend_create_file( $file_path, $content );
+				$file_path = trailingslashit( $stylesheet_dir ) . $data['hash'] . '.' . $file_type;
+				$file_created = avia_backend_create_file( $file_path, $content );
 				
 				//double check if the file can be accessed
 				if( is_readable( $file_path ) )
 				{
-					$handle = fopen( $file_path, "r" );
+					$handle = fopen( $file_path, 'r' );
 					$filecontent = fread( $handle, filesize( $file_path ) );
 					fclose( $handle );
 					
@@ -585,7 +617,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			
 			$generated_files[ $data['hash'] ] = true;
 			
-			update_option( $this->db_prefix . $data['file_group_name'], $generated_files );
+			$this->update_option_fix_cache( $this->db_prefix . $data['file_group_name'], $generated_files );
 			
 			//if everything worked out return the new file hash, otherwise return false
 			return true;
@@ -594,33 +626,33 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		
 		
 		//function that removes whitespace and comments, fixes relative urls etc
-		public function compress_content( $content , $file_type , $path)
+		public function compress_content( $content, $file_type, $path)
 		{
-			if('css' == $file_type)
+			if( 'css' == $file_type )
 			{
-				$content = $this->rel_to_abs_url($content, $path);
+				$content = $this->rel_to_abs_url( $content, $path );
 								
-				if($this->compress_files[$file_type]) 
+				if( $this->compress_files[ $file_type ] ) 
 				{
-					$content = $this->css_strip_whitespace($content);
+					$content = $this->css_strip_whitespace( $content );
 				}
 			}
 			else 
 			{
-				if($this->compress_files[$file_type])
+				if( $this->compress_files[ $file_type ] )
 				{
-					if(version_compare(phpversion(), '5.3', '>=')) 
+					if( version_compare( phpversion(), '5.3', '>=' ) ) 
 					{
 						include_once 'external/JSqueeze.php';
 						
 						$jz = new JSqueeze();
 						
 						$content = $jz->squeeze(
-						    $content,
-						    true,   // $singleLine
-						    false,  // $keepImportantComments
-						    false   // $specialVarRx
-						);
+										$content,
+										true,   // $singleLine
+										false,  // $keepImportantComments
+										false   // $specialVarRx
+									);
 					}
 				}
 			}
@@ -647,9 +679,9 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			// @since 4.5.5 supports UNICODE characters &#8216; - &#8221;
 			
 			$this->base_url = trailingslashit(dirname( get_site_url( null, $path ) ) );
-			$reg_exUrl 		= '/url\s*?\([\"|\'|\s|\/|\x{2018}|\x{2019}|\x{201C}|\x{201D}]*([^\:]+?)[\"|\'|\s|\x{2018}|\x{2019}|\x{201C}|\x{201D}]*\)/imu';
+			$reg_exUrl = '/url\s*?\([\"|\'|\s|\/|\x{2018}|\x{2019}|\x{201C}|\x{201D}]*([^\:]+?)[\"|\'|\s|\x{2018}|\x{2019}|\x{201C}|\x{201D}]*\)/imu';
 			
-			$content = preg_replace_callback( $reg_exUrl, array( $this, '_url_callback'), $content );
+			$content = preg_replace_callback( $reg_exUrl, array( $this, '_url_callback' ), $content );
 			
 			return $content;
 		}
@@ -716,7 +748,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 					}
 					
 					$current_base = $this->base_url;
-					$segments = explode( "../", $match[1] );
+					$segments = explode( '../', $match[1] );
 					$seg_count = count($segments) - 1;
 					
 					for( $i = $seg_count; $i > 0; $i-- )
@@ -732,38 +764,43 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		#################
 		
 		
-		
-		public function css_strip_whitespace($css)
+		/**
+		 * 
+		 * @param string $css
+		 * @return string
+		 */
+		public function css_strip_whitespace( $css )
 		{
-		  $replace = array(
-		    "#/\*.*?\*/#s" => "",  // Strip C style comments.
-		    "#\s\s+#"      => " ", // Strip excess whitespace.
-		    "#\t#"		   => ""
-		  );
-		  $search = array_keys($replace);
-		  $css = preg_replace($search, $replace, $css);
-		
-		  $replace = array(
-		    ": "  => ":",
-		    "; "  => ";",
-		    " {"  => "{",
-		    " }"  => "}",
-		    ", "  => ",",
-		    "{ "  => "{",
-		    "{ "  => "{",
-		    ";\n"  => ";", // Put all rules from one selector into one line
-		    ";}"  => "}", // Strip optional semicolons.
-		    ",\n" => ",", // Don't wrap multiple selectors.
-		    "\n}" => "}", // Don't wrap closing braces.
-		    "{\n" => "{", // Don't wrap the first rule of a selector.
-		    //"} "  => "}\n", // Put each rule on it's own line.
-		    "\n"  => "", //replace all newlines
-		  );
+			$replace = array(
+						"#/\*.*?\*/#s" => '',  // Strip C style comments.
+						"#\s\s+#"      => ' ', // Strip excess whitespace.
+						"#\t#"		   => ''
+					);
 		  
-		  $search = array_keys($replace);
-		  $css = str_replace($search, $replace, $css);
-		
-		  return trim($css);
+			$search = array_keys( $replace );
+			$css = preg_replace( $search, $replace, $css );
+
+			$replace = array(
+						': '  => ':',
+						'; '  => ';',
+						' {'  => '{',
+						' }'  => '}',
+						', '  => ',',
+						'{ '  => '{',
+						'{ '  => '{',
+						";\n"  => ';', // Put all rules from one selector into one line
+						';}'  => '}', // Strip optional semicolons.
+						",\n" => ',', // Don't wrap multiple selectors.
+						"\n}" => '}', // Don't wrap closing braces.
+						"{\n" => '{', // Don't wrap the first rule of a selector.
+						//"} "  => "}\n", // Put each rule on it's own line.
+						"\n"  => '', //replace all newlines
+					);
+		  
+			$search = array_keys( $replace );
+			$css = str_replace( $search, $replace, $css );
+
+			return trim( $css );
 		}
 		
 		//remove all db keys starting with the $this->db_prefix - this way all files will be generated new on next pageload
@@ -771,39 +808,47 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		public function reset_db_asset_list()
 		{
 			global $wpdb;
-			$results		= $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE '{$this->db_prefix}%'", OBJECT );
+			
+			$results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE '{$this->db_prefix}%'", OBJECT );
 			$stylesheet_dir = $this->get_dyn_stylesheet_dir_path();
 			
-			foreach($results as $result)
+			foreach( $results as $result )
 			{
 				//delete db option
-				delete_option($result->option_name);
+				$this->delete_option_fix_cache( $result->option_name );
 				
 				
 				// remove files. by default they are NOT deleted to not cause any issues with caching plugins.
 				// an option in the backend allows to change that setting
-				$file_group_name 	= str_replace($this->db_prefix, "", $result->option_name);
-				$delete_files 		= apply_filters( 'avf_delete_assets'  , false ); 
+				$file_group_name = str_replace( $this->db_prefix, '', $result->option_name );
+				$delete_files = apply_filters( 'avf_delete_assets', false ); 
 				
 				//fallback: if the folder gets to large we will clean up older files nevertheless
-				$files_to_delete    = array();
+				$files_to_delete = array();
 				
-				foreach(glob($stylesheet_dir.'/'.$file_group_name."*") as $file)
+				foreach( glob( $stylesheet_dir . '/' . $file_group_name . '*') as $file )
 				{
 					$files_to_delete[ filemtime($file) ] = $file;
 				}
 				
 				//set the number of files to remove. if delete files is enabled remove all, otherwise only the oldest 5
 				$remove_files = 0;
-				if(count($files_to_delete) > 100) $remove_files = 5;
-				if($delete_files) $remove_files = count($files_to_delete);
-
-				foreach($files_to_delete as $creation => $file)
+				if( count( $files_to_delete ) > 100 ) 
 				{
-					if($remove_files > 0)
+					$remove_files = 5;
+				}
+				
+				if( $delete_files ) 
+				{
+					$remove_files = count( $files_to_delete );
+				}
+
+				foreach( $files_to_delete as $creation => $file )
+				{
+					if( $remove_files > 0 )
 					{
-						unlink($file);
-						$remove_files--;
+						unlink( $file );
+						$remove_files --;
 					}
 				}
 			}
@@ -816,47 +861,47 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		{
 			global $wp_styles, $wp_scripts;
 			
-			foreach($this->deregister_files as $file_type => $files)
+			foreach( $this->deregister_files as $file_type => $files )
 			{
 				//get the data of the file we would generate
-				$enqueued	= ($file_type == 'css') ? $wp_styles : $wp_scripts;
+				$enqueued = ( $file_type == 'css' ) ? $wp_styles : $wp_scripts;
 				
-				foreach($files as $remove)
+				foreach( $files as $remove )
 				{
-					$enqueued->registered[$remove]->src = '';
+					$enqueued->registered[ $remove ]->src = '';
 					
 					//the extra data needs to be attached to the compressed file in order to be printed properly
-					if($attach_data_to && isset($enqueued->registered[$remove]->extra))
+					if( $attach_data_to && isset( $enqueued->registered[ $remove ]->extra ) )
 					{
 						//first copy the data attribute to our enqueued file
-						if(isset($enqueued->registered[$remove]->extra['data']))
+						if( isset( $enqueued->registered[ $remove ]->extra['data'] ) )
 						{
-							if(!isset($enqueued->registered[$attach_data_to]->extra['data']))
+							if( ! isset( $enqueued->registered[ $attach_data_to ]->extra['data'] ) )
 							{
-								$enqueued->registered[$attach_data_to]->extra['data'] = '';
+								$enqueued->registered[ $attach_data_to ]->extra['data'] = '';
 							}
 							
-							$enqueued->registered[$attach_data_to]->extra['data'] .= $enqueued->registered[$remove]->extra['data'];
+							$enqueued->registered[ $attach_data_to ]->extra['data'] .= $enqueued->registered[ $remove ]->extra['data'];
 							// reset data $enqueued->registered[$remove]->extra['data'] = '';
 						}
 						
 						//now merge the before and after arrays
-						$before_after = array('before','after');
+						$before_after = array( 'before', 'after' );
 						
-						foreach($before_after as $state)
+						foreach( $before_after as $state )
 						{
-							if(isset($enqueued->registered[$remove]->extra[$state]))
+							if( isset($enqueued->registered[ $remove ]->extra[ $state ] ) )
 							{
-								if(!isset($enqueued->registered[$attach_data_to]->extra[$state]))
+								if( ! isset( $enqueued->registered[ $attach_data_to ]->extra[ $state ] ) )
 								{
-//									$enqueued->registered[$attach_data_to]->extra[$state] = array();
+//									$enqueued->registered[ $attach_data_to ]->extra[ $state ] = array();
 								}
 								
 								
-								$a = $enqueued->registered[$attach_data_to]->extra[$state];
-								$b = $enqueued->registered[$remove]->extra[$state]; 
+								$a = $enqueued->registered[ $attach_data_to ]->extra[ $state ];
+								$b = $enqueued->registered[ $remove ]->extra[ $state ]; 
 								
-//								$enqueued->registered[$attach_data_to]->extra[$state] = array_merge($a, $b);
+//								$enqueued->registered[ $attach_data_to ]->extra[ $state ] = array_merge( $a, $b );
 							}
 						}
 					}
@@ -882,14 +927,15 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		
 		/**
 		 * 
+		 * @since 4.2.4
 		 * @param string $registered_path
 		 * @return string
 		 */
 		public function set_path( $registered_path )
 		{
-			$path =  str_replace( site_url(), '', $registered_path );
+			$path = str_replace( site_url(), '', $registered_path );
 			
-			if( strpos( $path, '//') === 0 ) //if the path starts with // - eg: used by plugins like woocommerce
+			if( strpos( $path, '//' ) === 0 ) //if the path starts with // - eg: used by plugins like woocommerce
 			{
 				$remove = explode( '//', site_url() );
 				$path = str_replace( '//' . $remove[1], '', $registered_path );
@@ -902,8 +948,7 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 		
 		/**
 		 * 
-		 * @global type $wp_styles
-		 * @global type $wp_scripts
+		 * @since 4.2.4
 		 */
 		public function inline_print_assets()
 		{
@@ -961,6 +1006,68 @@ if ( ! class_exists( 'aviaAssetManager' ) )
 			
 		}
 		
+		/**
+		 * Update option and provide a fix for caching plugins
+		 * see https://github.com/pantheon-systems/wp-redis/issues/221
+		 * 
+		 * @since 4.7.5.1
+		 * @param string $option
+		 * @param mixed $value
+		 * @param string|bool $autoload
+		 * @return bool
+		 */
+		protected function update_option_fix_cache( $option, $value, $autoload = null ) 
+		{
+			$return = update_option( $option, $value, $autoload );
+			$this->fix_all_options_cache( $option, true );
+			
+			return $return;
+		}
+		
+		/**
+		 * Delete option and provide a fix for caching plugins
+		 * see https://github.com/pantheon-systems/wp-redis/issues/221
+		 * 
+		 * @since 4.7.5.1
+		 * @param string $option
+		 * @return bool
+		 */
+		protected function delete_option_fix_cache( $option ) 
+		{
+			$return = delete_option( $option );
+			$this->fix_all_options_cache( $option );
+			
+			return $return;
+		}
+		
+		/**
+		 * Fix racing condition in options table
+		 * 
+		 * see https://github.com/pantheon-systems/wp-redis/issues/221
+		 * see https://core.trac.wordpress.org/ticket/31245#comment:57
+		 * 
+		 * @since 4.7.5.1
+		 * @param string $option
+		 * @param boolean $force_reload
+		 */
+		protected function fix_all_options_cache( $option, $force_reload = false )
+		{
+			if( false === strpos( avia_get_option( 'merge_disable_unique_timestamp' ), 'fix_wp_bug' ) )
+			{
+				return;
+			}
+			
+			if ( ! wp_installing() ) 
+			{
+				$alloptions = wp_load_alloptions(); //alloptions should be cached at this point
+
+				if( isset( $alloptions[ $option ] ) || $force_reload )  //only if option is among alloptions
+				{
+					wp_cache_delete( 'alloptions', 'options' );
+				}
+			}
+		}
+	
 
 	} // end class
 

@@ -1956,7 +1956,7 @@ $ruler-size: 16px;
 	  height: 1px;
 	  background: #4affff;
 	  z-index: 500;
-	  cursor: n-resize !important;
+	  cursor: row-resize !important;
 	  outline: 0 !important;
 	}
 	&:after {
@@ -1978,7 +1978,7 @@ $ruler-size: 16px;
 	  height: 100%;
 	  background: #4affff;
 	  z-index: 500;
-	  cursor: e-resize !important;
+	  cursor: col-resize !important;
 	  outline: 0 !important;
 	}
 	&:after {

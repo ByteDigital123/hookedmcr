@@ -70,7 +70,49 @@ if ( ! class_exists( 'AviaHelper' ) )
 			return $result;
 		}
 		
-		
+		/**
+		 * Checks for _blank and nofollow and returns the html markup.
+		 * 
+		 * @since 4.7.5.1
+		 * @since 4.7.6.3					'noopener noreferrer' added for target="_blank" 
+		 * @param string $target
+		 * @param string $link_type		added 4.7.6.3 - if 'manually' force adding 'noopener noreferrer' for rel
+		 * @param array $rel_attr		added 4.7.6.3 - additional attr for rel
+		 * @return string
+		 */
+		static public function get_link_target( $target, $link_type = '', $rel_attr = array() )
+		{
+			$markup = '';
+			$rel = is_array( $rel_attr ) ? $rel_attr : array();
+
+			if( false !== strpos( $target, '_blank' ) )
+			{
+				$markup .= ' target="_blank" ';
+				$rel[] = 'noopener';
+				$rel[] = 'noreferrer';
+			}
+			
+			if( false !== strpos( $link_type, 'manually' ) )
+			{
+				$rel[] = 'noopener';
+				$rel[] = 'noreferrer';
+			}
+
+			if( false !== strpos( $target, 'nofollow' ) )
+			{
+				$rel[] = 'nofollow';
+			}
+			
+			if( ! empty( $rel ) )
+			{
+				$rel = array_unique( $rel );
+				$markup .= ' rel="' . implode( ' ', $rel ). '"';
+			}
+
+			return $markup;
+		}
+
+
 		/**
     	 * get_url - Returns a url based on a string that holds either post type and id or taxonomy and id
 		 * 
@@ -504,7 +546,7 @@ if ( ! class_exists( 'AviaHelper' ) )
 		
 		/**
 		 * Create a lower case version of a string and sanatize it to be valid classnames.
-		 * Space seperated strings are kept as seperate to allow several classes
+		 * Space separated strings are kept as seperate to allow several classes
 		 * 
 		 * @since 4.5.7.2
 		 * @param string $string
@@ -702,29 +744,43 @@ if ( ! class_exists( 'AviaHelper' ) )
 		 * Helper function that builds css styling strings which are applied to html elements
 		 *
 		 */
-		static function style_string($atts, $key = false, $new_key = false, $append_value = "")
+		static function style_string( $atts, $key = false, $new_key = false, $append_value = '' )
 		{
-			$style_string = "";
+			$style_string = '';
 			
 			//finish the style string by wrapping the arguments into a style string
-			if((is_string($atts) || ! $atts ) && false == $key)
+			if( ( is_string( $atts ) || ! $atts ) && false == $key )
 			{
-				if(!empty($atts))
+				if( ! empty( $atts ) )
 				{
-					$style_string = "style='".$atts."'";
+					$style_string = "style='" . $atts . "'";
 				}
 			}
 			else //otherwise build only the styling argument
 			{
-				if(empty($new_key)) $new_key = $key;
-				
-				if(isset($atts[$key]) && $atts[$key] !== "")
+				if( empty( $new_key ) ) 
 				{
-					switch($new_key)
+					$new_key = $key;
+				}
+				
+				if( isset( $atts[ $key ] ) && $atts[ $key ] !== '' )
+				{
+					switch( $new_key )
 					{
-						case "background-image": $style_string = $new_key.":url(".$atts[$key].$append_value."); "; break;
-						case "background-repeat": if($atts[$key] == "stretch") $atts[$key] = "no-repeat"; $style_string = $new_key.":".$atts[$key].$append_value."; "; break;
-						default: $style_string = $new_key.":".$atts[$key].$append_value."; "; break;
+						case 'background-image': 
+							$style_string = $new_key . ':url(' . $atts[$key] . $append_value . '); '; 
+							break;
+						case 'background-repeat': 
+							if( $atts[ $key ] == 'stretch' ) 
+							{
+								$atts[ $key ] = 'no-repeat'; 
+							}
+							
+							$style_string = $new_key . ':' . $atts[ $key ] . $append_value . '; '; 
+							break;
+						default: 
+							$style_string = $new_key . ':' . $atts[ $key ] . $append_value . '; '; 
+							break;
 					}
 				}
 			}

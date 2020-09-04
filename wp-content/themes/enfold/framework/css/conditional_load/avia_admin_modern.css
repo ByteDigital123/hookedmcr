@@ -76,8 +76,8 @@ line-height: 1.5em;
     padding:12px 0;
 }
 
-#avia_options_page .avia_visual_set, .avia_visual_set{
-	
+#avia_options_page .avia_visual_set.visual-set-no-top-border{
+	border-top: none;
 }
 
 

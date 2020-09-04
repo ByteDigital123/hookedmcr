@@ -56,7 +56,7 @@ Avia Slideshow
 		//attach images as background
 		bg_slider: false,
 		
-		//delay of miliseconds to wait before showing the next slide
+		//delay of milliseconds to wait before showing the next slide
 		show_slide_delay: 0,
 		
 		//if slider animation is set to "fade" the fullfade property sets the crossfade behaviour
@@ -157,15 +157,12 @@ Avia Slideshow
 			{
 				//	data attribute is transformed to lower case, but js is case sensitive - transform key
 				var key = ( 'transition_speed' != i ) ? i :'transitionSpeed';
-				
-				// 4.7.4.1: Günter - in my opinion we should check newOptions[key], this is always true.
-				if( htmlData.hasOwnProperty( i ) )
-				{	
-					if( typeof htmlData[i] === "string" || typeof htmlData[i] === "number" || typeof htmlData[i] === "boolean" )
-					{
-						newOptions[key] = htmlData[i];
-					}
+
+				if( typeof htmlData[ i ] === "string" || typeof htmlData[ i ] === "number" || typeof htmlData[ i ] === "boolean" )
+				{
+					newOptions[ key ] = htmlData[ i ];
 				}
+
 			}
 
 			return newOptions;
@@ -838,10 +835,17 @@ Avia Slideshow
 			}
 			else
 			{
-				displaySlide.css(properties).avia_animate({opacity:1}, self.options.transitionSpeed/2, 'linear', function()
-				{
-					hideSlide.avia_animate({opacity:0}, 200, 'linear', fadeCallback);
-				});
+				if (self.current === 0) {
+					hideSlide.avia_animate({opacity:0}, self.options.transitionSpeed/2, 'linear');
+					displaySlide.css(properties).avia_animate({opacity:1}, self.options.transitionSpeed/2, 'linear',fadeCallback);
+				}
+				else{
+					displaySlide.css(properties).avia_animate({opacity:1}, self.options.transitionSpeed/2, 'linear', function()
+					{
+						hideSlide.avia_animate({opacity:0}, 200, 'linear', fadeCallback);
+					});
+				}
+
 			}
 			
 		},

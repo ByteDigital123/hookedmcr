@@ -234,11 +234,11 @@ if( ! class_exists( 'av_google_recaptcha' ) )
 					'score'				=> $this->get_score(),
 					'verify_nonce'		=> wp_create_nonce( av_google_recaptcha::AJAX_VERIFY_NONCE ),
 //					'submission_nonce'	=> wp_create_nonce( av_google_recaptcha::AJAX_SUBMISSION_NONCE ),
-					'cannot_use'		=> '<h3 class="av-recaptcha-error-main">' . __( 'Sorry, a problem occured trying to communicate with Google reCAPTCHA API. You are currently not able to submit the contact form. Please try again later - reload the page and also check your internet connection.', 'avia_framework' ) . '</h3>',
+					'cannot_use'		=> '<h3 class="av-recaptcha-error-main">' . __( 'Sorry, a problem occurred trying to communicate with Google reCAPTCHA API. You are currently not able to submit the contact form. Please try again later - reload the page and also check your internet connection.', 'avia_framework' ) . '</h3>',
 					'init_error_msg'	=> __( 'Initial setting failed. Sitekey 2 and/or sitekey 3 missing in frontend.', 'avia_framework' ),
-					'v3_timeout_pageload'	=> __( 'Timeout occured connecting to V3 API on initial pageload', 'avia_framework' ),
-					'v3_timeout_verify'	=> __( 'Timeout occured connecting to V3 API on verifying submit', 'avia_framework' ),
-					'v2_timeout_verify'	=> __( 'Timeout occured connecting to V2 API on verifying you as human. Please try again and check your internet connection. It might be necessary to reload the page.', 'avia_framework' ),
+					'v3_timeout_pageload'	=> __( 'Timeout occurred connecting to V3 API on initial pageload', 'avia_framework' ),
+					'v3_timeout_verify'	=> __( 'Timeout occurred connecting to V3 API on verifying submit', 'avia_framework' ),
+					'v2_timeout_verify'	=> __( 'Timeout occurred connecting to V2 API on verifying you as human. Please try again and check your internet connection. It might be necessary to reload the page.', 'avia_framework' ),
 					'verify_msg'		=> __( 'Verify....', 'avia_framework' ),
 					'connection_error'	=> __( 'Could not connect to the internet. Please reload the page and try again.', 'avia_framework' ),
 					'validate_first'	=> __( 'Please validate that you are a human first', 'avia_framework' ),
@@ -259,6 +259,22 @@ if( ! class_exists( 'av_google_recaptcha' ) )
 		public function handler_wp_admin_enqueue_scripts()
 		{
 			/**
+			 * Some 3rd party plugins need to supress loading scripts
+			 * Not loading the scripts might result in breaking backend !!!
+			 * Check if everything is working as expected.
+			 * 
+			 * @since 4.7.5.1
+			 * @param boolean
+			 * @return string			return 'skip_loading' to prohibit loading of backend scripts
+			 */
+			$skip_loading = apply_filters( 'avf_skip_enqueue_scripts_backend_grecaptcha', '' );
+			
+			if( 'skip_loading' === $skip_loading )
+			{
+				return;
+			}
+			
+			/**
 			 * In backend we must enqueue to validate keys and localize script
 			 */
 			wp_enqueue_script( 'avia_google_recaptcha_front_script' );
@@ -271,7 +287,7 @@ if( ! class_exists( 'av_google_recaptcha' ) )
 					'api_load_error'	=> __( 'Google reCAPTCHA API could not be loaded. We are not able to verify keys. Check your internet connection and try again.', 'avia_framework' ),
 					'invalid_version'	=> __( 'Please select Version 2 or 3 for reCAPTCHA', 'avia_framework' ),
 					'invalid_keys'		=> __( 'You have to enter a site key and a secret key to verify it.', 'avia_framework' ),
-					'v3_timeout'		=> __( 'A network timeout problem occured. Could be caused by an invalid V3 sitekey. Please recheck the key and try again.', 'avia_framework' )
+					'v3_timeout'		=> __( 'A network timeout problem occurred. Could be caused by an invalid V3 sitekey. Please recheck the key and try again.', 'avia_framework' )
 	            );
 			
 			wp_localize_script( 'avia_google_recaptcha_front_script', 'AviaReCAPTCHA_data', $args );
@@ -961,7 +977,7 @@ if( ! class_exists( 'av_google_recaptcha' ) )
 					}
 					else if( 'verify_error' == $this->get_verified_keys() )
 					{
-						$response_text  = __( 'A connection error occured last time we tried verify your keys with Google reCAPTCHA - please revalidate the keys.', 'avia_framework' );
+						$response_text  = __( 'A connection error occurred last time we tried verify your keys with Google reCAPTCHA - please revalidate the keys.', 'avia_framework' );
 					}
 					else if( '' == $this->get_verified_keys( $version ) )
 					{

@@ -590,7 +590,7 @@ if( ! class_exists( 'avia_style_generator' ) )
 			$type = $typefont->get_selected_font_type( $font );
 			
 			/**
-			 * Allow to specify a specific font size in selectbox
+			 * Allow to specify a specific font size in select box
 			 * e.g. myfont__1.5, google_font__1.5::100,300,500
 			 */
 			$rule_split = explode( '__', $font['family'] );

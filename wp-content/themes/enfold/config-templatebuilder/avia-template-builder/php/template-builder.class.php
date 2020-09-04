@@ -90,7 +90,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		protected $shortcode_parser;
 		
 		/**
-		 * State of the selectbox in admin area for the post/page/...
+		 * State of the select box in admin area for the post/page/...
 		 * 
 		 * @since 4.2.1
 		 * @var string			'disabled' | 'check_only' | 'auto_repair'
@@ -239,6 +239,22 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 * @var boolean 
 		 */
 		public $wp_footer_started;
+		
+		/**
+		 * Contains registered admin scripts for shortcodes to be enqueued after main admin scripts
+		 * 
+		 * @since 4.5.7.1
+		 * @var array 
+		 */
+		protected $registered_admin_scripts;
+		
+		/**
+		 * Contains registered admin CSS for shortcodes to be enqueued after main admin CSS
+		 * 
+		 * @since 4.5.7.1
+		 * @var array 
+		 */
+		protected $registered_admin_styles;
 
 
 		/**
@@ -291,39 +307,43 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			$this->wp_head_done = false;
 			$this->wp_sidebar_started = false;
 			$this->wp_footer_started = false;
+			$this->registered_admin_scripts = array();
+			$this->registered_admin_styles = array();
 			
-			$this->paths['pluginPath'] 	= trailingslashit( dirname( dirname(__FILE__) ) );
-			$this->paths['pluginDir'] 	= trailingslashit( basename( $this->paths['pluginPath'] ) );
-			$this->paths['pluginUrlRoot'] 	= apply_filters('avia_builder_plugins_url',  plugins_url().'/'.$this->paths['pluginDir']);
-			$this->paths['pluginUrl'] 	= $this->paths['pluginUrlRoot'] . "avia-template-builder/";
-			$this->paths['assetsURL']	= trailingslashit( $this->paths['pluginUrl'] ) . 'assets/';
-			$this->paths['assetsPath']	= trailingslashit( $this->paths['pluginPath'] ) . 'assets/';
-			$this->paths['imagesURL']	= trailingslashit( $this->paths['pluginUrl'] ) . 'images/';
-			$this->paths['configPath']	= apply_filters('avia_builder_config_path', $this->paths['pluginPath'] .'config/');
-				
+			$this->paths['pluginPath'] = trailingslashit( dirname( dirname( __FILE__ ) ) );
+			$this->paths['pluginDir'] = trailingslashit( basename( $this->paths['pluginPath'] ) );
+			$this->paths['pluginUrlRoot'] = apply_filters( 'avia_builder_plugins_url',  plugins_url() . '/' . $this->paths['pluginDir'] );
+			$this->paths['pluginUrl'] = $this->paths['pluginUrlRoot'] . 'avia-template-builder/';
+			$this->paths['assetsURL'] = trailingslashit( $this->paths['pluginUrl'] ) . 'assets/';
+			$this->paths['assetsPath'] = trailingslashit( $this->paths['pluginPath'] ) . 'assets/';
+			$this->paths['imagesURL'] = trailingslashit( $this->paths['pluginUrl'] ) . 'images/';
+			$this->paths['configPath'] = apply_filters( 'avia_builder_config_path', $this->paths['pluginPath'] . 'config/' );
 			AviaBuilder::$path = $this->paths;
-			AviaBuilder::$default_iconfont = apply_filters('avf_default_iconfont', array( 'entypo-fontello' => 
-																						array(
-																						'append'	=> '',
-																						'include' 	=> $this->paths['assetsPath'].'fonts',
-																						'folder'  	=> $this->paths['assetsURL'].'fonts',
-																						'config'	=> 'charmap.php',
-																						'compat'	=> 'charmap-compat.php', //needed to make the theme compatible with the old version of the font
-																						'full_path'	=> 'true' //tells the script to not prepend the wp_upload dir path to these urls
-																						)
-																					));
+			
+			AviaBuilder::$default_iconfont = apply_filters( 'avf_default_iconfont', 
+																array( 'entypo-fontello' => 
+																			array(
+																				'append'	=> '',
+																				'include' 	=> $this->paths['assetsPath'] . 'fonts',
+																				'folder'  	=> $this->paths['assetsURL'] . 'fonts',
+																				'config'	=> 'charmap.php',
+																				'compat'	=> 'charmap-compat.php', //needed to make the theme compatible with the old version of the font
+																				'full_path'	=> 'true' //tells the script to not prepend the wp_upload dir path to these urls
+																			)
+																		)
+														);
 		
-			add_action('load-post.php', array( $this, 'admin_init') , 5 );
-			add_action('load-post-new.php', array( $this, 'admin_init') , 5 );
+			add_action( 'load-post.php', array( $this, 'admin_init') , 5 );
+			add_action( 'load-post-new.php', array( $this, 'admin_init') , 5 );
 			
 			add_action( 'admin_init', array( $this, 'handler_admin_init' ), 1 );
 			add_action( 'init', array( $this, 'loadLibraries' ), 5 ); 
 			add_action( 'init', array( $this, 'init' ), 10 );
 			add_action( 'wp', array( $this, 'frontend_asset_check' ), 5 );
 			
-			add_action( 'wp_head', array( $this, 'handler_wp_head'), 99999999 );
-			add_action( 'get_sidebar', array( $this, 'handler_get_sidebar'), 1, 1 );
-			add_action( 'get_footer', array( $this, 'handler_get_footer'), 1, 1 );
+			add_action( 'wp_head', array( $this, 'handler_wp_head' ), 99999999 );
+			add_action( 'get_sidebar', array( $this, 'handler_get_sidebar' ), 1, 1 );
+			add_action( 'get_footer', array( $this, 'handler_get_footer' ), 1, 1 );
 			
 			
 			//save and restore meta information if user restores a revision
@@ -331,10 +351,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			add_action( '_wp_put_post_revision', array( $this, 'avia_builder_put_revision' ), 10, 1 );
 	        add_action( 'wp_restore_post_revision', array( $this, 'avia_builder_restore_revision' ), 10, 2 );
 
-			add_filter( 'avia_builder_metabox_filter', array( $this, 'handler_alb_metabox_filter'), 10, 1 );
+			add_filter( 'avia_builder_metabox_filter', array( $this, 'handler_alb_metabox_filter' ), 10, 1 );
 			
-			
-			add_action('dbx_post_sidebar', array( $this, 'handler_wp_dbx_post_sidebar'), 10, 1 );
+			add_action('dbx_post_sidebar', array( $this, 'handler_wp_dbx_post_sidebar' ), 10, 1 );
 
 		}
 		
@@ -359,6 +378,8 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			unset( $this->supported_post_status );
 			unset( $this->may_be_disabled_automatically );
 			unset( $this->disabled_assets );
+			unset( $this->registered_admin_scripts );
+			unset( $this->registered_admin_styles );
 		}
 		
 		/**
@@ -435,8 +456,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			
 			if( ! $this->alb_nonce_added )
 			{
-				$nonce =	wp_create_nonce ('avia_nonce_loader');
-				echo		'<input type="hidden" name="avia-loader-nonce" id="avia-loader-nonce" value="' . $nonce . '" />';
+				$nonce = wp_create_nonce ('avia_nonce_loader');
+				
+				echo '<input type="hidden" name="avia-loader-nonce" id="avia-loader-nonce" value="' . $nonce . '" />';
 				
 				$this->alb_nonce_added = true;
 			}
@@ -448,9 +470,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 **/
 		public function init()
 	 	{
-	 		if(isset($_GET['avia_mode']))
+	 		if( isset( $_GET['avia_mode'] ) )
 			{
-				AviaBuilder::$mode = esc_attr($_GET['avia_mode']);
+				AviaBuilder::$mode = esc_attr( $_GET['avia_mode'] );
 			}
 			
 	 		//activate the element manager
@@ -465,9 +487,13 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			new AviaMedia();
 			
 			//on ajax call load the functions that are usually only loaded on new post and edit post screen
-			if(AviaHelper::is_ajax()) 
+			if( AviaHelper::is_ajax() ) 
 			{
-				if(empty( $_POST['avia_request'] )) return;
+				if( empty( $_POST['avia_request'] ) ) 
+				{
+					return;
+				}
+				
                 $this->admin_init();
 	 	    } 
 	 		
@@ -491,53 +517,53 @@ if ( ! class_exists( 'AviaBuilder' ) )
 	 	}
 	 	
 		/**
-		 *Load all the required library files.
-		 **/
+		 * Load all the required library files.
+		 */
 		public function loadLibraries() 
 		{			
-			require_once( $this->paths['pluginPath'].'php/pointer.class.php' );
-			require_once( $this->paths['pluginPath'].'php/shortcode-helper.class.php' ); 
-			require_once( $this->paths['pluginPath'].'php/shortcode-parser.class.php' ); 
-			require_once( $this->paths['pluginPath'].'php/element-manager.class.php' );
-			require_once( $this->paths['pluginPath'].'php/generic-helper.class.php' );
-			require_once( $this->paths['pluginPath'].'php/html-helper.class.php' );
-			require_once( $this->paths['pluginPath'].'php/meta-box.class.php' );
-			require_once( $this->paths['pluginPath'].'php/shortcode-template.class.php' );
-			require_once( $this->paths['pluginPath'].'php/media.class.php' );
-			require_once( $this->paths['pluginPath'].'php/tiny-button.class.php' );
-			require_once( $this->paths['pluginPath'].'php/save-buildertemplate.class.php' );
-			require_once( $this->paths['pluginPath'].'php/storage-post.class.php' );
-			require_once( $this->paths['pluginPath'].'php/font-manager.class.php' );
-			require_once( $this->paths['pluginPath'].'php/asset-manager.class.php' );
-			require_once( $this->paths['pluginPath'].'php/popup-templates.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/pointer.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/shortcode-helper.class.php' ); 
+			require_once( $this->paths['pluginPath'] . 'php/shortcode-parser.class.php' ); 
+			require_once( $this->paths['pluginPath'] . 'php/element-manager.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/generic-helper.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/html-helper.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/meta-box.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/shortcode-template.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/media.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/tiny-button.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/save-buildertemplate.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/storage-post.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/font-manager.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/asset-manager.class.php' );
+			require_once( $this->paths['pluginPath'] . 'php/popup-templates.class.php' );
 			
 			
 			//autoload files in shortcodes folder and any other folders that were added by filter
-			$folders = apply_filters('avia_load_shortcodes', array($this->paths['pluginPath'].'php/shortcodes/'));
-			$this->autoloadLibraries($folders);
+			$folders = apply_filters( 'avia_load_shortcodes', array( $this->paths['pluginPath'] . 'php/shortcodes/' ) );
+			$this->autoloadLibraries( $folders );
 		}
 		
 		/**
 		 * PHP include all files from a number of folders which are passed as an array
 		 * This auoloads all the shortcodes located in php/shortcodes and any other folders that were added by filter
-		 **/
-		protected function autoloadLibraries($paths)
+		 */
+		protected function autoloadLibraries( $paths )
 		{
-			foreach ($paths as $path)
+			foreach( $paths as $path )
 			{
 				//include modules (eg files within folders with the same name)
-				foreach(glob($path.'*', GLOB_ONLYDIR) as $folder)
+				foreach( glob( $path . '*', GLOB_ONLYDIR ) as $folder )
 				{
-					$php_file = trailingslashit($folder) . basename($folder) . ".php";
+					$php_file = trailingslashit( $folder ) . basename( $folder ) . '.php';
 					
-					if(file_exists( $php_file ))
+					if( file_exists( $php_file ) )
 					{
 						include( $php_file );
 					}
 				}
 				
 				//include single files
-				foreach(glob($path.'*.php') as $file)
+				foreach( glob( $path . '*.php' ) as $file )
 				{
 					require_once( $file ); 
 				}
@@ -546,8 +572,8 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		
 		
 		/**
-		 *Add filters to various wordpress filter hooks
-		 **/
+		 * Add filters to various wordpress filter hooks
+		 */
 		protected function addAdminFilters() 
 		{
 			/**
@@ -564,14 +590,14 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		}
 		
 		/**
-		 *Add Admin Actions to some wordpress action hooks
-		 **/
-		protected function addAdminActions() {
-		
+		 * Add Admin Actions to some wordpress action hooks
+		 */
+		protected function addAdminActions() 
+		{
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts_styles' ) );
-			add_action( 'admin_print_scripts', array($this,'load_shortcode_assets'), 2000);
-		    add_action( 'print_media_templates', array($this, 'js_template_editor_elements' )); //create js templates for AviaBuilder Canvas Elements
-		    add_action( 'avia_save_post_meta_box', array($this, 'meta_box_save' )); //hook into meta box saving and store the status of the template builder and the shortcodes that are used
+			add_action( 'admin_print_scripts', array( $this,'load_shortcode_assets' ), 2000);
+			add_action( 'print_media_templates', array( $this, 'js_template_editor_elements' ) );	//create js templates for AviaBuilder Canvas Elements
+			add_action( 'avia_save_post_meta_box', array( $this, 'meta_box_save' ) );				//hook into meta box saving and store the status of the template builder and the shortcodes that are used
 
 			add_filter( 'avf_before_save_alb_post_data', array( $this, 'handler_before_save_alb_post_data' ), 10, 2 );	//	hook to balance shortcode for non ALB pages
 		    			
@@ -583,21 +609,22 @@ if ( ! class_exists( 'AviaBuilder' ) )
 
 		
 		/**
-		 *Add Actions for the frontend
-		 **/
-		protected function addActions() {
+		 * Add Actions for the frontend
+		 */
+		protected function addActions() 
+		{
 		
 			// Enable shortcodes in widget areas
-			add_filter('widget_text', 'do_shortcode');
+			add_filter( 'widget_text', 'do_shortcode' );
 			
 			//default wordpress hooking
-			add_action('wp_head', array($this,'load_shortcode_assets'), 2000);
-			add_filter( 'template_include' , array($this, 'template_include'), 20000); 
+			add_action( 'wp_head', array( $this, 'load_shortcode_assets' ), 2000 );
+			add_filter( 'template_include' , array( $this, 'template_include' ), 20000 ); 
 		}
 		
 		/**
-		 *Automatically load assests like fonts into your frontend
-		 **/
+		 * Automatically load assests like fonts into your frontend
+		 */
 		public function load_shortcode_assets()
 		{
 			$output = '';
@@ -605,9 +632,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			
 			/* if the builder is decoupled from the theme then make sure to only load iconfonts if they are actually necessary. in enfolds case it is
 				
-			foreach(AviaBuilder::$resources_to_load as $element)
+			foreach( AviaBuilder::$resources_to_load as $element )
 			{
-				if($element['type'] == 'iconfont')
+				if( $element['type'] == 'iconfont' )
 				{
 					$output .= avia_font_manager::load_font();
 				}
@@ -617,25 +644,61 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			echo $output;
 			
 			//output preview css paths
-			if(is_admin()) echo $this->load_preview_css( $output );
+			if( is_admin() ) 
+			{
+				echo $this->load_preview_css( $output );
+			}
 		}
 		
-	
 		/**
-		 *load css and js files when in editable mode
-		 **/
+		 * Adds registered shortcode admin script handles to array. Allows to enqueue them on edit pages only.
+		 * Avoids problems with e.g. WooCommerce that manipulates the enqueue array to preload scripts.
+		 * 
+		 * @since 4.7.5.2
+		 * @param string $handle
+		 */
+		public function add_registered_admin_script( $handle ) 
+		{
+			if( ! in_array( $handle, $this->registered_admin_scripts ) )
+			{
+				$this->registered_admin_scripts[] = $handle;
+			}
+		}
+		
+		/**
+		 * Adds registered shortcode admin script handles to array. Allows to enqueue them on edit pages only.
+		 * Avoids problems with e.g. WooCommerce that manipulates the enqueue array to preload scripts.
+		 * 
+		 * @since 4.7.5.2
+		 * @param string $handle
+		 */
+		public function add_registered_admin_style( $handle ) 
+		{
+			if( ! in_array( $handle, $this->registered_admin_styles ) )
+			{
+				$this->registered_admin_styles[] = $handle;
+			}
+		}
+
+		/**
+		 * load css and js files when in editable mode
+		 */
 		public function admin_scripts_styles()
 		{
 			global $wp_version;
 			$ver = $wp_version . "-" . AviaBuilder::VERSION;
 			
 			#js
-			wp_enqueue_script('avia_builder_js', $this->paths['assetsURL'].'js/avia-builder.js', array('jquery','jquery-ui-core', 'jquery-ui-sortable', 'jquery-ui-droppable','jquery-ui-datepicker','wp-color-picker','media-editor','post'), $ver, true );
-			wp_enqueue_script('avia_element_js' , $this->paths['assetsURL'].'js/avia-element-behavior.js' , array('avia_builder_js'), $ver, true );
-			wp_enqueue_script('avia_modal_js' , $this->paths['assetsURL'].'js/avia-modal.js' , array('jquery', 'avia_element_js', 'wp-color-picker'), $ver, true );
-			wp_enqueue_script('avia_history_js' , $this->paths['assetsURL'].'js/avia-history.js' , array('avia_element_js'), $ver, true );
-			wp_enqueue_script('avia_tooltip_js' , $this->paths['assetsURL'].'js/avia-tooltip.js' , array('avia_element_js'), $ver, true );
+			wp_enqueue_script( 'avia_builder_js', $this->paths['assetsURL'] . 'js/avia-builder.js', array( 'jquery', 'jquery-ui-core', 'jquery-ui-sortable', 'jquery-ui-droppable', 'jquery-ui-datepicker', 'wp-color-picker', 'media-editor', 'post' ), $ver, true );
+			wp_enqueue_script( 'avia_element_js', $this->paths['assetsURL'] . 'js/avia-element-behavior.js' , array( 'avia_builder_js' ), $ver, true );
+			wp_enqueue_script( 'avia_modal_js', $this->paths['assetsURL'] . 'js/avia-modal.js' , array( 'jquery', 'avia_element_js', 'wp-color-picker' ), $ver, true );
+			wp_enqueue_script( 'avia_history_js', $this->paths['assetsURL'] . 'js/avia-history.js' , array( 'avia_element_js' ), $ver, true );
+			wp_enqueue_script( 'avia_tooltip_js', $this->paths['assetsURL'] . 'js/avia-tooltip.js' , array( 'avia_element_js' ), $ver, true );
 
+			foreach( $this->registered_admin_scripts as $script ) 
+			{
+				wp_enqueue_script( $script );
+			}
 			
 			#css
 			wp_enqueue_style( 'avia-modal-style' , $this->paths['assetsURL'].'css/avia-modal.css', false, $ver);
@@ -650,33 +713,42 @@ if ( ! class_exists( 'AviaBuilder' ) )
 				wp_enqueue_style( 'avia-builder-rtl-style' , $this->paths['assetsURL'].'css/avia-builder-rtl.css');
 			}
 			
-			#localize strings for javascript
-			include_once($this->paths['configPath']."javascript_strings.php");
-
-			if(!empty($strings))
+			foreach( $this->registered_admin_styles as $style ) 
 			{
-				foreach($strings as $key => $string)
+				wp_enqueue_style( $style );
+			}
+			
+			#localize strings for javascript
+			include_once( $this->paths['configPath'] . 'javascript_strings.php' );
+
+			if( ! empty( $strings ) )
+			{
+				foreach( $strings as $key => $string )
 				{
-					wp_localize_script( $key, str_replace('_js', '_L10n', $key), $string );
+					wp_localize_script( $key, str_replace( '_js', '_L10n', $key ), $string );
 				}
 			}
 			
-			
 		}
 		
-		
+		/**
+		 * 
+		 * @param string $icon_font
+		 * @param string $css
+		 * @return string
+		 */
 		public function load_preview_css( $icon_font = '', $css = '' )
 		{
-			$output				= '';
-			$template_url 		= get_template_directory_uri();
-			$child_theme_url 	= get_stylesheet_directory_uri();
+			$output = '';
+			$template_url = get_template_directory_uri();
+			$child_theme_url = get_stylesheet_directory_uri();
 			$avia_dyn_stylesheet_url = false;
 			$ver = AviaBuilder::VERSION;
 			
 			global $avia;
 			
-			$safe_name = avia_backend_safe_string($avia->base_data['prefix']);
-			$safe_name = apply_filters('avf_dynamic_stylesheet_filename', $safe_name);
+			$safe_name = avia_backend_safe_string( $avia->base_data['prefix'] );
+			$safe_name = apply_filters( 'avf_dynamic_stylesheet_filename', $safe_name );
 	
 	        if( get_option( 'avia_stylesheet_exists' . $safe_name ) == 'true' )
 	        {
@@ -687,12 +759,12 @@ if ( ! class_exists( 'AviaBuilder' ) )
 				 * 
 				 * @since 4.4
 				 */
-				$avia_dyn_upload_path = apply_filters('avf_dyn_stylesheet_dir_url',  $avia_upload_dir['baseurl'] . '/dynamic_avia' );
+				$avia_dyn_upload_path = apply_filters( 'avf_dyn_stylesheet_dir_url',  $avia_upload_dir['baseurl'] . '/dynamic_avia' );
 				$avia_dyn_upload_path = trailingslashit( $avia_dyn_upload_path );
 				
 	            if( is_ssl() ) 
 				{
-					$avia_dyn_upload_path = str_replace("http://", "https://", $avia_dyn_upload_path );
+					$avia_dyn_upload_path = str_replace( 'http://', 'https://', $avia_dyn_upload_path );
 				}
 				
 				/**
@@ -703,84 +775,86 @@ if ( ! class_exists( 'AviaBuilder' ) )
 	            $avia_dyn_stylesheet_url = apply_filters( 'avf_dyn_stylesheet_file_url', $avia_dyn_upload_path . $safe_name . '.css' );
 	        }
 	        
-	        $google_fonts = array(avia_get_option('google_webfont'), avia_get_option('default_font'));
+	        $google_fonts = array( 
+								avia_get_option( 'google_webfont' ), 
+								avia_get_option( 'default_font' ) 
+							);
 	        
-	        foreach($google_fonts as $font)
+	        foreach( $google_fonts as $font )
 	        {
 	        	$font_weight = '';
 
-				if(strpos($font, ":") !== false)
+				if( strpos( $font, ':' ) !== false )
 				{
-					$data = explode(':',$font);
+					$data = explode( ':', $font );
 					$font = $data[0];
 					$font_weight = $data[1];
 				}
 	        
-		        if(strpos($font, 'websave') === false)
+		        if( strpos( $font, 'websave' ) === false )
 				{
-					$avia->style->add_google_font($font, $font_weight);
+					$avia->style->add_google_font( $font, $font_weight );
 				}
 	        }
 	        
 			//if no user defined css is available load all the default frontend css
-			if(empty($css))
+			if( empty( $css ) )
 			{
 				$css = array(
-					
-					includes_url('/js/mediaelement/mediaelementplayer-legacy.min.css') => 1, 
-					includes_url('/js/mediaelement/wp-mediaelement.css?ver=4.9.4') => 1, 
-					
-					$template_url."/css/grid.css" => 1,
-					$template_url."/css/base.css" => 1,
-					$template_url."/css/layout.css" => 1,
-					$template_url."/css/shortcodes.css" => 1,
-					$template_url."/js/aviapopup/magnific-popup.css" => 1,
-					$template_url."/css/rtl.css" => is_rtl(),
-					$child_theme_url."/style.css" => $template_url != $child_theme_url,
-				);
+							includes_url('/js/mediaelement/mediaelementplayer-legacy.min.css') => 1, 
+							includes_url('/js/mediaelement/wp-mediaelement.css?ver=4.9.4') => 1, 
+
+							$template_url . '/css/grid.css' => 1,
+							$template_url . '/css/base.css' => 1,
+							$template_url . '/css/layout.css' => 1,
+							$template_url . '/css/shortcodes.css' => 1,
+							$template_url . '/js/aviapopup/magnific-popup.css' => 1,
+							$template_url . '/css/rtl.css' => is_rtl(),
+							$child_theme_url . '/style.css' => $template_url != $child_theme_url,
+						);
 				
 				// iterate over template builder modules and load the default css in there as well. 
 				// hakish approach that might need refinement if we improve the backend preview
-				$path = trailingslashit (dirname( $this->paths['pluginPath'])) . "avia-shortcodes/";
+				$path = trailingslashit( dirname( $this->paths['pluginPath'] ) ) . 'avia-shortcodes/';
 				
-				foreach(glob($path.'*', GLOB_ONLYDIR) as $folder)
+				foreach( glob( $path . '*', GLOB_ONLYDIR ) as $folder )
 				{
-					$css_file 	= trailingslashit($folder) . basename($folder) . ".css";
-					$css_url	= trailingslashit($this->paths['pluginUrlRoot']) . "avia-shortcodes/" . basename($folder) ."/". basename($folder) . ".css";
+					$css_file = trailingslashit($folder) . basename($folder) . '.css';
+					$css_url = trailingslashit( $this->paths['pluginUrlRoot'] ) . 'avia-shortcodes/' . basename( $folder ) . '/' . basename( $folder ) . '.css';
 					
-					if(file_exists( $css_file ))
+					if( file_exists( $css_file ) )
 					{
 						$css[ $css_url ] = 1;
 					}
 				}
 
-				
 				//custom user css, overwriting our styles
-				$css[$template_url."/css/custom.css"] = 1;
-				$css[$avia_dyn_stylesheet_url] = $avia_dyn_stylesheet_url;
-				$css[$template_url."/css/admin-preview.css"] = 1;
+				$css[ $template_url.  '/css/custom.css' ] = 1;
+				$css[ $avia_dyn_stylesheet_url ] = $avia_dyn_stylesheet_url;
+				$css[ $template_url . '/css/admin-preview.css' ] = 1;
 				
-				$css = apply_filters('avf_preview_window_css_files' , $css );
+				$css = apply_filters( 'avf_preview_window_css_files' , $css );
 			}
 			
 			//module css
-			if(is_array($css))
+			if( is_array( $css ) )
 			{
-				foreach($css as $url => $load)
+				foreach( $css as $url => $load )
 				{
-					if($load) $output .= "<link rel='stylesheet' href='".$url."?ver=".$ver."' type='text/css' media='all' />";
+					if( $load ) 
+					{
+						$output .= "<link rel='stylesheet' href='{$url}?ver={$ver}' type='text/css' media='all' />";
+					}
 				}
 			}
 			
-			$output .= "<script type='text/javascript' src='".includes_url('/js/jquery/jquery.js')."?ver=".$ver."'></script>";
-			$output .= "<script type='text/javascript' src='".$template_url."/js/avia-admin-preview.js?ver=".$ver."'></script>";
+			$output .= "<script type='text/javascript' src='" . includes_url( '/js/jquery/jquery.js' ). "?ver={$ver}'></script>";
+			$output .= "<script type='text/javascript' src='" . $template_url . "/js/avia-admin-preview.js?ver={$ver}'></script>";
 			$output .= $avia->style->link_google_font();
-
-
-
-			$error = __('It seems you are currently adding some HTML markup or other special characters. Once all HTML tags are closed the preview will be available again. If this message persists please check your input for special characters and try to remove them.','avia_framework');
-			$html  = "<script type='text/javascript'>var avia_preview = " . json_encode( array( "error" => $error, "paths" => $output.$icon_font, 'title' => __('Element Preview','avia_framework') , 'background' => __('Set preview background:','avia_framework'), 'scale' => __('Scaled to:','avia_framework')) )  . "; \n";
-			$html .= "</script>";
+			
+			$error = __('It seems you are currently adding some HTML markup or other special characters. Once all HTML tags are closed the preview will be available again. If this message persists please check your input for special characters and try to remove them.', 'avia_framework' );
+			$html  = "<script type='text/javascript'>var avia_preview = " . json_encode( array( 'error' => $error, 'paths' => $output.$icon_font, 'title' => __( 'Element Preview', 'avia_framework' ) , 'background' => __( 'Set preview background:', 'avia_framework' ), 'scale' => __( 'Scaled to:', 'avia_framework' ) ) )  . "; \n";
+			$html .= '</script>';
 		
 			return $html;
 		}
@@ -796,9 +870,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		/**
 		 *safe mode or debugging
 		 **/
-		public function setMode($status = '')
+		public function setMode( $status = '' )
 	 	{
-			AviaBuilder::$mode = apply_filters('avia_builder_mode', $status);
+			AviaBuilder::$mode = apply_filters( 'avia_builder_mode', $status );
 		}
 		
 		/**
@@ -948,13 +1022,13 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		{
 			$option_value = avia_get_option( 'alb_developer_options', '' );
 			
-			if( $option_value == "alb_developer_options")
+			if( $option_value == 'alb_developer_options')
 			{
 				$option_value = 'hide';
 			}
 			else
 			{
-				$option_value = "show";
+				$option_value = 'show';
 			}
 			
 			
@@ -1317,7 +1391,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 */
 		public function handler_alb_shortcode_buttons_order()
 		{
-			header( "Content-Type: application/json" );
+			header( 'Content-Type: application/json' );
 			
 			$return = check_ajax_referer( 'avia_nonce_loader', '_ajax_nonce', false );
 			if( ! current_user_can( 'edit_posts' ) )
@@ -1349,24 +1423,24 @@ if ( ! class_exists( 'AviaBuilder' ) )
 
 		/**
 		 *set fullwidth elements that need to interact with section shortcode
-		 **/
-		public function setFullwidthElements($elements = array())
+		 */
+		public function setFullwidthElements( $elements = array() )
 	 	{
-		 	$elements = apply_filters('avf_fwd_elements', $elements);
+		 	$elements = apply_filters( 'avf_fwd_elements', $elements );
 		 	
 			AviaBuilder::$full_el_no_section = $elements;
-			AviaBuilder::$full_el = array_merge(array('av_section'), $elements);
+			AviaBuilder::$full_el = array_merge( array( 'av_section' ), $elements );
 		}
 		
 		
 		
 		/**
 		 *calls external classes that are needed for the script to operate
-		 **/
+		 */
 		public function call_classes()
 		{
 			//create the meta boxes
-			new MetaBoxBuilder($this->paths['configPath']);
+			new MetaBoxBuilder( $this->paths['configPath'] );
 
 			// save button
 			$this->get_AviaSaveBuilderTemplate();
@@ -1393,30 +1467,31 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			
 			//create tiny mce button
 			$tiny = array(
-				'id'				=> 'avia_builder_button',
-				'title'				=> __('Insert Theme Shortcode','avia_framework' ),
-				'image'				=> $this->paths['imagesURL'].'tiny-button.png',
-				'js_plugin_file'	=> $this->paths['assetsURL'].'js/avia-tinymce-buttons.js',
-				'shortcodes'		=> array_map(array($this, 'fetch_configs'), $this->shortcode_class)
-			);
+						'id'				=> 'avia_builder_button',
+						'title'				=> __( 'Insert Theme Shortcode', 'avia_framework' ),
+						'image'				=> $this->paths['imagesURL'] . 'tiny-button.png',
+						'js_plugin_file'	=> $this->paths['assetsURL'] . 'js/avia-tinymce-buttons.js',
+						'shortcodes'		=> array_map( array( $this, 'fetch_configs' ), $this->shortcode_class )
+					);
 			
 			//if we are using tinymce 4 or higher change the javascript file
 			global $tinymce_version;
 			
-			if(version_compare($tinymce_version[0], 4, ">="))
+			if( version_compare( $tinymce_version[0], 4, '>=' ) )
 			{
-				$tiny['js_plugin_file'] = $this->paths['assetsURL'].'js/avia-tinymce-buttons-4.js';
+				$tiny['js_plugin_file'] = $this->paths['assetsURL'] . 'js/avia-tinymce-buttons-4.js';
 			}
 
-			new avia_tinyMCE_button($tiny);
+			new avia_tinyMCE_button( $tiny );
 			$this->alb_magic_wand_button = true;
 			
 			//activate iconfont manager
 			new avia_font_manager();
 						
 		    //fetch all Wordpress pointers that help the user to use the builder
-			include($this->paths['configPath']."pointers.php");
-			$myPointers = new AviaPointer($pointers);
+			include( $this->paths['configPath'] . 'pointers.php' );
+			
+			$myPointers = new AviaPointer( $pointers );
 		}
 		
 		/**
@@ -1426,7 +1501,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 */
 		public function asset_manager()
 		{
-			if(empty($this->asset_manager_class))
+			if( empty( $this->asset_manager_class ) )
 			{
 				//activate asset_manager
 				$this->asset_manager_class = new aviaAssetManager( $this );
@@ -1454,14 +1529,14 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		
 		
 		/**
-		 * allows to filter which shortcode assets to display in the frontend. waits for the "wp" hook so the post id is already available
+		 * allows to filter which shortcode assets to display in the frontend. waits for the 'wp' hook so the post id is already available
 		 * 
 		 * @since 4.3
 		 */
 		public function frontend_asset_check()
 		{
 		 	//before creating shortcodes allow to filter the assets that are loaded in the frontend
-		 	//pass shortcode names like "av_video" or "av_audio" in an array
+		 	//pass shortcode names like 'av_video' or 'av_audio' in an array
 		 	$this->disabled_assets = apply_filters( 'avf_disable_frontend_assets', $this->disabled_assets );
 			
 			/**
@@ -1496,30 +1571,34 @@ if ( ! class_exists( 'AviaBuilder' ) )
         {
 	        global $post_ID, $wp_version;
 	        
-	        if( ! empty( $post_ID ) && $this->get_alb_builder_status( $post_ID ) )
-	        {
-	        	$classes .= ' avia-advanced-editor-enabled ';
-	        }
+			if( ! empty( $post_ID ) && $this->get_alb_builder_status( $post_ID ) )
+			{
+				$classes .= ' avia-advanced-editor-enabled ';
+			}
 			
-			if( version_compare( $wp_version, '5.4', '>=' ) )
+			if( version_compare( $wp_version, '5.5', '>=' ) )
+			{
+				$classes .= ' avia-wp55-fix ';
+			}
+			else if( version_compare( $wp_version, '5.4', '>=' ) )
 			{
 				$classes .= ' avia-wp54-fix ';
 			}
-	        
-	        if( $this->disable_drag_drop == true )
-	        {
-		        $classes .= ' av-no-drag-drop ';
-	        }
+
+			if( $this->disable_drag_drop == true )
+			{
+				$classes .= ' av-no-drag-drop ';
+			}
 			
 			/**
 			 * @since 4.2.3 we support columns in rtl order (before they were ltr only). To be backward comp. with old sites use this filter.
 			 */
 			if( is_rtl() && ( 'yes' == apply_filters( 'avf_rtl_column_support', 'yes' ) ) )
-	        {
+			{
 				$classes .= ' rtl ';
 			}
-			
-	        return $classes;
+
+			return $classes;
         }
         
 
@@ -1531,49 +1610,58 @@ if ( ! class_exists( 'AviaBuilder' ) )
 	 	{
 		 			 	
 	 		$children  = array();
-			foreach(get_declared_classes() as $class)
+			foreach( get_declared_classes() as $class )
 			{
-			    if(is_subclass_of($class, 'aviaShortcodeTemplate'))
+			    if( is_subclass_of( $class, 'aviaShortcodeTemplate' ) )
 			    {
-			    	 $allow = false;
-			    	 $children[] = $class;
-			    	 $this->shortcode_class[$class] = new $class($this);
-			    	 $shortcode = $this->shortcode_class[$class]->config['shortcode'];
-			    	 
-			    	 //check if the shortcode is allowed. if so init the shortcode, otherwise unset the item
-			    	 if( empty(ShortcodeHelper::$manually_allowed_shortcodes) && empty(ShortcodeHelper::$manually_disallowed_shortcodes) ) $allow = true;
-			    	 if( !$allow && !empty(ShortcodeHelper::$manually_allowed_shortcodes) && in_array($shortcode, ShortcodeHelper::$manually_allowed_shortcodes)) $allow = true;
-			    	 if( !$allow && !empty(ShortcodeHelper::$manually_disallowed_shortcodes) && !in_array($shortcode, ShortcodeHelper::$manually_disallowed_shortcodes)) $allow = true;
-			    	 
-			    	 
-			    	 if($allow)
-			    	 {
-			    	 	$this->shortcode_class[$class]->init(); 
-			    	 	$this->shortcode[$this->shortcode_class[$class]->config['shortcode']] = $class;
-			    	 	
-			    	 	
-			    	 	//save if the asset may be disabled automatically
-			    	 	if(!empty( $this->shortcode_class[$class]->config['disabling_allowed']) && $this->shortcode_class[$class]->config['disabling_allowed'] !== "manually") 
-			    	 	{
-				    	 	$this->may_be_disabled_automatically[] = $this->shortcode_class[$class]->config['shortcode'] ;
-			    	 	}
-			    	 	
-			    	 	//save shortcode as allowed by default. if we only want to display the shortcode in tinymce remove it from the list but keep the class instance alive
-			    	 	if(empty($this->shortcode_class[$class]->config['tinyMCE']['tiny_only']))
-			    	 	{
-			    			ShortcodeHelper::$allowed_shortcodes[] = $this->shortcode_class[$class]->config['shortcode'];
-			    		}
+					$allow = false;
+					$children[] = $class;
+					$this->shortcode_class[ $class ] = new $class( $this );
+					$shortcode = $this->shortcode_class[ $class ]->config['shortcode'];
+
+					//check if the shortcode is allowed. if so init the shortcode, otherwise unset the item
+					if( empty( ShortcodeHelper::$manually_allowed_shortcodes ) && empty( ShortcodeHelper::$manually_disallowed_shortcodes ) ) 
+					{
+						$allow = true;
+					}
+
+					if( ! $allow && ! empty( ShortcodeHelper::$manually_allowed_shortcodes ) && in_array( $shortcode, ShortcodeHelper::$manually_allowed_shortcodes ) ) 
+					{
+						$allow = true;
+					}
+
+					if( ! $allow && ! empty( ShortcodeHelper::$manually_disallowed_shortcodes ) && ! in_array( $shortcode, ShortcodeHelper::$manually_disallowed_shortcodes ) ) 
+					{
+						$allow = true;
+					}
+
+					if( $allow )
+					{
+						$this->shortcode_class[ $class ]->init(); 
+						$this->shortcode[ $this->shortcode_class[ $class ]->config['shortcode'] ] = $class;
+
+						//save if the asset may be disabled automatically
+						if( ! empty( $this->shortcode_class[ $class ]->config['disabling_allowed'] ) && $this->shortcode_class[ $class ]->config['disabling_allowed'] !== 'manually' ) 
+						{
+							$this->may_be_disabled_automatically[] = $this->shortcode_class[$class]->config['shortcode'] ;
+						}
+
+						//save shortcode as allowed by default. if we only want to display the shortcode in tinymce remove it from the list but keep the class instance alive
+						if( empty( $this->shortcode_class[ $class ]->config['tinyMCE']['tiny_only'] ) )
+						{
+							ShortcodeHelper::$allowed_shortcodes[] = $this->shortcode_class[ $class ]->config['shortcode'];
+						}
 			    		
-			    		//save nested shortcodes if they exist
-			    		if(isset($this->shortcode_class[$class]->config['shortcode_nested'])) 
-			    		{
-			    			ShortcodeHelper::$nested_shortcodes = array_merge(ShortcodeHelper::$nested_shortcodes, $this->shortcode_class[$class]->config['shortcode_nested']);
-			    	 	}
-			    	 }
-			    	 else
-			    	 {
-			    	 	unset($this->shortcode_class[$class]);
-			    	 }
+						//save nested shortcodes if they exist
+						if( isset( $this->shortcode_class[ $class ]->config['shortcode_nested'] ) ) 
+						{
+							ShortcodeHelper::$nested_shortcodes = array_merge( ShortcodeHelper::$nested_shortcodes, $this->shortcode_class[ $class ]->config['shortcode_nested'] );
+						}
+					}
+					else
+					{
+					   unset( $this->shortcode_class[ $class ] );
+					}
 			    }
 			}
 			
@@ -1608,14 +1696,14 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 */
 		public function extract_shortcode_from_tag( $tag = '' ) 
 		{
-			 if( empty( $tag) || ! is_string( $tag ) )
+			 if( empty( $tag ) || ! is_string( $tag ) )
 			{
 				return false;
 			}
 			
 			$match = array();
 			
-			$regex = '\[\/?([\w|-]+)';			//	gets opening and closing tag till first space after tag
+			$regex = "\[\/?([\w|-]+)";			//	gets opening and closing tag till first space after tag
 			preg_match_all( "/" . $regex . "/s", $tag, $match, PREG_OFFSET_CAPTURE );
 			
 			if( empty( $match ) )
@@ -1679,19 +1767,22 @@ if ( ! class_exists( 'AviaBuilder' ) )
 
 		
 		/**
-		 *create JS templates
-		 **/
+		 * create JS templates
+		 */
 		public function js_template_editor_elements()
 		{
-			foreach($this->shortcode_class as $shortcode)
+			foreach( $this->shortcode_class as $shortcode )
 			{
-				$class 	= $shortcode->config['php_class'];
+				$class = $shortcode->config['php_class'];
 				$template = $this->shortcode_class[$class]->prepare_editor_element();
 				
-				if(is_array($template)) continue;
+				if( is_array( $template ) ) 
+				{
+					continue;
+				}
 				
 				echo "\n<script type='text/html' id='avia-tmpl-{$class}'>\n";
-				echo $template;
+				echo	$template;
 				echo "\n</script>\n\n";
 			}
 
@@ -1876,10 +1967,12 @@ if ( ! class_exists( 'AviaBuilder' ) )
 				return $original_template;
 			}
 		
-
-    	   	if(($post_id && is_singular()) || isset($avia_config['builder_redirect_id']))
+    	   	if( ( $post_id && is_singular() ) || isset( $avia_config['builder_redirect_id'] ) )
     	   	{
-				if(!empty($avia_config['builder_redirect_id'])) $post_id = $avia_config['builder_redirect_id'];
+				if( ! empty( $avia_config['builder_redirect_id'] ) ) 
+				{
+					$post_id = $avia_config['builder_redirect_id'];
+				}
     	   	
 				ShortcodeHelper::$tree = $this->get_shortcode_tree( $post_id );
 				
@@ -1902,7 +1995,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 					//only redirect if no custom template is set
 					$template_file = get_post_meta( $post_id, '_wp_page_template', true );
 
-					if( "default" == $template_file || empty( $template_file ) )
+					if( 'default' == $template_file || empty( $template_file ) )
 					{
 						$avia_config['conditionals']['is_builder_template'] = true;
 						return $builder_template;
@@ -1935,9 +2028,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 				}
     	   	   
     	   	   //if a custom page was passed and the template builder is not active redirect to the default page template
-    	   	   if(isset($avia_config['builder_redirect_id']))
+    	   	   if( isset( $avia_config['builder_redirect_id'] ) )
     	   	   {
-    	   	   		if($template = locate_template('page.php', false))
+    	   	   		if( $template = locate_template( 'page.php', false) )
     	   	   		{
     	   	   			return $template;
     	   	   		}
@@ -1946,41 +2039,47 @@ if ( ! class_exists( 'AviaBuilder' ) )
     	   	
     	   	return $original_template;
     	}
-    	
-    	public function apply_editor_wrap()
-    	{
-    		//fetch the config array
-    		include($this->paths['configPath']."meta.php");
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function apply_editor_wrap()
+		{
+			//fetch the config array
+			include( $this->paths['configPath'] . 'meta.php' );
+
+			$slug = '';
+			$pages = array();
+
+			//check to which pages the avia builder is applied
+			foreach( $elements as $element )
+			{
+				if( is_array( $element['type'] ) && $element['type'][1] == 'visual_editor' )
+				{
+					$slug = $element['slug']; 
+					break;
+				}
+			}
     		
-    		$slug = '';
-    		$pages = array();
-    		//check to which pages the avia builder is applied
-    		foreach($elements as $element)
-    		{
-    			if(is_array($element['type']) && $element['type'][1] == 'visual_editor')
-    			{
-    				$slug = $element['slug']; break;
-    			}
-    		}
-    		
-    		foreach($boxes as $box)
-    		{
-    			if($box['id'] == $slug)
-    			{
-    				$pages = $box['page'];
-    			}
-    		}
+			foreach( $boxes as $box )
+			{
+				if( $box['id'] == $slug )
+				{
+					$pages = $box['page'];
+				}
+			}
+			
     		global $typenow;
     		
-    		if(!empty($pages) && in_array($typenow, $pages))
+    		if( ! empty( $pages ) && in_array( $typenow, $pages ) )
     		{	    
 		    	//html modification of the admin area: wrap
-		    	add_action( 'edit_form_after_title', array( $this, 'wrap_default_editor' ), 100000, 2 ); 
-		    	add_action( 'edit_form_after_editor', array( $this, 'close_default_editor_wrap' ), 1, 1 ); 
-		    }
-    	}
+				add_action( 'edit_form_after_title', array( $this, 'wrap_default_editor' ), 100000, 2 ); 
+				add_action( 'edit_form_after_editor', array( $this, 'close_default_editor_wrap' ), 1, 1 ); 
+			}
+		}
     	
-				
 		/**
 		 * Adds the ALB switch button
 		 * 
@@ -2056,13 +2155,15 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 */
 		public function close_default_editor_wrap( $post = null )
 		{
-			echo "</div>";
+			echo '</div>';
 		}
 		
 		
 		/**
 		 * function called by the metabox class that creates the interface in your wordpress backend
-		 **/
+		 * 
+		 * @param array $element
+		 */
 		public function visual_editor( $element )
 		{
 			$output = '';
@@ -2074,6 +2175,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			 * @used_by				Avia_Gutenberg						10
 			 * 
 			 * @since 4.5.1
+			 * @param string $output
+			 * @param array $element
+			 * @return string
 			 */
 			$output = apply_filters( 'avf_builder_metabox_editor_before', $output, $element );
 			
@@ -2149,14 +2253,14 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			}
 			
 			global $post_ID;
-			$active_builder  = $this->get_alb_builder_status( $post_ID );
+			$active_builder = $this->get_alb_builder_status( $post_ID );
 			
 			
-			$extra = AviaBuilder::$mode != true ? '' : "avia_mode_".AviaBuilder::$mode;
-			$hotekey_info = htmlentities($element['desc'], ENT_QUOTES, get_bloginfo( 'charset' ));
+			$extra = AviaBuilder::$mode != true ? '' : 'avia_mode_' . AviaBuilder::$mode;
+			$hotekey_info = htmlentities( $element['desc'], ENT_QUOTES, get_bloginfo( 'charset' ) );
 			
 			$output .= '<div class="shortcode_button_wrap avia-tab-container"><div class="avia-tab-title-container">'.$title.'</div>' . $tabs_output . '</div>';
-			$output .= '<input type="hidden" value="'.$active_builder.'" name="aviaLayoutBuilder_active" id="aviaLayoutBuilder_active" />';
+			$output .= '<input type="hidden" value="' . $active_builder . '" name="aviaLayoutBuilder_active" id="aviaLayoutBuilder_active" />';
 			
 			$params = array(
 							'args'	=> array( 'icon' =>  'ue86e' )
@@ -2168,11 +2272,11 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			
 			
 			$sorting_label = array(
-				'order' 	=> __( 'Default', 'avia_framework' ),
-				'name_asc' 	=> __( 'By name (ascending)', 'avia_framework' ),
-				'name_desc' => __( 'By name (descending)', 'avia_framework' ),
-				'usage' 	=> __( 'By usage', 'avia_framework' ),
-			);
+								'order' 	=> __( 'Default', 'avia_framework' ),
+								'name_asc' 	=> __( 'By name (ascending)', 'avia_framework' ),
+								'name_desc' => __( 'By name (descending)', 'avia_framework' ),
+								'usage' 	=> __( 'By usage', 'avia_framework' ),
+							);
 			
 				
 			$output .=	'<div id="avia-sort-list-dropdown" class="avia-sort-list-container" data-init_sort="' . $init_sort . '">';
@@ -2213,7 +2317,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			}
 			
 			$output .= "	<div id='aviaLayoutBuilder' class='avia-style avia_layout_builder avia_connect_sort preloading av_drop' data-dragdrop-level='0'>";
-			$output .= "	</div>";
+			$output .= '	</div>';
 			
 			
 			$clean_data = $this->get_posts_alb_content( $post_ID );
@@ -2223,7 +2327,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			$output .= "	<textarea id='_aviaLayoutBuilderCleanData' name='_aviaLayoutBuilderCleanData'>".$clean_data."</textarea>"; 
 			$nonce	= 			wp_create_nonce ('avia_nonce_loader');
 			$output .= '		<input type="hidden" name="avia-loader-nonce" id="avia-loader-nonce" value="'.$nonce.'" />';
-			$output .= "</div>";
+			$output .= '</div>';
 			
 			$this->alb_nonce_added = true;
 			
@@ -2337,22 +2441,47 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		}
 		
 		
-		/*helper function to sort the shortcode buttons*/
-		protected function sortByOrder($a, $b) 
+		/**
+		 * Helper function to sort the shortcode buttons
+		 * 
+		 * @param array $a
+		 * @param array $b
+		 * @return boolean
+		 */
+		protected function sortByOrder( $a, $b ) 
 		{
-			if(empty($a['order'])) $a['order'] = 10;
-			if(empty($b['order'])) $b['order'] = 10;
+			if( empty( $a['order'] ) ) 
+			{
+				$a['order'] = 10;
+			}
+			
+			if( empty( $b['order'] ) ) 
+			{
+				$b['order'] = 10;
+			}
 			
    			return $b['order'] >= $a['order'];
 		}
 
 		
 		
-		
+		/**
+		 * 
+		 * 
+		 * @param string|null $text
+		 * @return string|void
+		 */
 		public function text_to_interface( $text = null )
 		{
-			if(!current_user_can('edit_posts')) die();
-			if(isset($_REQUEST['params']['_ajax_nonce'])) $_REQUEST['_ajax_nonce'] = $_REQUEST['params']['_ajax_nonce'];
+			if( ! current_user_can( 'edit_posts' ) ) 
+			{
+				die();
+			}
+			
+			if( isset( $_REQUEST['params']['_ajax_nonce'] ) ) 
+			{
+				$_REQUEST['_ajax_nonce'] = $_REQUEST['params']['_ajax_nonce'];
+			}
 			
 			check_ajax_referer('avia_nonce_loader', '_ajax_nonce' );
 			
@@ -2360,13 +2489,22 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			
 			$allowed = false;
 			
-			if(isset($_POST['text'])) $text = $_POST['text']; //isset when avia_ajax_text_to_interface is executed (avia_builder.js)
-			if(isset($_POST['params']) && isset($_POST['params']['allowed'])) $allowed = explode(',',$_POST['params']['allowed']); //only build pattern with a subset of shortcodes
+			//isset when avia_ajax_text_to_interface is executed (avia_builder.js)
+			if( isset( $_POST['text'] ) ) 
+			{
+				$text = $_POST['text']; 
+			}
+			
+			//only build pattern with a subset of shortcodes
+			if( isset( $_POST['params'] ) && isset( $_POST['params']['allowed'] ) ) 
+			{
+				$allowed = explode( ',', $_POST['params']['allowed'] ); 
+			}
 			
 			//build the shortcode pattern to check if the text that we want to check uses any of the builder shortcodes
-			ShortcodeHelper::build_pattern($allowed);
-			$text_nodes = preg_split("/".ShortcodeHelper::$pattern."/s", $text);
+			ShortcodeHelper::build_pattern( $allowed );
 			
+			$text_nodes = preg_split( "/" . ShortcodeHelper::$pattern . "/s", $text );
 			
 			foreach( $text_nodes as $node ) 
 			{				
@@ -2376,13 +2514,13 @@ if ( ! class_exists( 'AviaBuilder' ) )
 	            }
 	            else
 	            {
-	               $text = preg_replace("/(".preg_quote($node, '/')."(?!\[\/))/", '[av_textblock]$1[/av_textblock]', $text);
+	               $text = preg_replace( "/(" . preg_quote( $node, '/' ) . "(?!\[\/))/", '[av_textblock]$1[/av_textblock]', $text );
 	            }
 	        }
 	        
-			$text = $this->do_shortcode_backend($text);
+			$text = $this->do_shortcode_backend( $text );
 			
-			if(isset($_POST['text']))
+			if( isset( $_POST['text'] ) )
 			{
 				echo $text;
 				exit();
@@ -2396,7 +2534,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		/**
 		 * Ajax callback to return preview output in modal popup
 		 * 
-		 * @param string $text
+		 * @param string|null $text
 		 */
 		public function text_to_preview( $text = null )
 		{
@@ -2421,6 +2559,9 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			 * Allow third party to modify content
 			 * 
 			 * @since 4.3.1
+			 * @param string $preview
+			 * @param string $text
+			 * @return string
 			 */
 			$preview = apply_filters( 'avf_text_to_preview', $preview, $text );
 			
@@ -2441,40 +2582,44 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			return $this->in_text_to_preview;
 		}
 
-		
-
-
-
-		public function do_shortcode_backend($text)
+		/**
+		 * 
+		 * @param string $text
+		 * @return string
+		 */
+		public function do_shortcode_backend( $text )
 		{
-			return preg_replace_callback( "/".ShortcodeHelper::$pattern."/s", array($this, 'do_shortcode_tag'), $text );
+			return preg_replace_callback( "/" . ShortcodeHelper::$pattern . "/s", array( $this, 'do_shortcode_tag' ), $text );
 		}
 
-		
+		/**
+		 * 
+		 * 
+		 * @param string $m
+		 * @return string
+		 */
 		public function do_shortcode_tag( $m ) 
 		{
 	        global $shortcode_tags;
 			
 	        // allow [[foo]] syntax for escaping a tag
-	        if ( $m[1] == '[' && $m[6] == ']' ) {
-	                return substr($m[0], 1, -1);
+	        if ( $m[1] == '[' && $m[6] == ']' ) 
+			{
+	                return substr( $m[0], 1, -1 );
 	        }
 			
 			//check for enclosing tag or self closing
-			$values['closing'] 	= strpos($m[0], '[/'.$m[2].']');
-			$values['content'] 	= $values['closing'] !== false ? $m[5] : null;
-	        $values['tag']		= $m[2];
-	        $values['attr']		= shortcode_parse_atts( stripslashes($m[3]) );
+			$values['closing'] = strpos( $m[0], '[/' . $m[2] . ']' );
+			$values['content'] = $values['closing'] !== false ? $m[5] : null;
+	        $values['tag'] = $m[2];
+	        $values['attr'] = shortcode_parse_atts( stripslashes( $m[3] ) );
 	        
-	       
-	        
-	        
-	        if(is_array($values['attr']))
+	        if( is_array( $values['attr'] ) )
 	        {
 		        $charset = get_bloginfo( 'charset' );
-		        foreach($values['attr'] as &$attr)
+		        foreach( $values['attr'] as &$attr )
 		        {
-		        	$attr =	htmlentities($attr, ENT_QUOTES, $charset);
+		        	$attr =	htmlentities( $attr, ENT_QUOTES, $charset );
 		        }
 			}
 			else
@@ -2482,21 +2627,22 @@ if ( ! class_exists( 'AviaBuilder' ) )
 				 $values['attr'] = array();
 			}
 			
-			 
-			
-	        if(isset($_POST['params']['extract']))
+	        if( isset( $_POST['params']['extract'] ) )
 	        {
 	        	//if we open a modal window also check for nested shortcodes
-	        	if($values['content']) $values['content'] = $this->do_shortcode_backend($values['content']);
+	        	if( $values['content'] ) 
+				{
+					$values['content'] = $this->do_shortcode_backend( $values['content'] );
+				}
 	        	
 	        	$_POST['extracted_shortcode'][] = $values;
 	        	
 	        	return $m[0];
 	        }
 			
-			if(in_array($values['tag'], ShortcodeHelper::$allowed_shortcodes))
+			if( in_array( $values['tag'], ShortcodeHelper::$allowed_shortcodes ) )
 			{
-				return $this->shortcode_class[$this->shortcode[$values['tag']]]->prepare_editor_element( $values['content'], $values['attr'] );
+				return $this->shortcode_class[ $this->shortcode[ $values['tag'] ] ]->prepare_editor_element( $values['content'], $values['attr'] );
 			}
 			else
 			{
@@ -2511,10 +2657,11 @@ if ( ! class_exists( 'AviaBuilder' ) )
 		 * see more: http://martinsikora.com/how-to-make-tinymce-to-output-clean-html
 		 */
 		 
-		public function tiny_mce_helper($mceInit)
+		public function tiny_mce_helper( $mceInit )
 		{
-			$mceInit['extended_valid_elements'] = empty($mceInit['extended_valid_elements']) ? '' : $mceInit['extended_valid_elements'] .","; 
-			$mceInit['extended_valid_elements'] = "span[!class]";
+			$mceInit['extended_valid_elements'] = empty( $mceInit['extended_valid_elements'] ) ? '' : $mceInit['extended_valid_elements'] . ','; 
+			$mceInit['extended_valid_elements'] = 'span[!class]';
+			
 			return $mceInit;
 		}
 		
@@ -2568,7 +2715,7 @@ if ( ! class_exists( 'AviaBuilder' ) )
 
 			foreach( $meta_fields as $meta_field )
 			{
-				$builder_meta_data  = get_metadata( 'post', $revision_id, $meta_field, true );
+				$builder_meta_data = get_metadata( 'post', $revision_id, $meta_field, true );
 
 				if ( ! empty( $builder_meta_data ) )
 				{
@@ -2744,8 +2891,8 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			/**
 			 * check first builder element. if its a section or a fullwidth slider we dont need to create the default opening divs here
 			 */
-			$first_el = isset(ShortcodeHelper::$tree[0]) ? ShortcodeHelper::$tree[0] : false;
-			$last_el  = ! empty( ShortcodeHelper::$tree )   ? end( ShortcodeHelper::$tree ) : false;
+			$first_el = isset( ShortcodeHelper::$tree[0] ) ? ShortcodeHelper::$tree[0] : false;
+			$last_el = ! empty( ShortcodeHelper::$tree ) ? end( ShortcodeHelper::$tree ) : false;
 			
 			if( ! $first_el || ! in_array( $first_el['tag'], AviaBuilder::$full_el ) )
 			{
@@ -2762,8 +2909,8 @@ if ( ! class_exists( 'AviaBuilder' ) )
 			{
 				$cm = avia_section_close_markup();
 
-				$out .=		"</div>";
-				$out .=	"</div>$cm <!-- section close by builder template -->";
+				$out .=		'</div>';
+				$out .=	"</div>{$cm} <!-- section close by builder template -->";
 			}
 			
 			// global fix for https://kriesi.at/support/topic/footer-disseapearing/#post-427764

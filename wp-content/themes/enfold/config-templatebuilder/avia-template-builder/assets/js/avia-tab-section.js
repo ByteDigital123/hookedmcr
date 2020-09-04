@@ -44,7 +44,7 @@
 				innerSc		= parent.find('>.avia_inner_shortcode:eq(0)'),
 				tab_header	= parent.find('.avia_tab_section_titles .av-admin-section-tab:last'),
 				new_tab		= parent.find('.av-admin-section-tab:eq(0)').clone().removeClass('av-admin-section-tab-active'),
-				el_tmpl		= $('#avia-tmpl-avia_sc_tab_sub_section').html();
+				el_tmpl		= $('#avia-tmpl-avia_sc_tab_sub_section').html().replace( 'av-admin-section-tab-content-active', '' );
 				
 				new_tab.find('.av-tab-custom-title').text("");
 				new_tab.insertAfter(tab_header);

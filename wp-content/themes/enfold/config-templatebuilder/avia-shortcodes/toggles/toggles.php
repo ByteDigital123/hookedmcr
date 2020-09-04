@@ -54,24 +54,26 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 			$this->config['version']		= '1.0';
 			$this->config['self_closing']	= 'no';
 			
-            $this->config['name']		= __( 'Accordion', 'avia_framework' );
-            $this->config['tab']		= __( 'Content Elements', 'avia_framework' );
-            $this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-accordion.png';
-            $this->config['order']		= 70;
-            $this->config['target']		= 'avia-target-insert';
-            $this->config['shortcode'] 	= 'av_toggle_container';
+            $this->config['name']			= __( 'Accordion', 'avia_framework' );
+            $this->config['tab']			= __( 'Content Elements', 'avia_framework' );
+            $this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-accordion.png';
+            $this->config['order']			= 70;
+            $this->config['target']			= 'avia-target-insert';
+            $this->config['shortcode']		= 'av_toggle_container';
             $this->config['shortcode_nested'] = array( 'av_toggle' );
-            $this->config['tooltip'] 	= __( 'Creates toggles or accordions', 'avia_framework' );
+            $this->config['tooltip']		= __( 'Creates toggles or accordions', 'avia_framework' );
             $this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 			$this->config['alb_desc_id']	= 'alb_description';
         }
 
 		function admin_assets()
 		{
 			$ver = AviaBuilder::VERSION;
-            wp_enqueue_script('avia_tab_toggle_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-toggle.js', array( 'avia_modal_js' ), $ver, true );
+			
+			wp_register_script('avia_tab_toggle_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-toggle.js', array( 'avia_modal_js' ), $ver, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_tab_toggle_js' );
 		}
 			
         function extra_assets()
@@ -354,7 +356,7 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 						),
 						
 						array(
-							'name' 	=> __( 'Current Toggle Appearence', 'avia_framework' ),
+							'name' 	=> __( 'Current Toggle Appearance', 'avia_framework' ),
 							'desc' 	=> __( 'Highlight title bar of open toggles', 'avia_framework' ),
 							'id' 	=> 'colors_current',
 							'type' 	=> 'select',
@@ -439,8 +441,8 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 						),
 				
 						array(
-							'name' 	=> __( 'Hover Toggle Appearence', 'avia_framework' ),
-							'desc' 	=> __( 'Appearence of toggles on mouse hover', 'avia_framework' ),
+							'name' 	=> __( 'Hover Toggle Appearance', 'avia_framework' ),
+							'desc' 	=> __( 'Appearance of toggles on mouse hover', 'avia_framework' ),
 							'id' 	=> 'hover_colors',
 							'type' 	=> 'select',
 							'std' 	=> '',
@@ -707,18 +709,17 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 
                 if( $atts['font_color_current'] !== '' ) 
 				{
-                    $current_colors .= AviaHelper::style_string($atts,'font_color_current','color');
-                    $current_colors .= AviaHelper::style_string($atts,'font_color_current','border-color');
+                    $current_colors .= AviaHelper::style_string( $atts, 'font_color_current', 'color' );
+                    $current_colors .= AviaHelper::style_string( $atts, 'font_color_current', 'border-color' );
                     $addClass .= ' hasCurrentStyle';
                 }
 
                 if( $atts['background_current'] == 'bg_color' ) 
 				{
-                    $current_colors .= AviaHelper::style_string($atts,'background_color_current','background-color');
+                    $current_colors .= AviaHelper::style_string( $atts, 'background_color_current','background-color' );
                 }
                 else if( $atts['background_current'] == 'bg_gradient' )
 				{
-
                     $gradient_settings = array(
 												$atts['background_gradient_current_direction'],
 												$atts['background_gradient_current_color1'],
@@ -743,8 +744,8 @@ if( ! class_exists( 'avia_sc_toggle' ) )
  
 			avia_sc_toggle::$counter = 1;
             avia_sc_toggle::$initial = $initial;
-            avia_sc_toggle::$tags 	 = array();
-            avia_sc_toggle::$atts 	 = $atts;
+            avia_sc_toggle::$tags = array();
+            avia_sc_toggle::$atts = $atts;
 
             $content  = ShortcodeHelper::avia_remove_autop( $content, true );
             $sortlist = ! empty( $sort ) ? $this->sort_list( $atts ) : '';
@@ -785,12 +786,12 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 			
             if( is_numeric( avia_sc_toggle::$initial ) && avia_sc_toggle::$counter == avia_sc_toggle::$initial )
             {
-                $titleClass   = 'activeTitle';
+                $titleClass = 'activeTitle';
                 $contentClass = 'active_tc';
                 $toggle_init_open_style = "style='display:block;'";
             }
 
-            if(empty($toggle_atts['title']))
+            if( empty( $toggle_atts['title'] ) )
             {
                 $toggle_atts['title'] = avia_sc_toggle::$counter;
             }
@@ -798,7 +799,7 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 			$setting_id = Avia_Builder()->get_developer_settings( 'custom_id' );
             if( empty( $toggle_atts['custom_id'] ) || in_array( $setting_id, array( 'deactivate' ) ) )
             {
-                $toggle_atts['custom_id'] = 'toggle-id-'.avia_sc_toggle::$toggle_id++;
+                $toggle_atts['custom_id'] = 'toggle-id-' . avia_sc_toggle::$toggle_id++;
             }
 			else
 			{
@@ -807,14 +808,14 @@ if( ! class_exists( 'avia_sc_toggle' ) )
             
             //custom colors
             $colors = $inherit = $icon_color = '';
-            if(!empty(avia_sc_toggle::$atts['colors']) && avia_sc_toggle::$atts['colors'] == 'custom')
+            if( ! empty( avia_sc_toggle::$atts['colors'] ) && avia_sc_toggle::$atts['colors'] == 'custom' )
             {
 				if( ! empty( avia_sc_toggle::$atts['background_color'] ) )
 				{
 					$colors = 'background-color: ' . avia_sc_toggle::$atts['background_color'] . '; ';
 				}
 	            
-	            if(!empty(avia_sc_toggle::$atts['font_color']))
+	            if( ! empty(avia_sc_toggle::$atts['font_color'] ) )
 	            {
 		            $colors .= 'color: ' . avia_sc_toggle::$atts['font_color'] . '; ';
 		            $icon_color = "style='border-color:" . avia_sc_toggle::$atts['font_color'] . ";'";
@@ -823,47 +824,46 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 
 	            }
 	            
-	            if(!empty(avia_sc_toggle::$atts['border_color']))
+	            if( ! empty( avia_sc_toggle::$atts['border_color'] ) )
 	            {
-		            $colors .= 'border-color: '.avia_sc_toggle::$atts['border_color'].'; ';
+		            $colors .= 'border-color: ' . avia_sc_toggle::$atts['border_color'] . '; ';
 		            $inherit .= ' av-inherit-border-color ';
 	            }
             }
             
-            if(!empty($colors))
+            if( ! empty( $colors ) )
             {
 	            $colors = "style='{$colors}'";
             }
 
             // hover styling
             $hover_styling = '';
-            if(!empty(avia_sc_toggle::$atts['hover_colors']) && avia_sc_toggle::$atts['hover_colors'] == 'custom')
+            if( ! empty( avia_sc_toggle::$atts['hover_colors'] ) && avia_sc_toggle::$atts['hover_colors'] == 'custom' )
 			{
-
-                if(!empty(avia_sc_toggle::$atts['hover_background_color']))
+                if( ! empty( avia_sc_toggle::$atts['hover_background_color'] ) )
 				{
-                    $hover_styling .= 'background-color: '.avia_sc_toggle::$atts['hover_background_color'].'; ';
+                    $hover_styling .= 'background-color: ' . avia_sc_toggle::$atts['hover_background_color'] . '; ';
                 }
 
-                if(!empty(avia_sc_toggle::$atts['hover_font_color'])) 
+                if( ! empty( avia_sc_toggle::$atts['hover_font_color'] ) ) 
 				{
-                    $hover_styling .= 'color: '.avia_sc_toggle::$atts['hover_font_color'].'; ';
+                    $hover_styling .= 'color: ' . avia_sc_toggle::$atts['hover_font_color'] . '; ';
                 }
             }
 
             $hover_styling_markup = ! empty( $hover_styling ) ? "data-hoverstyle='{$hover_styling}'" : '';
 
 
-            $markup_tab = avia_markup_helper(array('context' => 'entry','echo'=>false, 'custom_markup'=>$toggle_atts['custom_markup']));
-            $markup_title = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'custom_markup'=>$toggle_atts['custom_markup']));
-            $markup_text = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'custom_markup'=>$toggle_atts['custom_markup']));
+            $markup_tab = avia_markup_helper( array( 'context' => 'entry', 'echo' => false, 'custom_markup' => $toggle_atts['custom_markup'] ) );
+            $markup_title = avia_markup_helper( array( 'context' => 'entry_title', 'echo' => false, 'custom_markup' => $toggle_atts['custom_markup'] ) );
+            $markup_text = avia_markup_helper( array( 'context' => 'entry_content', 'echo' => false, 'custom_markup' => $toggle_atts['custom_markup'] ) );
 
-            $output .= '<section class="av_toggle_section" '.$markup_tab.' >';
-            $output .= '    <div role="tablist" class="single_toggle" '.$this->create_tag_string($toggle_atts['tags'], $toggle_atts).'  >';
-            $output .= '        <p data-fake-id="#'.$toggle_atts['custom_id'].'" class="toggler '.$titleClass.$inherit.'" '.$markup_title.' '.$colors.' '.$hover_styling_markup.' role="tab" tabindex="0" aria-controls="' . $toggle_atts['custom_id'] . '-container">'.$toggle_atts['title'].'<span class="toggle_icon" '.$icon_color.'>';
+            $output .= '<section class="av_toggle_section" ' . $markup_tab . ' >';
+            $output .= '    <div role="tablist" class="single_toggle" ' . $this->create_tag_string( $toggle_atts['tags'], $toggle_atts ) . '  >';
+            $output .= '        <p data-fake-id="#' . $toggle_atts['custom_id'] . '" class="toggler ' . $titleClass . $inherit . '" ' . $markup_title . ' ' . $colors . ' ' . $hover_styling_markup . ' role="tab" tabindex="0" aria-controls="' . $toggle_atts['custom_id'] . '">' . $toggle_atts['title'] . '<span class="toggle_icon" ' . $icon_color . '>';
             $output .= '        <span class="vert_icon"></span><span class="hor_icon"></span></span></p>';
-            $output .= '        <div id="'.$toggle_atts['custom_id'].'-container" class="toggle_wrap '.$contentClass.'"  '.$toggle_init_open_style.'>';
-            $output .= '            <div class="toggle_content invers-color '.$inherit.'" '.$markup_text.' '.$colors.' >';
+            $output .= '        <div id="' . $toggle_atts['custom_id'] . '" class="toggle_wrap ' . $contentClass . '"  ' . $toggle_init_open_style . '>';
+            $output .= '            <div class="toggle_content invers-color ' . $inherit . '" ' . $markup_text . ' ' . $colors . ' >';
             $output .=					ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $content ) );
             $output .= '            </div>';
             $output .= '        </div>';
@@ -877,20 +877,20 @@ if( ! class_exists( 'avia_sc_toggle' ) )
 
         function create_tag_string( $tags, $toggle_atts )
         {
-            $first_item_text = apply_filters( 'avf_toggle_sort_first_label', __('All','avia_framework'), $toggle_atts );
+            $first_item_text = apply_filters( 'avf_toggle_sort_first_label', __( 'All', 'avia_framework' ), $toggle_atts );
 
-            $tag_string = '{'.$first_item_text.'} ';
-            if(trim($tags) != '')
+            $tag_string = '{' . $first_item_text . '} ';
+            if( trim( $tags ) != '' )
             {
-                $tags = explode(',', $tags);
+                $tags = explode( ',', $tags );
 
-                foreach($tags as $tag)
+                foreach( $tags as $tag )
                 {
-                    $tag = esc_html(trim($tag));
-                    if(!empty($tag))
+                    $tag = esc_html( trim( $tag ) );
+                    if( ! empty( $tag ) )
                     {
-                        $tag_string .= '{'.$tag.'} ';
-                        avia_sc_toggle::$tags[$tag] = true;
+                        $tag_string .= '{' . $tag . '} ';
+                        avia_sc_toggle::$tags[ $tag ] = true;
                     }
                 }
             }

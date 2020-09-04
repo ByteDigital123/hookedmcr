@@ -21,17 +21,17 @@ if ( ! class_exists( 'avia_sc_postslider' ) )
 			$this->config['version']		= '1.0';
 			$this->config['self_closing']	= 'yes';
 			
-			$this->config['name']		= __( 'Post Slider', 'avia_framework' );
-			$this->config['tab']		= __( 'Content Elements', 'avia_framework' );
-			$this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-postslider.png';
-			$this->config['order']		= 30;
-			$this->config['target']		= 'avia-target-insert';
-			$this->config['shortcode'] 	= 'av_postslider';
-			$this->config['tooltip'] 	= __( 'Display a Slideshow of Post Entries', 'avia_framework' );
-			$this->config['drag-level'] = 3;
+			$this->config['name']			= __( 'Post Slider', 'avia_framework' );
+			$this->config['tab']			= __( 'Content Elements', 'avia_framework' );
+			$this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-postslider.png';
+			$this->config['order']			= 30;
+			$this->config['target']			= 'avia-target-insert';
+			$this->config['shortcode']		= 'av_postslider';
+			$this->config['tooltip']		= __( 'Display a Slideshow of Post Entries', 'avia_framework' );
+			$this->config['drag-level']		= 3;
 			$this->config['disabling_allowed'] = true;
-			$this->config['id_name']	= 'id';
-			$this->config['id_show']	= 'yes';
+			$this->config['id_name']		= 'id';
+			$this->config['id_show']		= 'yes';
 			$this->config['alb_desc_id']	= 'alb_description';
 		}
 		
@@ -117,6 +117,12 @@ if ( ! class_exists( 'avia_sc_postslider' ) )
 							'type' 	=> 'toggle_container',
 							'nodescription' => true
 						),
+				
+						array(
+								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation_slider' ),
+								'nodescription' => true
+							),
 				
 						array(
 								'type'			=> 'template',
@@ -395,9 +401,28 @@ if ( ! class_exists( 'avia_sc_postslider' ) )
 							'subtype'	=> array( '3'=>'3', '4'=>'4', '5'=>'5', '6'=>'6', '7'=>'7', '8'=>'8', '9'=>'9', '10'=>'10', '15'=>'15', '20'=>'20', '30'=>'30', '40'=>'40', '60'=>'60', '100'=>'100' )
 						),
 					
-					
+						
 				
 				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
+								'title'			=> __( 'Slider Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+				
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation_slider' ), $template );
+			
+			$c = array(
+			
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading'
+						)
+			);
 			
 			$template = array(
 							array(	
@@ -409,7 +434,6 @@ if ( ! class_exists( 'avia_sc_postslider' ) )
 					);
 				
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
-			
 		}
 
 		/**
@@ -535,6 +559,7 @@ if ( ! class_exists( 'avia_post_slider' ) )
 								'date_filter_start'	=> '',
 								'date_filter_end'	=> '',
 								'date_filter_format'	=> 'yy/mm/dd',		//	'yy/mm/dd' | 'dd-mm-yy'	| yyyymmdd
+								'lazy_loading'			=> 'disabled'
 				
 							), $atts, 'av_postslider' );
 		    
@@ -638,8 +663,15 @@ if ( ! class_exists( 'avia_post_slider' ) )
 				$title  	= '';
 				$show_meta  = ! is_post_type_hierarchical( $entry->post_type );
 				$commentCount = get_comments_number( $the_id );
-				$thumbnail  = get_the_post_thumbnail( $the_id, $image_size );
 				$format 	= get_post_format( $the_id );
+				
+				$post_thumbnail_id = get_post_thumbnail_id( $the_id );
+				if( $lazy_loading != 'enabled' )
+				{
+					Av_Responsive_Images()->add_attachment_id_to_not_lazy_loading( $post_thumbnail_id );
+				}
+				
+				$thumbnail = get_the_post_thumbnail( $the_id, $image_size );
 
 				if( empty( $format ) ) 
 				{

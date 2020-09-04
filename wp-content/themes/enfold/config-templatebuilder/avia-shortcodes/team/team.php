@@ -36,7 +36,9 @@ if ( ! class_exists( 'avia_sc_team' ) )
 		function admin_assets()
 		{
 			$ver = AviaBuilder::VERSION;
-			wp_enqueue_script('avia_tab_toggle_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-toggle.js', array( 'avia_modal_js' ), $ver, true );
+			
+			wp_register_script( 'avia_tab_toggle_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-toggle.js', array( 'avia_modal_js' ), $ver, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_tab_toggle_js' );
 		}
 
 		function extra_assets()
@@ -106,6 +108,11 @@ if ( ! class_exists( 'avia_sc_team' ) )
 							'type' 	=> 'toggle_container',
 							'nodescription' => true
 						),
+				
+						array(
+								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation' ),
+							),
 				
 						array(	
 								'type'			=> 'template',
@@ -253,21 +260,24 @@ if ( ! class_exists( 'avia_sc_team' ) )
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'styling_colors' ), $c );
 			
 			
-			
 			$c = array(
 				
+						array(	
+								'type'			=> 'template',
+								'template_id'	=> 'lazy_loading'
+							),
 				);
 			
 			$template = array(
 							array(	
 								'type'			=> 'template',
 								'template_id'	=> 'toggle',
-								'title'			=> __( 'General Styling', 'avia_framework' ),
+								'title'			=> __( 'Animation', 'avia_framework' ),
 								'content'		=> $c 
 							),
 					);
 			
-			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'styling_general1' ), $template );
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
 			
 		}
 		
@@ -459,13 +469,15 @@ if ( ! class_exists( 'avia_sc_team' ) )
 			$atts =  shortcode_atts( array(	
 						'name'			=> '',
 						'src'			=> '',
+						'attachment'	=> 0,
 						'image_width'	=> '',
 						'description'	=> '',
 						'job'			=> '',
 						'custom_markup'	=> '',
 						'font_color'	=> '', 
 						'custom_title'	=> '', 
-						'custom_content' => ''
+						'custom_content' => '',
+						'lazy_loading'	=> 'disabled'
 
 					), $atts, $this->config['shortcode'] );
 
@@ -478,8 +490,8 @@ if ( ! class_exists( 'avia_sc_team' ) )
 
 			if( $font_color == 'custom' )
 			{
-				$title_styling 		.= ! empty( $custom_title ) ? "color:{$custom_title}; " : '';
-				$content_styling 	.= ! empty( $custom_content ) ? "color:{$custom_content}; " : '';
+				$title_styling .= ! empty( $custom_title ) ? "color:{$custom_title}; " : '';
+				$content_styling .= ! empty( $custom_content ) ? "color:{$custom_content}; " : '';
 
 				if( $title_styling ) 
 				{
@@ -509,8 +521,9 @@ if ( ! class_exists( 'avia_sc_team' ) )
 
 				$output.= "<div class='team-img-container'>";
 				$markup = avia_markup_helper( array( 'context' => 'single_image', 'echo' => false, 'custom_markup' => $custom_markup ) );
-				$output.= "<img class='{$cls}' src='".$src."' alt='" . esc_attr( $name ) . "' $markup />";
+				$img_tag = "<img class='{$cls}' src='{$src}' alt='" . esc_attr( $name ) . "' {$markup} />";
 
+				$output.= Av_Responsive_Images()->prepare_single_image( $img_tag, $attachment, $lazy_loading );
 
 				if( ! empty( $socials ) )
 				{
@@ -601,7 +614,7 @@ if ( ! class_exists( 'avia_sc_team' ) )
 			$output .= "<span class='hidden team-member-affiliation' {$markup}>" . get_bloginfo('name') . '</span>';
 			$output .= '</section>';
 			
-			return $output;
+			return Av_Responsive_Images()->make_content_images_responsive( $output );
 		}
 
 		/**

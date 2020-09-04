@@ -243,11 +243,11 @@ if( ! function_exists( 'avia_events_custom_post_nav' ) )
 }
 
 /*modfiy breadcrumb navigation*/
-if(!function_exists('avia_events_breadcrumb'))
+if( ! function_exists( 'avia_events_breadcrumb') )
 {
-	add_filter('avia_breadcrumbs_trail','avia_events_breadcrumb');
+	add_filter( 'avia_breadcrumbs_trail', 'avia_events_breadcrumb' );
 
-	function avia_events_breadcrumb($trail)
+	function avia_events_breadcrumb( $trail )
 	{ 
 		global $avia_config, $wp_query;
 		

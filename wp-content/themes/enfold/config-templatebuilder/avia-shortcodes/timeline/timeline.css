@@ -426,11 +426,15 @@ ul.avia-timeline-horizontal {
     display: block;
 }
 
-ul.avia-timeline-horizontal li {
+ul.avia-timeline-horizontal li.av-milestone {
     display: inline-block;
     margin: 0 0 0 -4px;
     padding: 0;
     vertical-align: top;
+}
+
+.av-milestone-content li { 
+    margin-left: 0;
 }
 
 ul.avia-timeline-horizontal li:first-child {

@@ -40,18 +40,18 @@ if ( ! class_exists( 'avia_sc_tab_sub_section' ) )
 			$this->config['contains_layout']	= 'yes';
 			$this->config['contains_content']	= 'yes';
 
-			$this->config['invisible'] = true;
-			$this->config['name']		= 'Single Tab';
-			$this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-full.png';
-			$this->config['tab']		= __( 'Layout Elements', 'avia_framework' );
-			$this->config['order']		= 100;
-			$this->config['target']		= 'avia-section-drop';
-			$this->config['shortcode'] 	= 'av_tab_sub_section';
-			$this->config['html_renderer'] 	= false;
-			$this->config['tinyMCE'] 	= array( 'disable' => 'true' );
-			$this->config['tooltip'] 	= __( 'Creates a single tab for the tab section element', 'avia_framework' );
-			$this->config['drag-level'] = 2;
-			$this->config['drop-level'] = 1;
+			$this->config['invisible']		= true;
+			$this->config['name']			= 'Single Tab';
+			$this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-full.png';
+			$this->config['tab']			= __( 'Layout Elements', 'avia_framework' );
+			$this->config['order']			= 100;
+			$this->config['target']			= 'avia-section-drop';
+			$this->config['shortcode']		= 'av_tab_sub_section';
+			$this->config['html_renderer']	= false;
+			$this->config['tinyMCE']		= array( 'disable' => 'true' );
+			$this->config['tooltip']		= __( 'Creates a single tab for the tab section element', 'avia_framework' );
+			$this->config['drag-level']		= 2;
+			$this->config['drop-level']		= 1;
 		}
 		
 		
@@ -342,27 +342,27 @@ if ( ! class_exists( 'avia_sc_tab_sub_section' ) )
 		{
 			avia_sc_tab_section::$tab += 1;
 
-			extract($params);
+			extract( $params );
 
 			if( empty( $data ) ) 
 			{
 				$data = array();
 			}
 
-			$name 		= $this->config['shortcode'];
-			$drag 		= $this->config['drag-level'];
-			$drop 		= $this->config['drop-level'];
+			$name = $this->config['shortcode'];
+			$drag = $this->config['drag-level'];
+			$drop = $this->config['drop-level'];
 
 
-			$data['shortcodehandler'] 	= $this->config['shortcode'];
-			$data['modal_title'] 		= __( 'Edit Tab', 'avia_framework' );
-			$data['modal_ajax_hook'] 	= $this->config['shortcode'];
-			$data['dragdrop-level']		= $this->config['drag-level'];
+			$data['shortcodehandler'] = $this->config['shortcode'];
+			$data['modal_title'] = __( 'Edit Tab', 'avia_framework' );
+			$data['modal_ajax_hook'] = $this->config['shortcode'];
+			$data['dragdrop-level'] = $this->config['drag-level'];
 			$data['allowed-shortcodes'] = $this->config['shortcode'];
 
 			if( ! empty( $this->config['modal_on_load'] ) )
 			{
-				$data['modal_on_load'] 	= $this->config['modal_on_load'];
+				$data['modal_on_load'] = $this->config['modal_on_load'];
 			}
 
 			$dataString  = AviaHelper::create_data_string( $data );
@@ -379,7 +379,7 @@ if ( ! class_exists( 'avia_sc_tab_sub_section' ) )
 			$output .=			"<a class='avia-delete avia-tab-delete av-special-delete'  href='#delete' title='" . __( 'Delete Tab', 'avia_framework' ) . "'>x</a>";
 			$output .=			"<a class='avia-clone avia-tab-clone av-special-clone'  href='#clone' title='" . __( 'Clone Tab', 'avia_framework' ) . "' >" . __( 'Clone Cell', 'avia_framework' ) . '</a>';
 				
-			if(!empty($this->config['popup_editor']))
+			if( ! empty( $this->config['popup_editor'] ) )
 			{
 				$output .=		"<a class='avia-edit-element'  href='#edit-element' title='" . __( 'Edit Tab', 'avia_framework' ) . "'>edit</a>";
 			}
@@ -422,9 +422,9 @@ if ( ! class_exists( 'avia_sc_tab_sub_section' ) )
 
 				if( $image )
 				{
-					$bg 	= ! empty( $args['background_color'] ) ? 		$args['background_color'] : 'transparent';
-					$pos 	= ! empty( $args['background_position'] )  ? 	$args['background_position'] : 'center center';
-					$repeat = ! empty( $args['background_repeat'] ) ?		$args['background_repeat'] : 'no-repeat';
+					$bg 	= ! empty( $args['background_color'] ) ? $args['background_color'] : 'transparent';
+					$pos 	= ! empty( $args['background_position'] ) ? $args['background_position'] : 'center center';
+					$repeat = ! empty( $args['background_repeat'] ) ? $args['background_repeat'] : 'no-repeat';
 					$extra	= '';
 
 					if( $repeat == 'stretch' )
@@ -488,12 +488,12 @@ if ( ! class_exists( 'avia_sc_tab_sub_section' ) )
 			avia_sc_tab_section::$tab_atts[ avia_sc_tab_section::$tab ] = $atts;
 
 
-			$extraClass	 	= '';
-			$outer_style 	= '';
-			$data		 	= '';
-			$display_char 	= av_icon($atts['icon'], $atts['font']);
-			$icon			= '';
-			$image 			= '';
+			$extraClass = '';
+			$outer_style = '';
+			$data = '';
+			$display_char = av_icon( $atts['icon'], $atts['font'] );
+			$icon = '';
+			$image = '';
 				
 			if( $atts['icon_select'] == 'icon_top' )
 			{
@@ -582,17 +582,21 @@ if ( ! class_exists( 'avia_sc_tab_sub_section' ) )
 			$active_tab = avia_sc_tab_section::$tab == avia_sc_tab_sub_section::$attr['initial'] ? 'av-active-tab-content __av_init_open' : '';
 
 			$tab_link = AviaHelper::valid_href( $atts['tab_title'], '-', 'av-tab-section-' . avia_sc_tab_section::$count . '-' . avia_sc_tab_section::$tab );
-
-			$output   = '<div data-av-tab-section-content="' . avia_sc_tab_section::$tab . '" class="av-layout-tab av-animation-delay-container '.$active_tab.' '.$meta['el_class'].' '.$extraClass.' '.avia_sc_tab_sub_section::$extraClass.'" '.$outer_style.' '.$data.' data-tab-section-id="'.$tab_link.'">';
-			$output  .= "<div class='av-layout-tab-inner'>";
-			$output  .= "<div class='container'>";
+			$tab_id = 'av-tab-section-' . avia_sc_tab_section::$count . '-' . avia_sc_tab_section::$tab;
+			
+			$output  = '<div id="' . $tab_id . '" data-av-tab-section-content="' . avia_sc_tab_section::$tab . '" class="av-layout-tab av-animation-delay-container ' . $active_tab . ' ' . $meta['el_class'] . ' ' . $extraClass . ' ' . avia_sc_tab_sub_section::$extraClass . '" ' . $outer_style . ' ' . $data . ' data-tab-section-id="' . $tab_link . '">';
+			$output .=		"<div class='av-layout-tab-inner'>";
+			$output .=			"<div class='container'>";
+			
 			//if the user uses the column shortcode without the layout builder make sure that paragraphs are applied to the text
-			$content =  ( empty( $avia_config['conditionals']['is_builder_template'] ) ) ? ShortcodeHelper::avia_apply_autop(ShortcodeHelper::avia_remove_autop($content)) : ShortcodeHelper::avia_remove_autop($content, true);
-			$output .= $content . '</div>';
-			$output .= '</div>';
+			$content = ( empty( $avia_config['conditionals']['is_builder_template'] ) ) ? ShortcodeHelper::avia_apply_autop( ShortcodeHelper::avia_remove_autop( $content ) ) : ShortcodeHelper::avia_remove_autop( $content, true );
+			
+			$output .=				$content;
+			$output .=			'</div>';
+			$output .=		'</div>';
 			$output .= '</div>';
 
-			unset($avia_config['current_column']);
+			unset( $avia_config['current_column'] );
 
 			return $output;
 		}

@@ -247,14 +247,14 @@ class AviaTypeFonts extends aviaFontManagementBase
 		if( false === $font_info['key'] )
 		{
 			avia_backend_delete_folder( $temp_path );
-			$this->response['error'] .= sprintf( __( 'An error occured with the font %s and we are not able to integrate the font', 'avia_framework' ), $font_name ) . "<br /><br />";
+			$this->response['error'] .= sprintf( __( 'An error occurred with the font %s and we are not able to integrate the font', 'avia_framework' ), $font_name ) . "<br /><br />";
 			return false;
 		}
 		
 		if( ! $this->rename_temp_folder( $temp_path, $font_info['key'] ) )
 		{
 			avia_backend_delete_folder( $temp_path );
-			$this->response['error'] .= sprintf( __( 'An error occured creating the folder for the font %s in uploads directory. We are not able to integrate the font', 'avia_framework' ), $font_name ) . "<br /><br />";
+			$this->response['error'] .= sprintf( __( 'An error occurred creating the folder for the font %s in uploads directory. We are not able to integrate the font', 'avia_framework' ), $font_name ) . "<br /><br />";
 			return false;
 		}
 		
@@ -677,6 +677,7 @@ class AviaTypeFonts extends aviaFontManagementBase
 	
 						'Damion'			=> 'Damion',
 						'Dancing Script'	=> 'Dancing Script',
+						'Dosis'				=> 'Dosis:200,300,400,500,600,700,800',
 						'Droid Sans'		=> 'Droid Sans',
 						'Droid Serif'		=> 'Droid Serif',
 	
@@ -757,7 +758,6 @@ class AviaTypeFonts extends aviaFontManagementBase
 	
 	
 						'Tangerine'			=> 'Tangerine',
-						'Terminal Dosis'	=> 'Terminal Dosis',
 						'Tenor Sans'		=> 'Tenor Sans',
 	
 						'Varela Round'		=> 'Varela Round',
@@ -1102,7 +1102,7 @@ class AviaTypeFonts extends aviaFontManagementBase
 	
 
 	/**
-	 * Splits the selected font string (option value from font selectbox)
+	 * Splits the selected font string (option value from font select box)
 	 * 
 	 * @since 4.3
 	 * @param string $selection
@@ -1125,7 +1125,7 @@ class AviaTypeFonts extends aviaFontManagementBase
 
 	
 	/**
-	 * Returns the type of font selected from a selectbox
+	 * Returns the type of font selected from a select box
 	 * 
 	 * @since 4.3
 	 * @param array $font_info

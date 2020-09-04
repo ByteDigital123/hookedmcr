@@ -177,7 +177,7 @@ if ( ! class_exists( 'avia_sc_contact' ) )
 
 			$link = '<a target="_blank" href="' . admin_url( 'admin.php?page=avia#goto_google' ) . '">' . __( 'activated here', 'avia_framework' ) . '</a>';
 			$captcha_desc  = __( 'Do you want to display a Captcha field at the end of the form so users must prove they are human?', 'avia_framework' ) . '</br></br>';
-			$captcha_desc .= __( 'Either by solving a simply mathematical question or by Google reCaptcha, that needs to be', 'avia_framework' ) . ' ' . $link . '. ';
+			$captcha_desc .= __( 'Either by solving a simple mathematical question or by Google reCaptcha, that needs to be', 'avia_framework' ) . ' ' . $link . '. ';
 			$captcha_desc .= __( 'In case Google reCAPTCHA is deactivated (maybe later) in theme options, Enfold captcha will be used, if you select here to use V2 then V2 will be used for this contact form (even if you selected V3 in theme options). If you selected V3 here and the score fails or you did not selected V3 in theme options then V2 will be used to check if user is a human.', 'avia_framework' );
 			$captcha_desc .= '</br></br>';
 			$captcha_desc .= __( '(It is recommended to only activate this if you receive spam from your contact form, since an invisible spam protection is also implemented that should filter most spam messages by robots anyway)', 'avia_framework' );
@@ -380,7 +380,7 @@ if ( ! class_exists( 'avia_sc_contact' ) )
 				
 						array(
 							'name' 	=> __( 'Autoresponder reply to email address', 'avia_framework' ),
-							'desc' 	=> __( 'Enter one or more reply to Email addresses (seperated by comma) for the autoresponder mail. Leave blank if not needed.', 'avia_framework' ),
+							'desc' 	=> __( 'Enter one or more reply to Email addresses (separated by comma) for the autoresponder mail. Leave blank if not needed.', 'avia_framework' ),
 							'id' 	=> 'autoresponder_reply_to',
 							'std' 	=> '',
 							'type' 	=> 'input',

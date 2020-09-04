@@ -11,6 +11,11 @@ if ( !class_exists( 'avia_sc_catalogue' ) )
 {
 	class avia_sc_catalogue extends aviaShortcodeTemplate
 	{
+		/**
+		 * @since 4.7.6.2
+		 * @var string 
+		 */
+		protected $html_lazy_loading;
 		
 		/**
 		 *
@@ -117,6 +122,11 @@ if ( !class_exists( 'avia_sc_catalogue' ) )
 				
 						array(	
 								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation' )
+							),
+				
+						array(	
+								'type'			=> 'template',
 								'template_id'	=> 'screen_options_toggle'
 							),
 				
@@ -188,6 +198,28 @@ if ( !class_exists( 'avia_sc_catalogue' ) )
 			
 			
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'content_catalog' ), $c );
+			
+			$c = array(
+						
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'lazy_loading',
+							'std'			=> 'enabled'
+						),
+						
+				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
+								'title'			=> __( 'Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+			
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			
 				
 		}
 		
@@ -386,22 +418,33 @@ if ( !class_exists( 'avia_sc_catalogue' ) )
 			extract( $this->screen_options ); //return $av_font_classes, $av_title_font_classes and $av_display_classes 
 
 			extract( shortcode_atts( array(
-											'title'	=> ''
+											'title'			=> '',
+											'lazy_loading'	=> 'enabled'
 										), $atts, $this->config['shortcode'] ) );
 
+			
+			$this->html_lazy_loading = $lazy_loading;
+			
+			
 			$output	 = '';
-			$output .=	"<div {$meta['custom_el_id']} class='av-catalogue-container {$av_display_classes} ".$meta['el_class']."'>";
+			$output .=	"<div {$meta['custom_el_id']} class='av-catalogue-container {$av_display_classes} {$meta['el_class']}'>";
 
 			$output .=		"<ul class='av-catalogue-list'>";
 			$output .=			ShortcodeHelper::avia_remove_autop( $content, true );
 			$output .=		'</ul>';
 			$output .=	'</div>';
 
-
-			return $output;
+			return Av_Responsive_Images()->make_content_images_responsive( $output );
 		}
 
-		function av_catalogue_item( $atts, $content = '', $shortcodename = '' )
+		/**
+		 * 
+		 * @param array $atts
+		 * @param string $content
+		 * @param string $shortcodename
+		 * @return string
+		 */
+		public function av_catalogue_item( $atts, $content = '', $shortcodename = '' )
 		{
 			/**
 			 * Fixes a problem when 3-rd party plugins call nested shortcodes without executing main shortcode  (like YOAST in wpseo-filter-shortcodes)
@@ -426,20 +469,19 @@ if ( !class_exists( 'avia_sc_catalogue' ) )
 			}
 				
 			$item_markup = array( 'open' => 'div', 'close' => 'div' );
-			$image 		 = '';
-			$blank		 = '';
+			$image = '';
+			$blank = '';
 
-			if($link)
+			if( $link )
 			{
 				if( $link == 'lightbox' && $id )
 				{
-					$link 	= aviaHelper::get_url( $link, $id );
+					$link = AviaHelper::get_url( $link, $id );
 				}
 				else
 				{
-					$link 	= aviaHelper::get_url($link);
-					$blank = ( strpos( $target, '_blank' ) !== false || $target == 'yes' ) ? ' target="_blank" ' : '';
-					$blank .= strpos( $target, 'nofollow' ) !== false ? ' rel="nofollow" ' : '';
+					$link = AviaHelper::get_url( $link );
+					$blank = AviaHelper::get_link_target( $target );
 				}
 
 				$item_markup = array( 'open' => "a href='{$link}' {$blank}", 'close' => 'a' );
@@ -465,16 +507,16 @@ if ( !class_exists( 'avia_sc_catalogue' ) )
 
 					$alt = get_post_meta( $attachment_entry->ID, '_wp_attachment_image_alt', true );
 					$alt = ! empty( $alt ) ? esc_attr( $alt ) : '';
-					$img_title = trim( $attachment_entry->post_titl ) ? esc_attr( $attachment_entry->post_title ) : '';
+					$img_title = trim( $attachment_entry->post_title ) ? esc_attr( $attachment_entry->post_title ) : '';
 					$src = wp_get_attachment_image_src( $attachment_entry->ID, 'square' );
 					$src = ! empty( $src[0] ) ? $src[0] : '';
 
 					$image = "<img src='{$src}' title='{$img_title}' alt='{$alt}' class='av-catalogue-image' />";
+					$image = Av_Responsive_Images()->prepare_single_image( $image, $attachment_entry->ID, $this->html_lazy_loading );
 				}
 			}
 
-
-			$output = '';
+			$output  = '';
 			$output .= '<li>';
 			$output .= "<{$item_markup['open']} class='av-catalogue-item'>";
 			$output .=		$image;

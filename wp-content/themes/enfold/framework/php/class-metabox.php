@@ -16,7 +16,7 @@
  */
 
 
-if( !class_exists( 'avia_meta_box' ) )
+if( ! class_exists( 'avia_meta_box' ) )
 {
 
 

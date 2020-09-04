@@ -15,7 +15,7 @@
  *													),
  *						'content'				=> ! isset() | array( array of elements - can be templates also )
  *						'templates_include'		=> ! isset() | array( list of needed subtemplates ),
- *						'subtype'				=> mixed					//	allows to change subtype e.g. for selectboxes
+ *						'subtype'				=> mixed					//	allows to change subtype e.g. for select boxes
  *						'args'					=> mixed					//	e.g. shortcode class
  *													
  *					),
@@ -118,6 +118,11 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		 */
 		public function replace_templates( array $elements )
 		{
+			if( empty( $elements ) )
+			{
+				return $elements;
+			}
+			
 			$start_check = true;
 			
 			while( $start_check )
@@ -896,12 +901,14 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		 */
 		protected function linkpicker_toggle( array $element )
 		{
+			$id = isset( $element['id'] ) ? $element['id'] : 'link';
 			$name = ! empty( $element['name'] ) ? $element['name'] : __( 'Text Link?', 'avia_framework' );
 			$desc = ! empty( $element['desc'] ) ? $element['desc'] : __( 'Apply  a link to the text?', 'avia_framework' );
 			$std = ! empty( $element['std'] ) ? $element['std'] : '';
 			$required = ! empty( $element['required'] ) ? $element['required'] : array();
-			$link_required = ! empty( $element['link_required'] ) ? $element['link_required'] : array( 'link', 'not', '' );
+			$link_required = ! empty( $element['link_required'] ) ? $element['link_required'] : array( $id, 'not', '' );
 			$target_id = isset( $element['target_id'] ) ? $element['target_id'] : 'linktarget';
+			$target_std = isset( $element['target_std'] ) ? $element['target_std'] : '';
 			
 			$subtype = array();
 			if( isset( $element['subtype'] ) && is_array( $element['subtype'] ) )
@@ -918,6 +925,9 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 					{
 						case 'no':
 							$subtype[ __( 'No Link', 'avia_framework' ) ] = '';
+							break;
+						case 'default':
+							$subtype[ __( 'Use Default Link', 'avia_framework' ) ] = 'default';
 							break;
 						case 'manually':
 							$subtype[ __( 'Set Manually', 'avia_framework' ) ] = 'manually';
@@ -941,25 +951,27 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 						array(
 							'name'		=> $name,
 							'desc'		=> $desc,
-							'id'		=> 'link',
+							'id'		=> $id,
 							'type'		=> 'linkpicker',
 							'std'		=> $std,
 							'fetchTMPL'	=> true,
 							'required'	=> $required,
 							'subtype'	=> $subtype
-						),
-
-						array(
+						)
+				);
+			
+			if( ! isset( $element['no_target'] ) || true !== $element['no_target'] )
+			{
+				$c[] = array(
 							'name' 	=> __( 'Open in new window', 'avia_framework' ),
 							'desc' 	=> __( 'Do you want to open the link in a new window', 'avia_framework' ),
 							'id' 	=> $target_id,
 							'type' 	=> 'select',
-							'std' 	=> '',
+							'std' 	=> $target_std,
 							'required'	=> $link_required,
 							'subtype'	=> AviaHtmlHelper::linking_options()
-						)
-				
-				);
+						);
+			}
 			
 			if( isset( $element['no_toggle'] ) && true === $element['no_toggle'] )
 			{
@@ -1388,7 +1400,201 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Masonry Captions Template
+		 * Button Color Template
+		 * 
+		 * @since 4.7.5.1
+		 * @param array $element
+		 * @return array
+		 */
+		protected function button_colors( array $element )
+		{
+			$color_id = isset( $element['color_id'] ) ? $element['color_id'] : 'color';
+			$custom_id = isset( $element['custom_id'] ) && is_string( $element['custom_id'] ) ? $element['custom_id'] : 'custom';
+			$required = isset( $element['required'] ) ? $element['required'] : array();
+			
+			if( isset( $element['ids'] ) && is_array( $element['ids'] ) )
+			{
+				$ids = $element['ids'];
+			}
+			else
+			{
+				$ids = array(
+						'bg'		=> array(
+										'color'		=> $color_id . '_bg',
+										'custom'	=> 'custom',
+										'custom_id'	=> $custom_id . '_bg',
+									),
+						'bg_hover'	=> array(
+										'color'		=> $color_id . '_bg_hover',
+										'custom'	=> 'custom',
+										'custom_id'	=> $custom_id . '_bg_hover',
+									),
+						'font'		=> array(
+										'color'		=> $color_id . '_font',
+										'custom'	=> 'custom',
+										'custom_id'	=> $custom_id . '_font',
+									),
+						'font_hover' => array(
+										'color'		=> $color_id . '_font_hover',
+										'custom'	=> 'custom',
+										'custom_id'	=> $custom_id . '_font_hover',
+									),
+						);
+			}
+			
+			if( isset( $element['name'] ) && is_array( $element['name'] ) )
+			{
+				$name = $element['name'];
+			}
+			else
+			{
+				$name = array(
+							'bg'			=>	__( 'Button Background Color', 'avia_framework' ),
+							'bg_hover'		=>	__( 'Button Background Color On Hover', 'avia_framework' ),
+							'font'			=>	__( 'Button Font Color', 'avia_framework' ),
+							'font_hover'	=>	__( 'Button Font Color On Hover', 'avia_framework' )
+						);
+			}
+			
+			if( isset( $element['desc'] ) && is_array( $element['desc'] ) )
+			{
+				$desc = $element['desc'];
+			}
+			else
+			{
+				$desc = array(
+							'bg'			=>	__( 'Select background color for your button here', 'avia_framework' ),
+							'bg_hover'		=>	__( 'Select background color on hover for your button here', 'avia_framework' ),
+							'font'			=>	__( 'Select font color for your button here', 'avia_framework' ),
+							'font_hover'	=>	__( 'Select font color on hover for your button here', 'avia_framework' )
+						);
+			}
+			
+			if( isset( $element['std'] ) && is_array( $element['std'] ) )
+			{
+				$std = $element['std'];
+			}
+			else
+			{
+				$std = array(
+							'bg'				=>	'theme-color',
+							'bg_hover'			=>	'theme-color-highlight',
+							'font'				=>	'#ffffff',
+							'font_hover'		=>	'#ffffff',
+							'custom_bg'			=>	'#444444',
+							'custom_bg_hover'	=>	'#444444',
+							'custom_font'		=>	'#ffffff',
+							'custom_font_hover'	=>	'#ffffff'
+						);
+			}
+			
+			if( isset( $element['translucent'] ) && is_array( $element['translucent'] ) )
+			{
+				$translucent = $element['translucent'];
+			}
+			else
+			{
+				$translucent = array(
+									'bg'			=>	'',
+									'bg_hover'		=>	'',
+									'font'			=>	array(),
+									'font_hover'	=>	array()
+								);
+			}
+			
+			$template = array(
+				
+					array(	
+						'type'			=> 'template',
+						'template_id'	=> 'named_colors',
+						'id'			=> $ids['bg']['color'],
+						'name'			=> $name['bg'],
+						'desc'			=> $desc['bg'],
+						'std'			=> $std['bg'],
+						'translucent'	=> $translucent['bg'],
+						'custom'		=> $ids['bg']['custom'],
+						'required'		=> $required
+					),
+
+					array(	
+						'name' 	=> $name['bg'],
+						'desc' 	=> $desc['bg'],
+						'id' 	=> $ids['bg']['custom_id'],
+						'type' 	=> 'colorpicker',
+						'std' 	=> $std['custom_bg'],
+						'required'	=> array( $ids['bg']['color'], 'equals', $ids['bg']['custom'] )
+					),
+				
+					array(	
+						'type'			=> 'template',
+						'template_id'	=> 'named_colors',
+						'id'			=> $ids['bg_hover']['color'],
+						'name'			=> $name['bg_hover'],
+						'desc'			=> $desc['bg_hover'],
+						'std'			=> $std['bg_hover'],
+						'translucent'	=> $translucent['bg_hover'],
+						'custom'		=> $ids['bg_hover']['custom'],
+						'required'		=> $required
+					),
+
+					array(	
+						'name' 	=> $name['bg_hover'],
+						'desc' 	=> $desc['bg_hover'],
+						'id' 	=> $ids['bg_hover']['custom_id'],
+						'type' 	=> 'colorpicker',
+						'std' 	=> $std['custom_bg_hover'],
+						'required'	=> array( $ids['bg_hover']['color'], 'equals', $ids['bg_hover']['custom'] )
+					),
+				
+					array(	
+						'type'			=> 'template',
+						'template_id'	=> 'named_colors',
+						'id'			=> $ids['font']['color'],
+						'name'			=> $name['font'],
+						'desc'			=> $desc['font'],
+						'std'			=> $std['font'],
+						'translucent'	=> $translucent['font'],
+						'custom'		=> $ids['font']['custom'],
+						'required'		=> $required
+					),
+				
+					array(	
+						'name' 	=> $name['font'],
+						'desc' 	=> $desc['font'],
+						'id' 	=> $ids['font']['custom_id'],
+						'type' 	=> 'colorpicker',
+						'std' 	=> $std['font'],
+						'required'	=> array( $ids['font']['color'], 'equals', $ids['font']['custom'] )
+					),
+				
+//					array(	
+//						'type'			=> 'template',
+//						'template_id'	=> 'named_colors',
+//						'id'			=> $ids['font_hover']['color'],
+//						'name'			=> $name['font_hover'],
+//						'desc'			=> $desc['font_hover'],
+//						'std'			=> $std['font_hover'],
+//						'translucent'	=> $translucent['font_hover'],
+//						'custom'		=> $ids['font_hover']['custom'],
+//						'required'		=> $required
+//					),
+//				
+//					array(	
+//						'name' 	=> $name['font_hover'],
+//						'desc' 	=> $desc['font_hover'],
+//						'id' 	=> $ids['font_hover']['custom_id'],
+//						'type' 	=> 'colorpicker',
+//						'std' 	=> $std['font_hover'],
+//						'required'	=> array( $ids['font_hover']['color'], 'equals', $ids['font_hover']['custom'] )
+//					)
+				
+				);
+			
+			return $template;
+		}
+		
+		/**
+		 * Named Color Template
 		 * 
 		 * @since 4.5.6.1
 		 * @param array $element
@@ -1404,7 +1610,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 			$container_class  = isset( $element['container_class'] ) ? $element['container_class'] : '';
 			$theme_col_key = isset( $element['theme-col-key'] ) ? $element['theme-col-key'] : 'theme-color';
 			
-			if( isset( $element['translucent'] ) )
+			if( isset( $element['translucent'] ) && is_array( $element['translucent'] ) )
 			{
 				$translucent = $element['translucent'];
 			}
@@ -1440,7 +1646,8 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 			
 			if( ! empty( $element['custom'] ) )
 			{
-				$colored[ __( 'Custom Color', 'avia_framework' ) ] = 'custom';
+				$val = true === $element['custom'] ? 'custom' : $element['custom'];
+				$colored[ __( 'Custom Color', 'avia_framework' ) ] = $val;
 			}
 			
 			$e = array(
@@ -1789,7 +1996,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Title Font Sizes
+		 * Select boxes for Title Font Sizes
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -1836,7 +2043,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Content Font Sizes
+		 * Select boxes for Content Font Sizes
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -1881,7 +2088,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 
 		/**
-		 * Selectboxes for Heading Font Size
+		 * Select boxes for Heading Font Size
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -1905,7 +2112,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Content Font Size
+		 * Select boxes for Content Font Size
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -1929,7 +2136,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Subheading Font Size
+		 * Select boxes for Subheading Font Size
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -1956,7 +2163,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Number Font Size (countdown)
+		 * Select boxes for Number Font Size (countdown)
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -1980,7 +2187,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Text Font Size (countdown)
+		 * Select boxes for Text Font Size (countdown)
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -2004,7 +2211,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectboxes for Columns ( 1 - 4 )
+		 * Select boxes for Columns ( 1 - 4 )
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -2046,7 +2253,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 * Selectbox for <h. > tag and inputfield for custom class
+		 * Select box for <h. > tag and inputfield for custom class
 		 * 
 		 * @since 4.5.7.2
 		 * @param array $element
@@ -2133,7 +2340,43 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		}
 		
 		/**
-		 *  Selectboxes for WooCommerce Options for non product elements
+		 * Lazy Load Template 
+		 * 
+		 * @since 4.7.6.3
+		 * @param array $element
+		 * @return array
+		 */
+		protected function lazy_loading( array $element )
+		{
+			$desc  = __( 'Lazy loading of images using pure HTML is a feature introduced with WP 5.5 as a standard feature to speed up page loading. But it may not be compatible with animations and might break functionality of your page.', 'avia_framework' ) . ' '; 
+			$desc .= __( 'Therefore this feature is disabled by default. Please check carefully that everything is working as you expect when you enable this feature for this element.', 'avia_framework' );
+					
+			$id = isset( $element['id'] ) && ! empty( $element['id'] ) ? $element['id'] : 'lazy_loading';
+			$std = isset( $element['std'] ) && in_array( $element['std'] , array( 'disabled', 'enabled' ) ) ? $element['std'] : 'disabled';
+			$required = isset( $element['required'] ) && is_array( $element['required'] ) ? $element['required'] : array();
+			
+			$template = array(
+							array(
+								'name'		=> __( 'Lazy Loading Of Images', 'avia_framework' ),
+								'desc'		=> $desc,
+								'id'		=> $id,
+								'type'		=> 'select',
+								'std'		=> $std,
+								'required'	=> $required,
+								'subtype'	=> array(
+													__( 'Do not use lazy loading', 'avia_framework' )	=> 'disabled',
+													__( 'Enable lazy loading', 'avia_framework' )		=> 'enabled'
+												)
+							)
+				);
+			
+			return $template;
+		}
+		
+		
+		
+		/**
+		 *  Select boxes for WooCommerce Options for non product elements
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element
@@ -2209,7 +2452,7 @@ if( ! class_exists( 'Avia_Popup_Templates' ) )
 		
 		
 		/**
-		 *  Selectboxes for WooCommerce Options for product elements
+		 *  Select boxes for WooCommerce Options for product elements
 		 * 
 		 * @since 4.5.7.1
 		 * @param array $element

@@ -832,12 +832,10 @@ if ( ! class_exists( 'avia_sc_iconlist' ) )
 			$display_char = av_icon($atts['icon'], $atts['font']);
 			$display_char_wrapper = array();
 
-			$blank = ( strpos($atts['linktarget'], '_blank') !== false || $atts['linktarget'] == 'yes' ) ? ' target="_blank" ' : '';
-			$blank .= strpos($atts['linktarget'], 'nofollow') !== false ? ' rel="nofollow" ' : '';
-			
+			$blank = AviaHelper::get_link_target( $atts['linktarget'] );
 			if( ! empty( $atts['link'] ) )
 			{
-				$atts['link'] = aviaHelper::get_url($atts['link']);
+				$atts['link'] = AviaHelper::get_url($atts['link']);
 
 				if( ! empty($atts['link'] ) )
 				{

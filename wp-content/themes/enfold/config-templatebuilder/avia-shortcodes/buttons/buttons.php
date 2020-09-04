@@ -30,7 +30,6 @@ if ( ! class_exists( 'avia_sc_button' ) )
 			$this->config['preview'] 	= true;
 			$this->config['id_name']	= 'id';
 			$this->config['id_show']	= 'yes';
-
 		}
 
 
@@ -63,7 +62,6 @@ if ( ! class_exists( 'avia_sc_button' ) )
 						'nodescription' => true
 					),
 					
-
 					array(
 							'type'			=> 'template',
 							'template_id'	=> 'toggle_container',
@@ -156,7 +154,7 @@ if ( ! class_exists( 'avia_sc_button' ) )
 			 */
 			
 			$c = array(
-						array(	
+						array(
 							'name' 	=> __( 'Button Label', 'avia_framework' ),
 							'desc' 	=> __( 'This is the text that appears on your button.', 'avia_framework' ),
 							'id' 	=> 'label',
@@ -164,16 +162,16 @@ if ( ! class_exists( 'avia_sc_button' ) )
 							'std' => __( 'Click me', 'avia_framework' )
 						),
 				
-						array(	
-							'name' 	=> __( 'Button Icon', 'avia_framework' ),
-							'desc' 	=> __( 'Should an icon be displayed at the left side of the button', 'avia_framework' ),
+						array(
+							'name' 	=> __( 'Show Button Icon', 'avia_framework' ),
+							'desc' 	=> __( 'Should an icon be displayed at the left or right side of the button', 'avia_framework' ),
 							'id' 	=> 'icon_select',
 							'type' 	=> 'select',
 							'std' 	=> 'yes',
 							'subtype'	=> array(
-												__( 'No Icon', 'avia_framework' )							=> 'no',
-												__( 'Yes, display Icon to the left', 'avia_framework' )		=> 'yes' ,	
-												__( 'Yes, display Icon to the right', 'avia_framework' )	=> 'yes-right-icon',
+												__( 'No Icon', 'avia_framework' )					=> 'no',
+												__( 'Display icon to the left', 'avia_framework' )	=> 'yes' ,	
+												__( 'Display icon to the right', 'avia_framework' )	=> 'yes-right-icon',
 											)
 						),
 				
@@ -193,7 +191,7 @@ if ( ! class_exists( 'avia_sc_button' ) )
 							'type' 	=> 'checkbox',
 							'std' 	=> '',
 							'required'	=> array( 'icon_select', 'not_empty_and', 'no' )
-						),
+						)
 				
 				);
 			
@@ -218,7 +216,7 @@ if ( ! class_exists( 'avia_sc_button' ) )
 			$c = array(
 						array(	
 							'name' 	=> __( 'Button Size', 'avia_framework' ),
-							'desc' 	=> __( 'Choose the size of your button here', 'avia_framework' ),
+							'desc' 	=> __( 'Choose the size of your button here.', 'avia_framework' ),
 							'id' 	=> 'size',
 							'type' 	=> 'select',
 							'std' 	=> 'small',
@@ -226,7 +224,7 @@ if ( ! class_exists( 'avia_sc_button' ) )
 												__( 'Small', 'avia_framework' )		=> 'small',
 												__( 'Medium', 'avia_framework' )	=> 'medium',
 												__( 'Large', 'avia_framework' )		=> 'large',
-												__( 'X Large', 'avia_framework' )	=> 'x-large',
+												__( 'X Large', 'avia_framework' )	=> 'x-large'
 											)
 						),
 							
@@ -240,11 +238,12 @@ if ( ! class_exists( 'avia_sc_button' ) )
 												__( 'Align Left', 'avia_framework' )	=> 'left',
 												__( 'Align Center', 'avia_framework' )	=> 'center',
 												__( 'Align Right', 'avia_framework' )	=> 'right',
-											)
+											),
+							'required'	=> array( 'size', 'not', 'fullwidth' )
 						),
 				
 						array(	
-							'name' 	=> __( 'Button Label display', 'avia_framework' ),
+							'name' 	=> __( 'Button Label Display', 'avia_framework' ),
 							'desc' 	=> __( 'Select how to display the label', 'avia_framework' ),
 							'id' 	=> 'label_display',
 							'type' 	=> 'select',
@@ -279,29 +278,51 @@ if ( ! class_exists( 'avia_sc_button' ) )
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'styling_appearance' ), $template );
 			
 			$c = array(
+				
+						array(	
+							'name' 	=> __( 'Button Colors Selection', 'avia_framework' ),
+							'desc' 	=> __( 'Select the available options for button colors. Switching to advanced options for already existing buttons you need to set all options (color settings from basic options are ignored).', 'avia_framework' ),
+							'id' 	=> 'color_options',
+							'type' 	=> 'select',
+							'std' 	=> '',
+							'subtype'	=> array(
+												__( 'Basic options only', 'avia_framework' )	=> '',	
+												__( 'Advanced options', 'avia_framework' )		=> 'color_options_advanced',
+											)
+						),
+				
 						array(	
 							'type'			=> 'template',
 							'template_id'	=> 'named_colors',
-							'custom'		=> true
+							'custom'		=> true,
+							'required'		=> array( 'color_options', 'equals', '' )
 						),
 				
 						array(	
 							'name' 	=> __( 'Custom Background Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom background color for your Button here', 'avia_framework' ),
+							'desc' 	=> __( 'Select a custom background color for your button here', 'avia_framework' ),
 							'id' 	=> 'custom_bg',
 							'type' 	=> 'colorpicker',
 							'std' 	=> '#444444',
 							'required'	=> array( 'color', 'equals', 'custom' )
 						),	
 						
-						array(	
+						array(
 							'name' 	=> __( 'Custom Font Color', 'avia_framework' ),
-							'desc' 	=> __( 'Select a custom font color for your Button here', 'avia_framework' ),
+							'desc' 	=> __( 'Select a custom font color for your button here', 'avia_framework' ),
 							'id' 	=> 'custom_font',
 							'type' 	=> 'colorpicker',
 							'std' 	=> '#ffffff',
 							'required'	=> array( 'color', 'equals', 'custom')
-						),	
+						),
+				
+						array(	
+							'type'			=> 'template',
+							'template_id'	=> 'button_colors',
+							'color_id'		=> 'btn_color',
+							'custom_id'		=> 'btn_custom',
+							'required'		=> array( 'color_options', 'not', '' )
+						)
 				
 				);
 			
@@ -403,6 +424,7 @@ if ( ! class_exists( 'avia_sc_button' ) )
 			extract( AviaHelper::av_mobile_sizes( $atts ) ); //return $av_font_classes, $av_title_font_classes and $av_display_classes 
 
 			$atts = shortcode_atts( array(
+				
 							'label'			=> 'Click me', 
 							'link'			=> '', 
 							'link_target'	=> '',
@@ -416,27 +438,78 @@ if ( ! class_exists( 'avia_sc_button' ) )
 							'font'			=> '',
 							'icon_hover'	=> '',
 							'label_display'	=> '',
-							'title_attr'	=> ''
+							'title_attr'	=> '',
+				
+							'color_options'			=> '',		//	added 4.7.5.1
+							'btn_color_bg'			=> 'theme-color',			
+							'btn_color_bg_hover'	=> 'theme-color',
+							'btn_color_font'		=> 'custom',
+							'btn_custom_bg'			=> '#444444',
+							'btn_custom_bg_hover'	=> '#444444',
+							'btn_custom_font'		=> '#ffffff',
+//							'btn_color_font_hover'	=> '#ffffff',
+//							'btn_custom_font_hover'	=> '#ffffff'
+							
 						), $atts, $this->config['shortcode'] );
 			
 			
-
-			$display_char 	= av_icon($atts['icon'], $atts['font']);
-			$extraClass 	= $atts['icon_hover'] ? 'av-icon-on-hover' : '';
-
 			if( $atts['icon_select'] == 'yes' ) 
 			{
 				$atts['icon_select'] = 'yes-left-icon';
 			}
 
 			$style = '';
-			if($atts['color'] == 'custom') 
-			{
-				$style .= "style='background-color:{$atts['custom_bg']}; border-color:{$atts['custom_bg']}; color:{$atts['custom_font']}; '";
-			}
-				
-				
+			$style_hover = '';
 			$data = '';
+			$background_hover = '';
+			
+			$display_char = av_icon( $atts['icon'], $atts['font'] );
+			$extraClass = $atts['icon_hover'] ? 'av-icon-on-hover' : '';
+			
+			if( '' == $atts['color_options'] )
+			{
+				if( $atts['color'] == 'custom' ) 
+				{
+					$style .= AviaHelper::style_string( $atts, 'custom_bg', 'background-color' );
+					$style .= AviaHelper::style_string( $atts, 'custom_bg', 'border-color' );
+					$style .= AviaHelper::style_string( $atts, 'custom_font', 'color' );
+				}
+				else
+				{
+					$extraClass .= ' ' . $this->class_by_arguments( 'color', $atts, true );
+				}
+			}
+			else		//	color_options_advanced - added 4.7.5.1
+			{
+				if( 'custom' == $atts['btn_color_bg'] )
+				{
+					$style .= AviaHelper::style_string( $atts, 'btn_custom_bg', 'background-color' );
+					$style .= AviaHelper::style_string( $atts, 'btn_custom_bg', 'border-color' );
+				}
+				else 
+				{
+					$extraClass .= ' avia-color-' . $atts['btn_color_bg'] . ' ';
+				}
+				
+				if( 'custom' == $atts['btn_color_font'] )
+				{
+					$style .= AviaHelper::style_string( $atts, 'btn_custom_font', 'color' );
+				}
+				else
+				{
+					$extraClass .= ' avia-font-color-' . $atts['btn_color_font'];
+				}
+				
+				if( 'custom' == $atts['btn_color_bg_hover'] )
+				{
+					$style_hover = "style='background-color:{$atts['btn_custom_bg_hover']};'";
+				}
+				
+				$background_hover = "<span class='avia_button_background avia-button avia-color-" . $atts['btn_color_bg_hover'] . "' {$style_hover}></span>";
+			}
+			
+			$style = AviaHelper::style_string( $style );
+			
 			if( ! empty( $atts['label_display'] ) && $atts['label_display'] == 'av-button-label-on-hover' ) 
 			{
 				$extraClass .= ' av-button-label-on-hover ';
@@ -449,11 +522,9 @@ if ( ! class_exists( 'avia_sc_button' ) )
 				$extraClass .= ' av-button-notext ';
 			}
 
-			$blank = strpos($atts['link_target'], '_blank') !== false ? ' target="_blank" ' : '';
-			$blank .= strpos($atts['link_target'], 'nofollow') !== false ? ' rel="nofollow" ' : '';
-
-			$link  = AviaHelper::get_url( $atts['link'] );
-			$link  = ( ( $link == 'http://' ) || ( $link == 'manually' ) ) ? '' : $link;
+			$blank = AviaHelper::get_link_target( $atts['link_target'] );
+			$link = AviaHelper::get_url( $atts['link'] );
+			$link = ( ( $link == 'http://' ) || ( $link == 'manually' ) ) ? '' : $link;
 
 			$title_attr = ! empty( $atts['title_attr'] ) && empty( $atts['label_display'] ) ? 'title="' . esc_attr( $atts['title_attr'] ) . '"' : '';
 
@@ -472,8 +543,9 @@ if ( ! class_exists( 'avia_sc_button' ) )
 			}
 
 			$output  = '';
-			$output .=	"<a href='{$link}' {$data} class='avia-button {$extraClass} {$av_display_classes} " . $this->class_by_arguments( 'icon_select, color, size, position', $atts, true ) . "' {$blank} {$style} >";
+			$output .=	"<a href='{$link}' {$data} class='avia-button {$extraClass} {$av_display_classes} " . $this->class_by_arguments( 'icon_select, size, position', $atts, true ) . "' {$blank} {$style} >";
 			$output .=		$content_html;
+			$output .=		$background_hover;
 			$output .=	'</a>';
 
 			$output =  "<div {$meta['custom_el_id']} class='avia-button-wrap avia-button-{$atts['position']} {$meta['el_class']}' {$title_attr}>{$output}</div>";

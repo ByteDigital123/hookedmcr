@@ -38,16 +38,16 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 			$this->config['contains_text']		= 'no';
 			$this->config['layout_children']	= array( 'av_tab_sub_section' );
 
-			$this->config['name']		= __( 'Tab Section', 'avia_framework' );
-			$this->config['icon']		= AviaBuilder::$path['imagesURL'] . 'sc-tabsection.png';
-			$this->config['tab']		= __( 'Layout Elements', 'avia_framework' );
-			$this->config['order']		= 13;
-			$this->config['shortcode'] 	= 'av_tab_section';
-			$this->config['html_renderer'] 	= false;
-			$this->config['tinyMCE'] 	= array( 'disable' => 'true' );
-			$this->config['tooltip'] 	= __( 'Add a fullwidth section with tabs that can contain columns and other elements', 'avia_framework' );
-			$this->config['drag-level'] = 1;
-			$this->config['drop-level'] = 100;
+			$this->config['name']			= __( 'Tab Section', 'avia_framework' );
+			$this->config['icon']			= AviaBuilder::$path['imagesURL'] . 'sc-tabsection.png';
+			$this->config['tab']			= __( 'Layout Elements', 'avia_framework' );
+			$this->config['order']			= 13;
+			$this->config['shortcode']		= 'av_tab_section';
+			$this->config['html_renderer']	= false;
+			$this->config['tinyMCE']		= array( 'disable' => 'true' );
+			$this->config['tooltip']		= __( 'Add a fullwidth section with tabs that can contain columns and other elements', 'avia_framework' );
+			$this->config['drag-level']		= 1;
+			$this->config['drop-level']		= 100;
 			$this->config['disabling_allowed'] = true;
 
 			$this->config['id_name']		= 'id';
@@ -58,7 +58,9 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 		function admin_assets()
 		{
 			$ver = AviaBuilder::VERSION;
-			wp_enqueue_script('avia_tab_section_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-section.js', array( 'avia_builder_js','avia_modal_js' ), $ver, true );
+			
+			wp_register_script( 'avia_tab_section_js', AviaBuilder::$path['assetsURL'] . 'js/avia-tab-section.js', array( 'avia_builder_js','avia_modal_js' ), $ver, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_tab_section_js' );
 		}
 			
 			
@@ -493,7 +495,7 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 				
 			$params['class'] = "av-tab-section-container entry-content-wrapper main_color {$transition} {$content_height} {$av_display_classes} {$tab_pos} {$meta['el_class']}";
 			$params['open_structure'] = false; 
-			$params['id'] = AviaHelper::save_string( $id, '-', 'av-tab-section-'.avia_sc_tab_section::$count );
+			$params['id'] = AviaHelper::save_string( $id, '-', 'av-tab-section-' . avia_sc_tab_section::$count );
 			$params['custom_markup'] = $meta['custom_markup'];
 			$params['aria_label'] = $meta['aria_label'];
 				
@@ -514,11 +516,11 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 			}
 
 			avia_sc_tab_sub_section::$attr = $atts;
-			$final_content =  ShortcodeHelper::avia_remove_autop($content,true) ;
+			$final_content = ShortcodeHelper::avia_remove_autop( $content,true ) ;
 
-			$width   	= avia_sc_tab_section::$tab * 100;
-			$tabs 		= '';
-			$tab_style  = '';
+			$width = avia_sc_tab_section::$tab * 100;
+			$tabs = '';
+			$tab_style = '';
 			$custom_tab_color = '';
 			$arrow = "<span class='av-tab-arrow-container'><span></span></span>";
 				
@@ -537,8 +539,8 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 				$image  = ! empty( avia_sc_tab_section::$tab_images[$i] ) ? avia_sc_tab_section::$tab_images[$i] : '';
 
 				$extraClass  = '';
-				$extraClass .= !empty($icon) 	? 'av-tab-with-icon ' : 'av-tab-no-icon ';
-				$extraClass .= !empty($image) 	? 'av-tab-with-image noHover ' : 'av-tab-no-image ';
+				$extraClass .= ! empty( $icon ) ? 'av-tab-with-icon ' : 'av-tab-no-icon ';
+				$extraClass .= ! empty( $image ) ? 'av-tab-with-image noHover ' : 'av-tab-no-image ';
 				$extraClass .= avia_sc_tab_section::$tab_atts[ $i ]['tab_image_style'];
 
 				/**
@@ -546,19 +548,22 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 				 */
 				$active_tab = $i == $atts['initial'] ? 'av-active-tab-title no-scroll' : '';					
 
-				$tab_title = ! empty( avia_sc_tab_section::$tab_titles[$i] ) ? avia_sc_tab_section::$tab_titles[$i] : '';
+				$tab_title = ! empty( avia_sc_tab_section::$tab_titles[ $i ] ) ? avia_sc_tab_section::$tab_titles[ $i ] : '';
 				if( $tab_title == '' && empty( $image ) && empty( $icon ) )
 				{
 					$tab_title = __( 'Tab', 'avia_framework' ) . ' ' . $i;
 				}
 
+				$tab_link = AviaHelper::valid_href( $tab_title, '-', 'av-tab-section-' . avia_sc_tab_section::$count . '-' . $i );
+				$tab_id = 'av-tab-section-' . avia_sc_tab_section::$count . '-' . $i;
+				
 				if( $tab_title == '' )
 				{
 					$extraClass .= ' av-tab-without-text ';
+					$tab_link .= '-link';		//	layout is broken since adding aria-controls $tab_id with 4.7.6
 				}
-
-				$tab_link = AviaHelper::valid_href( $tab_title, '-', 'av-tab-section-' . avia_sc_tab_section::$count . '-' . $i );
-				$tabs  .= "<a href='#{$tab_link}' data-av-tab-section-title='{$i}' class='av-section-tab-title {$active_tab} {$extraClass} '>{$icon}{$image}<span class='av-outer-tab-title'><span class='av-inner-tab-title'>{$tab_title}</span></span>{$arrow}</a>";
+				
+				$tabs  .= "<a href='#{$tab_link}' data-av-tab-section-title='{$i}' class='av-section-tab-title {$active_tab} {$extraClass} ' role='tab' tabindex='0' aria-controls='{$tab_id}'>{$icon}{$image}<span class='av-outer-tab-title'><span class='av-inner-tab-title'>{$tab_title}</span></span>{$arrow}</a>";
 			}
 
 
@@ -567,7 +572,7 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 				$tab_style .= AviaHelper::style_string( $atts, 'bg_color', 'background-color' );
 			}
 				
-			if( ! empty($atts['color'] ) )
+			if( ! empty( $atts['color'] ) )
 			{
 				$tab_style .= AviaHelper::style_string( $atts, 'color', 'color' );
 				$custom_tab_color = 'av-custom-tab-color';
@@ -578,7 +583,7 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 				$tab_style = "style='{$tab_style}'";
 			}
 			
-			$tabs_final =  "<div class='av-tab-section-tab-title-container avia-tab-title-padding-{$tab_padding} {$custom_tab_color}' {$tab_style}>{$tabs}</div>";
+			$tabs_final =  "<div class='av-tab-section-tab-title-container avia-tab-title-padding-{$tab_padding} {$custom_tab_color}' {$tab_style} role='tablist'>{$tabs}</div>";
 
 			$output .=  avia_new_section( $params );
 			$output .=  "<div class='av-tab-section-outer-container'>";
@@ -610,6 +615,4 @@ if ( ! class_exists( 'avia_sc_tab_section' ) )
 		}
 	}
 }
-
-
 

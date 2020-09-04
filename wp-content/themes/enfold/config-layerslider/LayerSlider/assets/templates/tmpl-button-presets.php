@@ -11,10 +11,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#1b9af7"
+				"background-color": "#1b9af7"
 			}'>
 				<span class="ls-preset-button-1-1">BUTTON</span>
 			</li>
@@ -25,10 +25,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#1b9af7",
+				"background-color": "#1b9af7",
 				"border-top": "3px solid white",
 				"border-right": "3px solid white",
 				"border-bottom": "3px solid white",
@@ -42,10 +42,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#1b9af7",
+				"background-color": "#1b9af7",
 				"border-radius": "5px",
 				"border-bottom": "4px solid #106092"
 			}'>
@@ -57,10 +57,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#1b9af7",
+				"background-color": "#1b9af7",
 				"border-radius": "50px"
 			}'>
 				<span class="ls-preset-button-1-4">BUTTON</span>
@@ -73,7 +73,7 @@
 				"line-height": "50px",
 				"color": "#fff",
 				"text-align": "center",
-				"background": "#1b9af7",
+				"background-color": "#1b9af7",
 				"border-radius": "100%",
 
 				"html": "<i class=\"fa fa-arrow-right\"></i>"
@@ -93,10 +93,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#a5de37"
+				"background-color": "#a5de37"
 			}'>
 				<span class="ls-preset-button-2-1">BUTTON</span>
 			</li>
@@ -107,10 +107,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#a5de37",
+				"background-color": "#a5de37",
 				"border-top": "3px solid white",
 				"border-right": "3px solid white",
 				"border-bottom": "3px solid white",
@@ -124,10 +124,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#a5de37",
+				"background-color": "#a5de37",
 				"border-radius": "5px",
 				"border-bottom": "4px solid #719c1c"
 			}'>
@@ -139,10 +139,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#a5de37",
+				"background-color": "#a5de37",
 				"border-radius": "50px"
 			}'>
 				<span class="ls-preset-button-2-4">BUTTON</span>
@@ -155,7 +155,7 @@
 				"line-height": "50px",
 				"color": "#fff",
 				"text-align": "center",
-				"background": "#a5de37",
+				"background-color": "#a5de37",
 				"border-radius": "100%",
 
 				"html": "<i class=\"fa fa-arrow-right\"></i>"
@@ -173,10 +173,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#feae1b"
+				"background-color": "#feae1b"
 			}'>
 				<span class="ls-preset-button-3-1">BUTTON</span>
 			</li>
@@ -187,10 +187,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#feae1b",
+				"background-color": "#feae1b",
 				"border-top": "3px solid white",
 				"border-right": "3px solid white",
 				"border-bottom": "3px solid white",
@@ -204,10 +204,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#feae1b",
+				"background-color": "#feae1b",
 				"border-radius": "5px",
 				"border-bottom": "4px solid #c38717"
 			}'>
@@ -219,10 +219,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#feae1b",
+				"background-color": "#feae1b",
 				"border-radius": "50px"
 			}'>
 				<span class="ls-preset-button-3-4">BUTTON</span>
@@ -235,7 +235,7 @@
 				"line-height": "50px",
 				"color": "#fff",
 				"text-align": "center",
-				"background": "#feae1b",
+				"background-color": "#feae1b",
 				"border-radius": "100%",
 
 				"html": "<i class=\"fa fa-arrow-right\"></i>"
@@ -253,10 +253,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#ff505d"
+				"background-color": "#ff505d"
 			}'>
 				<span class="ls-preset-button-4-1">BUTTON</span>
 			</li>
@@ -267,10 +267,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#ff505d",
+				"background-color": "#ff505d",
 				"border-top": "3px solid white",
 				"border-right": "3px solid white",
 				"border-bottom": "3px solid white",
@@ -284,10 +284,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#ff505d",
+				"background-color": "#ff505d",
 				"border-radius": "5px",
 				"border-bottom": "4px solid #b72a34"
 			}'>
@@ -299,10 +299,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#ff505d",
+				"background-color": "#ff505d",
 				"border-radius": "50px"
 			}'>
 				<span class="ls-preset-button-4-4">BUTTON</span>
@@ -315,7 +315,7 @@
 				"line-height": "50px",
 				"color": "#fff",
 				"text-align": "center",
-				"background": "#ff505d",
+				"background-color": "#ff505d",
 				"border-radius": "100%",
 
 				"html": "<i class=\"fa fa-arrow-right\"></i>"
@@ -333,10 +333,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#7b72e9"
+				"background-color": "#7b72e9"
 			}'>
 				<span class="ls-preset-button-5-1">BUTTON</span>
 			</li>
@@ -347,10 +347,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#7b72e9",
+				"background-color": "#7b72e9",
 				"border-top": "3px solid white",
 				"border-right": "3px solid white",
 				"border-bottom": "3px solid white",
@@ -364,10 +364,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#7b72e9",
+				"background-color": "#7b72e9",
 				"border-radius": "5px",
 				"border-bottom": "4px solid #554db7"
 			}'>
@@ -379,10 +379,10 @@
 				"padding-bottom": 15,
 				"padding-left": 60,
 				"font-family": "Arial, sans-serif",
-				"font-size": 14,
+				"font-size": 16,
 				"font-weight": 700,
 				"color": "#fff",
-				"background": "#7b72e9",
+				"background-color": "#7b72e9",
 				"border-radius": "50px"
 			}'>
 				<span class="ls-preset-button-5-4">BUTTON</span>
@@ -395,7 +395,7 @@
 				"line-height": "50px",
 				"color": "#fff",
 				"text-align": "center",
-				"background": "#7b72e9",
+				"background-color": "#7b72e9",
 				"border-radius": "100%",
 
 				"html": "<i class=\"fa fa-arrow-right\"></i>"

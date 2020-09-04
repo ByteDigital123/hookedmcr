@@ -44,7 +44,7 @@ if( ! class_exists( 'avia_form' ) )
 
 
 		/**
-		 * This string holds the html output for elements that gets merged with the final output in case an error occured or no submission took place
+		 * This string holds the html output for elements that gets merged with the final output in case an error occurred or no submission took place
 		 * @var string
 		 */
 		var $elements_html = '';
@@ -313,7 +313,7 @@ if( ! class_exists( 'avia_form' ) )
 		/**
          * display_form
          *
-         * Checks if an error occured and if the user tried to send, if thats the case, and if sending worked display a success message, otherwise display the whole form
+         * Checks if an error occurred and if the user tried to send, if thats the case, and if sending worked display a success message, otherwise display the whole form
 		 * 
 		 * @param boolean $return
 		 * @return string
@@ -361,7 +361,7 @@ if( ! class_exists( 'avia_form' ) )
 
 					if( false === $submit_result )
 					{
-						$success .= ! empty( $this->submit_error ) ? $this->submit_error : __( 'Form could not be submitted - an error occured. Please reload page and try again.', 'avia_framework' );
+						$success .= ! empty( $this->submit_error ) ? $this->submit_error : __( 'Form could not be submitted - an error occurred. Please reload page and try again.', 'avia_framework' );
 					}
 					else
 					{

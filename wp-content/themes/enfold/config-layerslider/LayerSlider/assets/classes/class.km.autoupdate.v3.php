@@ -379,9 +379,9 @@ class KM_UpdatesV3 {
 		// Required informations
 		if( empty( $_POST['purchase_code'] ) || empty( $_POST['channel'] ) ) {
 			die( json_encode( array(
-				'status' => 'Please enter your license key.',
-				'errCode' => 'ERR_INVALID_DATA_RECEIVED')
-			) );
+				'message' => 'Please enter your license key.',
+				'errCode' => 'ERR_INVALID_DATA_RECEIVED'
+			) ) );
 		}
 
 		// Re-validation

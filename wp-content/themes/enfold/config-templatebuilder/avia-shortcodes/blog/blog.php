@@ -135,6 +135,11 @@ if ( ! class_exists( 'avia_sc_blog' ) )
 							'nodescription' => true
 						),
 				
+						array(
+								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation' ),
+							),
+				
 						array(	
 								'type'			=> 'template',
 								'template_id'	=> 'screen_options_toggle'
@@ -430,6 +435,29 @@ if ( ! class_exists( 'avia_sc_blog' ) )
 			
 			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'styling_pagination' ), $template );
 			
+			/**
+			 * Advanced Tab
+			 * ============
+			 */
+			$c = array(
+				
+					array(	
+								'type'			=> 'template',
+								'template_id'	=> 'lazy_loading'
+							),
+				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
+								'title'			=> __( 'Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+			
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			
 		}
 
 
@@ -529,7 +557,9 @@ if ( ! class_exists( 'avia_sc_blog' ) )
 							'date_filter'		=> '',
 							'date_filter_start'	=> '',
 							'date_filter_end'	=> '',
-							'date_filter_format'	=> 'mm / dd / yy'
+							'date_filter_format'	=> 'mm / dd / yy',
+							'lazy_loading'		=> 'disabled'
+				
 						), $atts, $this->config['shortcode'] );
 
 			$page = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
@@ -626,7 +656,8 @@ if ( ! class_exists( 'avia_sc_blog' ) )
 			$avia_config['preview_mode'] = $atts['preview_mode'];
 			$avia_config['image_size'] = $atts['image_size'];
 			$avia_config['blog_content'] = $atts['content_length'];
-			$avia_config['remove_pagination'] = $atts['paginate'] === 'yes' ? false :true;
+			$avia_config['remove_pagination'] = $atts['paginate'] === 'yes' ? false : true;
+			$avia_config['alb_html_lazy_loading'] = $atts['lazy_loading']; 
 
 			/**
 			 * Force supress of pagination if element will be hidden on foillowing pages
@@ -642,6 +673,7 @@ if ( ! class_exists( 'avia_sc_blog' ) )
 			get_template_part( 'includes/loop', 'index' );
 			$output = ob_get_clean();
 			
+			unset( $avia_config['alb_html_lazy_loading'] );
 			wp_reset_query();
 
 			if( 'yes' == $atts['paginate'] && $is_single )
@@ -665,15 +697,15 @@ if ( ! class_exists( 'avia_sc_blog' ) )
 
 			if( $output )
 			{
-				$extraclass = function_exists('avia_blog_class_string') ? avia_blog_class_string() : '';
+				$extraclass = function_exists( 'avia_blog_class_string' ) ? avia_blog_class_string() : '';
 				$extraclass .= $atts['bloglist_width'] == 'force_fullwidth' ? ' av_force_fullwidth' : '';
 				$extraclass .= ! empty( $meta['custom_class'] ) ? ' ' . $meta['custom_class'] : '';
-				$markup = avia_markup_helper(array('context' => 'blog','echo'=>false, 'custom_markup'=>$meta['custom_markup']));
+				$markup = avia_markup_helper( array( 'context' => 'blog', 'echo' => false, 'custom_markup' => $meta['custom_markup'] ) );
 
 				$output = "<div {$meta['custom_el_id']} class='av-alb-blogposts template-blog {$extraclass} {$av_display_classes}' {$markup}>{$output}</div>";
 			}
 
-			return $output;
+			return Av_Responsive_Images()->make_content_images_responsive( $output );
 		}
 
 

@@ -19,12 +19,15 @@ class AviaMedia{
 	
 	function add_assets()
 	{
-		if(is_admin())
+		if( is_admin() )
 		{
 			$ver = AviaBuilder::VERSION;
 	
-			wp_enqueue_script('avia_media_js' , AviaBuilder::$path['assetsURL'].'js/avia-media.js' , array('avia_element_js'), $ver, true );
-			wp_enqueue_style( 'avia-media-style' , AviaBuilder::$path['assetsURL'].'css/avia-media.css');
+			wp_register_script( 'avia_media_js', AviaBuilder::$path['assetsURL'] . 'js/avia-media.js' , array( 'avia_element_js' ), $ver, true );
+			Avia_Builder()->add_registered_admin_script( 'avia_media_js' );
+			
+			wp_register_style( 'avia-media-style', AviaBuilder::$path['assetsURL'] . 'css/avia-media.css' );
+			Avia_Builder()->add_registered_admin_style( 'avia-media-style' );
 		}
 	}
 	

@@ -90,8 +90,21 @@ class LS_Sources {
 	 * @param string $skin The name of the skin/folder
 	 * @return array Skin details
 	 */
-	public static function getSkin($handle) {
-		return self::$skins[ strtolower($handle) ];
+	public static function getSkin( $handle ) {
+
+		// Skin not found
+		if( empty( self::$skins[ strtolower( $handle ) ] ) ) {
+
+			// "Noskin" still available
+			if( ! empty( self::$skins[ 'noskin' ] ) ) {
+				trigger_error( 'LayerSlider skin "'.$handle.'" not found. Defaulting to "noskin".');
+				return self::$skins[ 'noskin' ];
+			}
+
+			trigger_error( 'LayerSlider skin "'.$handle.'" not found.');
+		}
+
+		return self::$skins[ strtolower( $handle ) ];
 	}
 
 
@@ -117,8 +130,9 @@ class LS_Sources {
 	 * @param string $skin The name of the skin/folder
 	 * @return string Path for the skin's directory
 	 */
-	public static function pathForSkin($handle) {
-		return self::$skins[ strtolower($handle) ]['dir'] . DIRECTORY_SEPARATOR;
+	public static function pathForSkin( $handle ) {
+		$skin = self::getSkin( $handle );
+		return $skin['dir'] . DIRECTORY_SEPARATOR;
 	}
 
 
@@ -132,7 +146,9 @@ class LS_Sources {
 	 * @return string URL for the skin's directory
 	 */
 	public static function urlForSkin( $handle ) {
-		$path = self::$skins[ strtolower($handle) ]['dir'];
+
+		$skin = self::getSkin( $handle );
+		$path = $skin['dir'];
 		$url = content_url() . str_replace(realpath(WP_CONTENT_DIR), '', realpath($path)).'/';
 		$url = set_url_scheme( str_replace('\\', '/', $url) );
 

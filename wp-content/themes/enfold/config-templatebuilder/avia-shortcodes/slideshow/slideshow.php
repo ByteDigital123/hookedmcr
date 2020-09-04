@@ -112,6 +112,11 @@ if ( ! class_exists( 'avia_sc_slider' ) )
 				
 						array(	
 								'type'			=> 'template',
+								'template_id'	=> $this->popup_key( 'advanced_animation_slider' )
+							),
+				
+						array(	
+								'type'			=> 'template',
 								'template_id'	=> $this->popup_key( 'advanced_animation' )
 							),
 				
@@ -162,8 +167,8 @@ if ( ! class_exists( 'avia_sc_slider' ) )
 			
 			$c = array(
 						array(
-							'type'	=> 'modal_group',
-							'id'	=> 'content',
+							'type'		=> 'modal_group',
+							'id'		=> 'content',
 							'container_class'	=> 'avia-element-fullwidth avia-multi-img',
 							'modal_title'	=> __( 'Edit Form Element', 'avia_framework' ),
 							'add_label'		=>  __( 'Add single image or video', 'avia_framework' ),
@@ -273,7 +278,7 @@ if ( ! class_exists( 'avia_sc_slider' ) )
 				
 						array(
 							'name' 	=> __( 'Transition Speed', 'avia_framework' ),
-							'desc' 	=> __( 'Selected speed in miliseconds for transition effect.', 'avia_framework' ),
+							'desc' 	=> __( 'Selected speed in milliseconds for transition effect.', 'avia_framework' ),
 							'id' 	=> 'transition_speed',
 							'type' 	=> 'select',
 							'std' 	=> '',
@@ -321,8 +326,26 @@ if ( ! class_exists( 'avia_sc_slider' ) )
 							),
 					);
 			
-			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation_slider' ), $template );
 			
+			$c = array(
+				
+					array(	
+								'type'			=> 'template',
+								'template_id'	=> 'lazy_loading'
+							),
+				);
+			
+			$template = array(
+							array(	
+								'type'			=> 'template',
+								'template_id'	=> 'toggle',
+								'title'			=> __( 'Animation', 'avia_framework' ),
+								'content'		=> $c 
+							),
+					);
+			
+			AviaPopupTemplates()->register_dynamic_template( $this->popup_key( 'advanced_animation' ), $template );
 		}
 		
 		
@@ -753,10 +776,11 @@ if ( ! class_exists( 'avia_sc_slider' ) )
 		 */
 		function editor_sub_element( $params )
 		{	
-			$img_template 		= $this->update_template( 'img_fakeArg', '{{img_fakeArg}}' );
-			$template 			= $this->update_template( 'title', '{{title}}' );
-			$content 			= $this->update_template( 'content', '{{content}}' );
-			$video 				= $this->update_template( 'video', '{{video}}' );
+			$img_template	= $this->update_template( 'img_fakeArg', '{{img_fakeArg}}' );
+			$template		= $this->update_template( 'title', '{{title}}' );
+			$content		= $this->update_template( 'content', '{{content}}' );
+			$video			= $this->update_template( 'video', '{{video}}' );
+			
 			$thumbnail = isset( $params['args']['id'] ) ? wp_get_attachment_image( $params['args']['id'] ) : '';
 
 
@@ -802,7 +826,8 @@ if ( ! class_exists( 'avia_sc_slider' ) )
 							'content'			=> ShortcodeHelper::shortcode2array( $content, 1 ),
 							'class'				=> $meta['el_class'] . ' ' . $av_display_classes,
 							'custom_markup'		=> $meta['custom_markup'],
-							'autoplay_stopper'	=>''
+							'autoplay_stopper'	=> '',
+							'lazy_loading'		=> 'disabled'
 
 					), $atts, $this->config['shortcode'] );
 

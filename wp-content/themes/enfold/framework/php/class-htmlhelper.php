@@ -1459,7 +1459,7 @@ if( ! class_exists( 'avia_htmlhelper' ) )
 								'label'				=> false,			//	for option group
 								'class'				=> '',
 								'hierarchical'		=> 'yes',			//	'yes' | 'no'
-								'post_status'		=> 'publish',		//	array or seperated by comma,
+								'post_status'		=> 'publish',		//	array or separated by comma,
 								'option_none_text'	=> '',				//	text to display for "Nothing selected"
 								'option_none_value'	=> '',				//	value for 'option_none_text'
 								'option_no_change'	=> ''				//	value for 'no change' - set to -1 by WP default
@@ -1780,7 +1780,7 @@ if( ! class_exists( 'avia_htmlhelper' ) )
 		}
 		
 		/**
-		 * Returns a selectbox of available menus
+		 * Returns a select box of available menus
 		 * In case you need extra options in front add them to subtype array. Menus will be appended.
 		 * 
 		 * @since 4.5
@@ -2056,22 +2056,68 @@ if( ! class_exists( 'avia_htmlhelper' ) )
 			$extraclass = $required = '';	
 			if( isset( $element['required'] ) && ! empty( $element['required'] ) ) 
 			{ 
-				$required = '<input type="hidden" value="'.$element['required'][0].'::'.$element['required'][1].'" class="avia_required" />';  
+				$required = '<input type="hidden" value="' . $element['required'][0] . '::'.$element['required'][1] . '" class="avia_required" />';  
 				$extraclass = ' avia_hidden avia_required_container';
 			} 
 			
-			if(isset($element['class'])) $extraclass .= ' '.$element['class'];
+			if( isset( $element['class'] ) ) 
+			{
+				$extraclass .= ' ' . $element['class'];
+			}
 		
-			$output  = '<div class="avia_section avia_'.$element['type'].' '.$extraclass.'"  id="avia_'.$element['id'].'">';
+			$output  = '<div class="avia_section avia_' . $element['type'] . ' ' . $extraclass . '"  id="avia_' . $element['id'] . '">';
 			$output .= $required;
-			if($element['name'] != '') $output .= '<h4>'.$element['name'].'</h4>';
-			$output .= $element['desc'];
+			
+			if( $element['name'] != '' ) 
+			{
+				$output .= '<h4>' . $element['name'] . '</h4>';
+			}
+			
+			$output .=		$element['desc'];
 			$output .= '</div>';
+			
 			return $output;
 		}
 		
-		
-		
+		/**
+		 * Returns an overview of the responsive images grouped by aspect ratio
+		 * 
+		 * @since 4.7.5.1
+		 * @param array $element
+		 * @return string
+		 */
+		public function responsive_images_overview( array $element ) 
+		{
+			$extraclass = '';
+			$required = '';
+			
+			if( isset( $element['required'] ) && ! empty( $element['required'] ) ) 
+			{ 
+				$required = '<input type="hidden" value="' . $element['required'][0] . '::' . $element['required'][1] . '" class="avia_required" />';  
+				$extraclass = ' avia_hidden avia_required_container';
+			}
+			
+			if( isset( $element['class'] ) ) 
+			{
+				$extraclass .= ' ' . $element['class'];
+			}
+			
+			$output  = '<div class="avia_section avia_' . $element['type'] . ' ' . $extraclass . '"  id="avia_' . $element['id'] . '">';
+			$output .= $required;
+			
+			if( $element['name'] != '' ) 
+			{
+				$output .= '<h4>' . $element['name'] . '</h4>';
+			}
+			
+			$output .=		'<div class="av-plugin-check-wrap">';
+			$output .=			Av_Responsive_Images()->options_page_overview();
+			$output .=		'</div>';
+			$output .= '</div>';
+			
+			return $output;
+		}
+
 		/**
          * 
          * The target method renders a div that is able to hold an image or a background color
@@ -2929,7 +2975,7 @@ if( ! class_exists( 'avia_htmlhelper' ) )
 	
 	
 		/**
-		 * Displays a selectbox and supports optgroup tag
+		 * Displays a select box and supports optgroup tag
 		 * 
 		 * @param array $element
 		 * @return string

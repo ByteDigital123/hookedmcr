@@ -56,6 +56,22 @@ $fontHelvetica: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sa
 	}
 }
 
+#ls-language-form {
+
+	.inner {
+		padding: 20px;
+		text-align: center;
+		font-size: 13px
+	}
+
+	select {
+		width: auto;
+		margin-left: 10px;
+	}
+}
+
+
+
 .ls-subpage-link {
 	position: relative;
 	display: block;
@@ -379,9 +395,8 @@ ul.ls-font-list {
 		}
 
 		.button {
-			position: absolute;
-			top: 3px;
-			right: 0px;
+			float: right;
+			margin: 2px 0 0 5px;
 		}
 	}
 

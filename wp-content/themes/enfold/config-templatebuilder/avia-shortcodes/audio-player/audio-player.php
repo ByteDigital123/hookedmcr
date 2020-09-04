@@ -273,8 +273,8 @@ if ( ! class_exists( 'avia_sc_audio_player' ) )
 							'type'			=> 'select',
 							'std'			=> '',
 							'subtype'		=> array(
-													__( 'Start manually','avia_framework' )		=> 'manual',
-													__( 'Start on pageload','avia_framework' )	=> 'autoplay'
+													__( 'Start manually', 'avia_framework' )	=> 'manual',
+													__( 'Start on pageload', 'avia_framework' )	=> 'autoplay'
 												)
 						),
 				
@@ -285,8 +285,8 @@ if ( ! class_exists( 'avia_sc_audio_player' ) )
 							'type'			=> 'select',
 							'std'			=> '',
 							'subtype'		=> array(
-													__( 'Start from beginning again','avia_framework' )		=> '',
-													__( 'Stop after playing last song','avia_framework' )	=> 'avia-playlist-no-loop'
+													__( 'Start from beginning again', 'avia_framework' )	=> '',
+													__( 'Stop after playing last song', 'avia_framework' )	=> 'avia-playlist-no-loop'
 												)
 						),
 				
@@ -297,9 +297,9 @@ if ( ! class_exists( 'avia_sc_audio_player' ) )
 							'type'			=> 'select',
 							'std'			=> '',
 							'subtype'		=> array(
-													__( 'Use order of playlist as selected','avia_framework' )	=> 'normal',
-													__( 'Shuffle the playlist randomly','avia_framework' )		=> 'shuffle',
-													/*__( 'Reverse the playlist','avia_framework' )				=> 'reverse'*/
+													__( 'Use order of playlist as selected', 'avia_framework' )	=> 'normal',
+													__( 'Shuffle the playlist randomly', 'avia_framework' )		=> 'shuffle',
+													/*__( 'Reverse the playlist', 'avia_framework' )			=> 'reverse'*/
 												)
 						)
 						
@@ -577,7 +577,7 @@ if ( ! class_exists( 'avia_sc_audio_player' ) )
 					
 					//	Dummy element only to avoid notices
 					array(	
-							'name'		=> __('Which type of media is this?','avia_framework' ),
+							'name'		=> __('Which type of media is this?', 'avia_framework' ),
 							'id'		=> 'audio_type',
 							'type'		=> 'select',
 							'std'		=> 'audio',

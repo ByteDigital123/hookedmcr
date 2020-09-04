@@ -19,7 +19,7 @@
 		{
 			var container 		= $(this),
 				tabs			= container.find('.av-section-tab-title'),
-			    tab_outer		= container.find('.av-tab-section-outer-container'),
+			    	tab_outer		= container.find('.av-tab-section-outer-container'),
 				tab_wrap		= container.find('.av-tab-section-tab-title-container'),
 				tab_nav			= container.find('.av_tab_navigation'), 
 				content_wrap	= container.find('.av-tab-section-inner-container'),
@@ -36,8 +36,9 @@
 					var current_tab 	= $(e.currentTarget),
 						current_arrow	= current_tab.find('.av-tab-arrow-container span'),
 						tab_nr			= current_tab.data('av-tab-section-title');
-						
-						current_content = container.find('[data-av-tab-section-content="'+tab_nr+'"]');
+					
+					//	reset global scope !!
+					current_content = container.find('[data-av-tab-section-content="'+tab_nr+'"]');
 					
 					var new_bg			= current_content.data('av-tab-bg-color'),
 						new_font		= current_content.data('av-tab-color'),
@@ -48,15 +49,24 @@
 					current_tab.addClass('av-active-tab-title');
 					current_content.addClass("av-active-tab-content");
 					
-					if(new_bg !== "") current_arrow.css('background-color', new_bg);
-					if(new_font !== "") current_tab.css('color', new_font);
-						
-					var new_pos = ((parseInt(tab_nr,10) - 1) * -100 );
-					    if ($('body').hasClass('rtl')) {
-	        				new_pos = ((parseInt(tab_nr,10) - 1) * 100 );
-	    					}
+					if( new_bg !== "" ) 
+					{
+						current_arrow.css('background-color', new_bg);
+					}
 					
-					if(cssActive)
+					if( new_font !== "" ) 
+					{
+						current_tab.css('color', new_font);
+					}
+						
+					var new_pos = ( (parseInt( tab_nr,10 ) - 1 ) * -100 );
+					    
+					if( $('body').hasClass('rtl') ) 
+					{
+						new_pos = ( ( parseInt( tab_nr,10 ) - 1 ) * 100 );
+					}
+					
+					if( cssActive )
 					{
 						//move the slides
 						new_pos = new_pos / tabs.length;
@@ -72,7 +82,10 @@
 					set_tab_titlte_pos();
 					set_slide_height();
 					
-					if(!prevent_hash) location.hash = current_tab.attr('href');
+					if( ! prevent_hash ) 
+					{
+						location.hash = current_tab.attr('href');
+					}
 					
 					setTimeout(function()
 					{

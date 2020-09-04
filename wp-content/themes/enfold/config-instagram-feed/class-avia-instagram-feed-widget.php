@@ -664,7 +664,7 @@ if( ! class_exists( 'Avia_Instagram_Feed_Widget' ) )
 			
 			$elements[] = array(
 							'name'		=> __( 'Carousel Interval Time:', 'avia_framework' ),
-							'desc'		=> __( 'The interval time between slides for autoplay in miliseconds.', 'avia_framework' ),
+							'desc'		=> __( 'The interval time between slides for autoplay in milliseconds.', 'avia_framework' ),
 							'id'		=> $this->get_field_id( 'carouseltime' ),
 							'id_name'	=> $this->get_field_name( 'carouseltime' ),
 							'type'		=> 'text',
