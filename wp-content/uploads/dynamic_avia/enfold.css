@@ -29,6 +29,38 @@ body.signika_negative {font-family:'signika negative', 'HelveticaNeue', 'Helveti
     width: 100%;
     padding: 10px 0;
 }
+
+
+
+@media only screen and (max-width: 989px) and (min-width: 768px){
+
+.html_header_top.html_logo_center .logo {
+    left: 14%;
+}
+
+.avia-menu.av_menu_icon_beside {
+    padding-right: 0!important;
+    margin-right: 0!important;
+}
+
+
+}
+
+
+
+@media only screen and (max-width: 767px) {
+
+.responsive .logo img {
+    margin: 0;
+    width: 100px;
+}
+
+.avia-menu.av_menu_icon_beside {
+    padding-right: 0!important;
+    margin-right: 0!important;
+}
+
+}
 .container {width:80%;} .container .av-content-small.units {width:73%; }
 			
 			  .responsive .boxed#top , .responsive.html_boxed.html_header_sticky #header, 
